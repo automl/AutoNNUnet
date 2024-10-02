@@ -1,0 +1,5 @@
+alias my-account='sacctmgr show User $user --associations'
+alias filesize="ls -lhaSr"
+alias squeue-me="squeue -l --me"
+alias show-job="sstat --format=JobID,NTasks,AveCPU,AveCPUFreq,AveRSS,MaxRSS -j"
+

@@ -1,0 +1,13 @@
+default_context:
+  add_badges: n
+  add_citation_file: n
+  create_author_file: n
+  project_slug: '{{ cookiecutter.project_name.lower().replace('' '', ''_'').replace(''-'',
+    ''_'') }}'
+  use_docs: n
+  use_github_workflows: n
+  use_mypy_typing: y
+  use_pydoc_style: y
+  use_pypi_deployment_with_travis: n
+  use_pytest": y
+  use_ruff_format: y

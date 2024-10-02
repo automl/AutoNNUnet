@@ -1,0 +1,5 @@
+
+export REPODIR=${BIGWORK}"/projects"
+alias cluster-info="sinfo -o '%8P %10n %.11T %.4c %.8z %.6m %12G %10l %10L %10O %20E' -S '-P' --partition=tnt,ai,ainlp"
+alias make-project="conda activate template && cd $BIGWORK && source automl_repo_template/cookiecutter.sh"
+export ENVDIR=${BIGWORK}"/envs"
