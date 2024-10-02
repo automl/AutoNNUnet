@@ -47,8 +47,8 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
 ruff: ## run ruff as a formatter
-	python -m ruff --exit-zero autonnunet
-	python -m ruff --silent --exit-zero --no-cache --fix autonnunet
+	python -m ruff check --exit-zero autonnunet
+	python -m ruff check --silent --exit-zero --no-cache --fix autonnunet
 isort:
 	python -m isort autonnunet tests
 

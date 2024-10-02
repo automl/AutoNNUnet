@@ -3,7 +3,6 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-
 AUTONNUNET_OUTPUT = Path("./output").resolve()
 AUTONNUNET_PREDCITIONS =  Path("./predictions").resolve()
 AUTONNUNET_PLOTS = Path("./plots").resolve()

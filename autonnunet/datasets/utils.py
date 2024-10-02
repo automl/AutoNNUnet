@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 import tarfile
+from pathlib import Path
 
 
 def download_file(url: str, target_path: Path) -> None:

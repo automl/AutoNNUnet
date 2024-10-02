@@ -27,7 +27,6 @@ dependencies = [
   "tox",
   "twine",
   "bump-my-version",
-
 ]
 
 requires-python = ">=3.10"
@@ -95,8 +94,7 @@ changelog_start_rev = "1.0.0"
 [tool.ruff]
 target-version = "py310"
 line-length = 88
-show-source = true
-src = ["src", "tests", "examples"]
+src = ["autonnunet", "tests", "examples"]
 extend-safe-fixes = ["ALL"]
 
 # Allow unused variables when underscore-prefixed.

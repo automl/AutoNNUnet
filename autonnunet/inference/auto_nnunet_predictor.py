@@ -4,12 +4,13 @@ import os
 from typing import TYPE_CHECKING
 
 import torch
-from batchgenerators.utilities.file_and_folder_operations import join, load_json
-from dynamic_network_architectures.building_blocks.helper import get_matching_batchnorm
+from batchgenerators.utilities.file_and_folder_operations import (join,
+                                                                  load_json)
+from dynamic_network_architectures.building_blocks.helper import \
+    get_matching_batchnorm
 from nnunetv2.inference.predict_from_raw_data import nnUNetPredictor
-from nnunetv2.utilities.label_handling.label_handling import (
-    determine_num_input_channels,
-)
+from nnunetv2.utilities.label_handling.label_handling import \
+    determine_num_input_channels
 from nnunetv2.utilities.plans_handling.plans_handler import PlansManager
 from torch._dynamo import OptimizedModule
 

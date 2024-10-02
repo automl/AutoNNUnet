@@ -1,3 +1,8 @@
+"""Compute the budgets for Hyperband."""
+from __future__ import annotations
+
+import argparse
+
 import numpy as np
 from smac.intensifier.successive_halving import SuccessiveHalving
 
@@ -38,3 +43,17 @@ def compute_hyperband_budgets(b_min, b_max, eta) -> tuple[dict[int, list], dict[
     print("Total budget: ", total_budget)
 
     return n_configs_in_stage, budgets_in_stage, total_trials, total_budget
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--b_min", type=int, default=15)
+    parser.add_argument("--b_max", type=int, default=1000)
+    parser.add_argument("--eta", type=int, default=4)
+    args = parser.parse_args()
+
+    compute_hyperband_budgets(
+        b_min=args.b_min,
+        b_max=args.b_max,
+        eta=args.eta
+    )

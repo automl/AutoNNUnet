@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import argparse
 import os
 import subprocess
 
+from autonnunet.utils.paths import NNUNET_DATASETS
+
 from .base_dataset import Dataset
 from .utils import download_file, untar_file
-from autonnunet.utils.paths import NNUNET_DATASETS
 
 MSD_URLS = {
     "Dataset001_BrainTumour": "https://msd-for-monai.s3-us-west-2.amazonaws.com/Task01_BrainTumour.tar",
@@ -76,3 +78,11 @@ class MSDDataset(Dataset):
         self.logger.info(f"Executing command: {' '.join(preprocess_command)}")
         subprocess.run(preprocess_command, check=True)
 
+
+if __name__  == "__main__":
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument("--dataset_name", type=str, required=True)
+    args = argparser.parse_args()
+
+    dataset = MSDDataset(name=args.dataset_name)
+    dataset.download_and_extract()

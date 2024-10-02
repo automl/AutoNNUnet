@@ -111,10 +111,12 @@ ENV/
 # Datasets
 data/
 
-# hydra
+# hydra and slurm
 **/hydra.yaml
 **/multirun.yaml
 **/overrides.yaml
+**/.hydra
+**/.submitit
 
 # nnU-Net
 **/progress.png

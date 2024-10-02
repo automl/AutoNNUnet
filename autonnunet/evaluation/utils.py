@@ -1,23 +1,20 @@
 from __future__ import annotations
+
 import warnings
 
 warnings.filterwarnings("ignore")
-import os
-
-import pandas as pd
-import zipfile
-
-from autonnunet.utils import dataset_name_to_msd_task
-
-
 import logging
+import os
+import zipfile
 from typing import Any
 
+import pandas as pd
 import torch
-from autonnunet.utils import get_device, set_environment_variables
-from autonnunet.utils.paths import AUTONNUNET_OUTPUT, AUTONNUNET_PREDCITIONS, NNUNET_PREPROCESSED, NNUNET_RAW
 from omegaconf import DictConfig, OmegaConf
 
+from autonnunet.utils import dataset_name_to_msd_task, get_device
+from autonnunet.utils.paths import (AUTONNUNET_OUTPUT, AUTONNUNET_PREDCITIONS,
+                                    NNUNET_PREPROCESSED, NNUNET_RAW)
 
 # According to the MSD, these predictions should not be included in the submission
 IGNORE_PREDICTIONS = [
@@ -39,9 +36,10 @@ def get_prediction_trainer(
     cfg: DictConfig
 ) -> Any:
     # We do lazy imports here to make everything pickable for SLURM
-    from autonnunet.training import AutoNNUNetTrainer
     from batchgenerators.utilities.file_and_folder_operations import load_json
     from torch.backends import cudnn
+
+    from autonnunet.training import AutoNNUNetTrainer
 
     preprocessed_dataset_folder_base = NNUNET_PREPROCESSED / cfg.dataset.name
     plans_file = preprocessed_dataset_folder_base / f"{cfg.trainer.plans_identifier}.json"
@@ -72,8 +70,7 @@ def run_prediction(
         use_folds: tuple[int]
     ):
     from autonnunet.inference import AutoNNUNetPredictor
-    
-    set_environment_variables()
+
     os.environ["nnUNet_results"] = "."      # noqa: SIM112
     os.environ["nnUNet_n_proc_DA"] = "20"   # noqa: SIM112
 

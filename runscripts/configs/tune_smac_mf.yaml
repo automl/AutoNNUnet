@@ -10,7 +10,7 @@ smac_seed: 0
 
 # HPO configuration
 n_trials: 127
-min_budget: 10
+min_budget: 15
 max_budget: 1000
 eta: 4
 

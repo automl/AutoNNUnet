@@ -6,11 +6,14 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 import torch
-from dynamic_network_architectures.building_blocks.helper import get_matching_batchnorm
-from nnunetv2.training.loss.compound_losses import DC_and_BCE_loss, DC_and_CE_loss
+from dynamic_network_architectures.building_blocks.helper import \
+    get_matching_batchnorm
+from nnunetv2.training.loss.compound_losses import (DC_and_BCE_loss,
+                                                    DC_and_CE_loss)
 from nnunetv2.training.loss.deep_supervision import DeepSupervisionWrapper
 from nnunetv2.training.loss.dice import MemoryEfficientSoftDiceLoss
-from nnunetv2.training.loss.robust_ce_loss import RobustCrossEntropyLoss, TopKLoss
+from nnunetv2.training.loss.robust_ce_loss import (RobustCrossEntropyLoss,
+                                                   TopKLoss)
 from nnunetv2.training.lr_scheduler.polylr import PolyLRScheduler
 from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
 from nnunetv2.utilities.helpers import softmax_helper_dim1
