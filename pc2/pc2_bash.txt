@@ -1,9 +1,0 @@
-
-export REPODIR=${SCRATCH}"/projects"
-alias cluster-info="sinfo -o '%8P %10n %.11T %.4c %.8z %.6m %12G %10l %10L %10O %20E' -S '-P'"
-alias make-project="conda activate template && cd $SCRATCH && source automl_repo_template/cookiecutter.sh"
-export ENVDIR=${SCRATCH}"/envs"
-
-# Sync to/from cluster, relative to repodir
-# e.g. from cluster to local: rsync2local runs .
-#rsync2local() {rsync -azv --delete -e 'ssh -J ${PC2USER}@fe.noctua2.pc2.uni-paderborn.de' ${PC2USER}@n2login5:${REPODIR}/${1} ${2}; }

@@ -1,2 +1,0 @@
-export SCRATCH="${PC2PFS}/hpc-prf-intexml/
-export DATA="${PC2DATA}/hpc-prf-intexml/
