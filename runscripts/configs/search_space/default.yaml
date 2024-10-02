@@ -1,0 +1,71 @@
+seed: 0
+hyperparameters:
+  hp_config.optimizer:
+    type: categorical
+    choices:
+      - SGD
+      - Adam
+      - AdamW
+    default: SGD
+  hp_config.momentum:
+    type: uniform_float
+    upper: 0.999
+    lower: 0.85
+    default: 0.99
+    log: true
+  hp_config.initial_lr:
+    type: uniform_float
+    upper: 0.1
+    lower: 1.0e-05
+    default: 1.0e-02
+    log: true
+  hp_config.lr_scheduler:
+    type: categorical
+    choices:
+      - PolyLRScheduler
+      - CosineAnnealingLR
+      - None
+    default: PolyLRScheduler
+  hp_config.weight_decay:
+    type: uniform_float
+    upper: 1.0e-02
+    lower: 1.0e-06
+    default: 3.0e-05
+    log: true
+  hp_config.oversample_foreground_percent:
+    type: uniform_float
+    upper: 1.0
+    lower: 0.0
+    default: 0.33
+    log: false
+  hp_config.normalization:
+    type: categorical
+    choices:
+      - InstanceNorm
+      - BatchNorm
+    default: InstanceNorm
+  hp_config.n_conv_per_stage_encoder:
+    type: uniform_int
+    upper: 3
+    lower: 2
+    log: false
+    default: 2
+  hp_config.n_conv_per_stage_decoder:
+    type: uniform_int
+    upper: 3
+    lower: 2
+    log: false
+    default: 2
+  hp_config.loss_function:
+    type: categorical
+    choices:
+      - DiceLoss
+      - DiceAndCrossEntropyLoss
+      - CrossEntropyLoss
+      - TopKLoss
+    default: DiceAndCrossEntropyLoss
+conditions:
+  - child: hp_config.momentum
+    parent: hp_config.optimizer
+    value: SGD
+    type: EQ

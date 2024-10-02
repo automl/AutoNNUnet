@@ -1,0 +1,59 @@
+defaults:
+  - _self_
+  - base
+  - cluster: kisski_gpu
+  - search_space: default
+  - dataset: Dataset002_Heart
+  - override hydra/sweeper: HyperSMAC
+
+smac_seed: 0
+
+# HPO configuration
+n_trials: 127
+min_budget: 10
+max_budget: 1000
+eta: 4
+
+hydra:
+  sweeper:
+    n_trials: ${n_trials}
+    budget_variable: hp_config.num_epochs
+    search_space: ${search_space}
+    sweeper_kwargs:
+      min_budget: ${min_budget}
+      max_budget: ${max_budget}
+      # seeds: [0, 1, 2, 3, 4] # these are the folds in our case
+      job_array_size_limit: 5
+      seed_keyword: fold
+      deterministic: true
+      optimizer_kwargs:
+        smac_facade:
+          _target_: smac.facade.multi_fidelity_facade.MultiFidelityFacade
+          _partial_: true
+        intensifier:
+          _target_: smac.facade.multi_fidelity_facade.MultiFidelityFacade.get_intensifier
+          _partial_: true
+          eta: ${eta}
+          n_seeds: 1
+          incumbent_selection: highest_budget
+        scenario:
+          seed: ${smac_seed}
+          n_trials: ${hydra.sweeper.n_trials}
+          use_default_config: true  # this increases the number of initial configs by 1
+          min_budget: ${hydra.sweeper.sweeper_kwargs.min_budget}
+          max_budget: ${hydra.sweeper.sweeper_kwargs.max_budget}
+          deterministic: true
+          n_workers: 1
+          name: ${dataset.name}
+          output_directory: output/smac_mf/${dataset.name}/${trainer.configuration}/${smac_seed}/smac_output
+        config_selector:
+          _target_: smac.main.config_selector.ConfigSelector
+          _partial_: true
+          retrain_after: 1
+          min_trials: 2
+  run:  
+    dir: output/smac_mf/${dataset.name}/${trainer.configuration}/${smac_seed}
+  sweep:
+    dir: output/smac_mf/${dataset.name}/${trainer.configuration}/${smac_seed}
+  job:
+    chdir: true

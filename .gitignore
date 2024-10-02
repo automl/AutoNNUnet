@@ -104,3 +104,18 @@ ENV/
 # IDE settings
 .vscode/
 .idea/
+
+# Model checkpoints
+*.pth
+
+# Datasets
+data/
+
+# hydra
+**/hydra.yaml
+**/multirun.yaml
+**/overrides.yaml
+
+# nnU-Net
+**/progress.png
+**/*.nii.gz

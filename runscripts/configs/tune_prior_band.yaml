@@ -1,0 +1,46 @@
+defaults:
+  - _self_
+  - cluster: luis_gpu
+  - search_space: default
+  - override hydra/sweeper: HyperNEPS
+  - dataset: Dataset002_Heart
+
+neps_seed: 0
+
+# HPO configuration
+n_trials: 43
+min_budget: 10
+max_budget: 1000
+eta: 5
+
+hydra:
+  sweeper:
+    budget: 10_000
+    budget_variable: num_epochs
+    sweeper_kwargs:
+      job_array_size_limit: 1
+      seeds: [0, 1, 2, 3, 4]
+      optimizer_kwargs:
+        fidelity_variable: ${hydra.sweeper.budget_variable}
+        min_budget: 5
+        max_budget: 50
+        seed: ${neps_seed}
+        optimizer:
+          _target_: neps.optimizers.multi_fidelity_prior.priorband.PriorBand
+          _partial_: true
+          budget: ${hydra.sweeper.budget}
+          eta: ${eta}
+          prior_confidence: medium
+          random_interleave_prob: 0.0
+          sample_default_first: true
+          sample_default_at_target: false
+          prior_weight_type: geometric
+          inc_sample_type: mutation
+          inc_mutation_rate: 0.5
+          inc_mutation_std: 0.25
+          inc_style: dynamic
+    dir: output/prior_band/${dataset.dataset_name}/${args.configuration_name}/${neps_seed}
+  sweep:
+    dir: output/prior_band/${dataset.dataset_name}/${args.configuration_name}/${neps_seed}
+  job:
+    chdir: true

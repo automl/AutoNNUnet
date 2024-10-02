@@ -1,0 +1,15 @@
+defaults:
+  - _self_
+  - /cluster: kisski_gpu_preprocess
+  - dataset: Dataset002_Heart
+
+configuration: 3d_fullres
+
+hydra:
+  run:
+    dir: output/prepare/${dataset.name}/
+  sweep:
+    dir: output/prepare/${dataset.name}/
+    subdir: ""   
+  job:
+    chdir: true
