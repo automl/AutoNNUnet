@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 
-from automis.utils import Plotter
+from autonnunet.utils import Plotter
 
 if __name__  == "__main__":
     argparser = argparse.ArgumentParser()

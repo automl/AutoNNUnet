@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 
-from automis.datasets import MSDDataset
+from autonnunet.datasets import MSDDataset
 
 if __name__  == "__main__":
     argparser = argparse.ArgumentParser()

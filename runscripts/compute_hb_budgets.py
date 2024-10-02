@@ -1,5 +1,5 @@
 """Compute the budgets for Hyperband."""
-from automis.utils import compute_hyperband_budgets
+from autonnunet.utils import compute_hyperband_budgets
 import argparse
 
 if __name__ == "__main__":

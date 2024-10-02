@@ -12,18 +12,18 @@ from typing import TYPE_CHECKING, Any
 
 import hydra
 import torch
-from automis.utils import (
+from autonnunet.utils import (
     check_if_job_already_done,
     get_device,
     read_metrics,
     seed_everything,
-    set_environment_variables,
     write_performance,
 )
-from codecarbon import EmissionsTracker
+from autonnunet.utils.paths import NNUNET_PREPROCESSED
+from codecarbon import OfflineEmissionsTracker
 
 if TYPE_CHECKING:
-    from automis.training import CustomNNUNetTrainer
+    from autonnunet.training import AutoNNUNetTrainer
     from omegaconf import DictConfig
 
 
@@ -31,17 +31,17 @@ def get_trainer(
     cfg: DictConfig
 ) -> Any:
     # We do lazy imports here to make everything pickable for SLURM
-    from automis.training import CustomNNUNetTrainer
+    from autonnunet.training import AutoNNUNetTrainer
     from batchgenerators.utilities.file_and_folder_operations import load_json
     from nnunetv2.run.run_training import maybe_load_checkpoint
     from torch.backends import cudnn
 
-    preprocessed_dataset_folder_base = Path(os.environ["nnUNet_preprocessed"]) / cfg.dataset.name  # noqa: SIM112
+    preprocessed_dataset_folder_base = NNUNET_PREPROCESSED / cfg.dataset.name  # noqa: SIM112
     plans_file = preprocessed_dataset_folder_base / f"{cfg.trainer.plans_identifier}.json"
     plans = load_json(plans_file)
     dataset_json = load_json(preprocessed_dataset_folder_base / "dataset.json")
 
-    nnunet_trainer = CustomNNUNetTrainer(
+    nnunet_trainer = AutoNNUNetTrainer(
         plans=plans,
         configuration=cfg.trainer.configuration,
         fold=cfg.fold,
@@ -84,13 +84,14 @@ def run(cfg: DictConfig):
     seed_everything(cfg.seed)
 
     logger.info("Setting up emissions tracker")
-    tracker = EmissionsTracker(
+    tracker = OfflineEmissionsTracker(
+        country_iso_code="DEU",
         log_level="WARNING"
     )
     tracker.start()
 
     logger.info("Creating trainer")
-    nnunet_trainer: CustomNNUNetTrainer = get_trainer(cfg)
+    nnunet_trainer: AutoNNUNetTrainer = get_trainer(cfg)
 
     if cfg.pipeline.run_training:
         logger.info("Starting training")

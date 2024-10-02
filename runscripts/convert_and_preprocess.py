@@ -10,10 +10,10 @@ import sys
 from typing import TYPE_CHECKING
 
 import hydra
-from automis.utils import set_environment_variables
+from autonnunet.utils import set_environment_variables
 
 if TYPE_CHECKING:
-    from automis.datasets import Dataset
+    from autonnunet.datasets import Dataset
     from omegaconf import DictConfig
 
 set_environment_variables()

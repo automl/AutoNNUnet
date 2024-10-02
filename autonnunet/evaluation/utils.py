@@ -1,26 +1,45 @@
 from __future__ import annotations
-
 import warnings
 
 warnings.filterwarnings("ignore")
-
-import argparse
-import logging
 import os
-from pathlib import Path
+
+import pandas as pd
+import zipfile
+
+from autonnunet.utils import dataset_name_to_msd_task
+
+
+import logging
 from typing import Any
 
 import torch
-from automis.utils import get_device, set_environment_variables
-from automis.utils.paths import AUTONNUNET_OUTPUT, AUTONNUNET_PREDCITIONS, NNUNET_PREPROCESSED, NNUNET_RAW
+from autonnunet.utils import get_device, set_environment_variables
+from autonnunet.utils.paths import AUTONNUNET_OUTPUT, AUTONNUNET_PREDCITIONS, NNUNET_PREPROCESSED, NNUNET_RAW
 from omegaconf import DictConfig, OmegaConf
 
 
-def get_trainer(
+# According to the MSD, these predictions should not be included in the submission
+IGNORE_PREDICTIONS = [
+    "liver_141.nii.gz",
+    "liver_156.nii.gz",
+    "liver_160.nii.gz",
+    "liver_161.nii.gz",
+    "liver_162.nii.gz",
+    "liver_164.nii.gz",
+    "liver_167.nii.gz",
+    "liver_182.nii.gz",
+    "liver_189.nii.gz",
+    "liver_190.nii.gz",
+    "hepaticvessel_247.nii.gz"
+]
+
+
+def get_prediction_trainer(
     cfg: DictConfig
 ) -> Any:
     # We do lazy imports here to make everything pickable for SLURM
-    from automis.training import CustomNNUNetTrainer
+    from autonnunet.training import AutoNNUNetTrainer
     from batchgenerators.utilities.file_and_folder_operations import load_json
     from torch.backends import cudnn
 
@@ -29,7 +48,7 @@ def get_trainer(
     plans = load_json(plans_file)
     dataset_json = load_json(preprocessed_dataset_folder_base / "dataset.json")
 
-    nnunet_trainer = CustomNNUNetTrainer(
+    nnunet_trainer = AutoNNUNetTrainer(
         plans=plans,
         configuration=cfg.trainer.configuration,
         fold=0,
@@ -52,7 +71,11 @@ def run_prediction(
         configuration: str,
         use_folds: tuple[int]
     ):
-    from automis.inference import CustomNNUNetPredictor
+    from autonnunet.inference import AutoNNUNetPredictor
+    
+    set_environment_variables()
+    os.environ["nnUNet_results"] = "."      # noqa: SIM112
+    os.environ["nnUNet_n_proc_DA"] = "20"   # noqa: SIM112
 
     if approach == "baseline":
         model_base_output_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration
@@ -62,12 +85,10 @@ def run_prediction(
     # Read config from yaml
     cfg = DictConfig(OmegaConf.load(model_base_output_dir / "fold_0" / "config.yaml"))
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-
+    logger = logging.getLogger(__name__)
     logger.info("Starting prediction")
 
-    predictor = CustomNNUNetPredictor(
+    predictor = AutoNNUNetPredictor(
         tile_step_size=0.5,
         use_gaussian=True,
         use_mirroring=True,
@@ -103,21 +124,40 @@ def run_prediction(
     logger.info("Finished prediction")
 
 
-if __name__  == "__main__":
-    set_environment_variables()
-    os.environ["nnUNet_results"] = "."      # noqa: SIM112
-    os.environ["nnUNet_n_proc_DA"] = "20"   # noqa: SIM112
+def extract_incumbent(dataset_name: str, approach: str, configuration: str, smac_seed: int) -> None:
+    output_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration / str(smac_seed)
+    target_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration / "incumbent"
 
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument("--dataset_name", type=str, required=True)
-    argparser.add_argument("--approach", type=str, default="baseline")
-    argparser.add_argument("--configuration", type=str, default="3d_fullres")
-    argparser.add_argument("--use_folds", nargs="+", type=int, default=[0, 1, 2, 3, 4])
-    args = argparser.parse_args()
+    incumbent_df = pd.read_csv(output_dir / "incumbent.csv")
+    incumbent_config_id = int(incumbent_df["config_id"].values[-1])
 
-    run_prediction(
-        dataset_name=args.dataset_name,
-        approach=args.approach,
-        configuration=args.configuration,
-        use_folds=args.use_folds
-    )
+    for fold in range(5):
+        run_id = incumbent_config_id * 5 + fold
+        target_fold_dir = target_dir / f"fold_{fold}"
+        target_fold_dir.mkdir(exist_ok=True, parents=True)
+
+        # Copy the run to the incumbent directory
+        os.system(f"cp -r {run_id}/ {target_fold_dir}/")
+
+
+def compress_msd_submission(approach: str, configuration: str):
+    predictions_dir = AUTONNUNET_PREDCITIONS / approach
+    target_path = AUTONNUNET_MSD_SUBMISSIONS / f"{approach}_{configuration}.zip"
+    AUTONNUNET_MSD_SUBMISSIONS.mkdir(exist_ok=True)
+
+    with zipfile.ZipFile(target_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+        for dataset_name in os.listdir(predictions_dir):
+            task_name = dataset_name_to_msd_task(dataset_name)
+            dataset_dir = predictions_dir / dataset_name / configuration
+            for file in os.listdir(dataset_dir):
+                if file in IGNORE_PREDICTIONS:
+                    continue
+
+                if not file.endswith(".nii.gz"):
+                    continue
+
+                file_path = dataset_dir / file
+
+                # Save the file in the zip with the task name as a subdirectory
+                zipf.write(file_path, task_name + "/" + file)
+

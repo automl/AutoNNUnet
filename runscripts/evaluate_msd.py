@@ -1,0 +1,48 @@
+from __future__ import annotations
+
+import warnings
+
+warnings.filterwarnings("ignore")
+
+import argparse
+from autonnunet.datasets.msd_dataset import MSD_URLS
+
+from autonnunet.evaluation import run_prediction, extract_incumbent, compress_msd_submission
+import logging
+
+
+if __name__  == "__main__":
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument("--approach", type=str, default="baseline")
+    argparser.add_argument("--configuration", type=str, default="3d_fullres")
+    argparser.add_argument("--smac_seed", type=int, default=0)
+    argparser.add_argument("--use_folds", nargs="+", type=int, default=[0, 1, 2, 3, 4])
+    args = argparser.parse_args()
+
+    logger = logging.getLogger(__name__)
+    logger.info("Starting MSD evaluation.")
+
+    for dataset_name in MSD_URLS.keys():
+        logger.info(f"Running prediction for {dataset_name}.")
+        run_prediction(
+            dataset_name=dataset_name,
+            approach=args.approach,
+            configuration=args.configuration,
+            use_folds=args.use_folds
+        )
+
+        if args.approach == "smac_mf":
+            logger.info(f"Extracting incumbent for {dataset_name}.")
+            extract_incumbent(
+                dataset_name=dataset_name,
+                approach=args.approach,
+                configuration=args.configuration,
+                smac_seed=args.smac_seed
+            )
+
+    logger.info("Compressing MSD submission.")
+    compress_msd_submission(
+        approach=args.approach,
+        configuration=args.configuration
+    )
+        

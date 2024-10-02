@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from omegaconf import DictConfig
 
 
-class CustomNNUNetPredictor(nnUNetPredictor):
+class AutoNNUNetPredictor(nnUNetPredictor):
     def __init__(self,
                  tile_step_size: float = 0.5,
                  use_gaussian: bool = True,
