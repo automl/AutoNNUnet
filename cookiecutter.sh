@@ -42,7 +42,7 @@ fi
 yes="y"
 no="n"
 
-cookiecutter automl_repo_template --config-file  automl_repo_template/$config_name
+cookiecutter https://github.com/LUH-AI/automl_repo_template --config-file  $config_name
 
 echo ""
 echo "What's the name of your new project again?"
