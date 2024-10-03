@@ -6,8 +6,10 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 import torch
+from batchgenerators.utilities.file_and_folder_operations import load_json
 from dynamic_network_architectures.building_blocks.helper import \
     get_matching_batchnorm
+from nnunetv2.run.run_training import maybe_load_checkpoint
 from nnunetv2.training.loss.compound_losses import (DC_and_BCE_loss,
                                                     DC_and_CE_loss)
 from nnunetv2.training.loss.deep_supervision import DeepSupervisionWrapper
@@ -21,6 +23,8 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 
 from autonnunet.training.auto_nnunet_logger import AutoNNUNetLogger
 from autonnunet.training.dummy_lr_scheduler import DummyLRScheduler
+from autonnunet.utils import get_device
+from autonnunet.utils.paths import NNUNET_PREPROCESSED
 
 if TYPE_CHECKING:
     from omegaconf import DictConfig
@@ -55,10 +59,45 @@ class AutoNNUNetTrainer(nnUNetTrainer):
         self.log_file = os.path.join(self.output_folder, "training_log.txt")
         self.logger = AutoNNUNetLogger()
 
+    @staticmethod
+    def from_config(cfg: DictConfig) -> AutoNNUNetTrainer:
+        preprocessed_dataset_folder_base = NNUNET_PREPROCESSED / cfg.dataset.name
+        plans_file = preprocessed_dataset_folder_base / f"{cfg.trainer.plans_identifier}.json"
+        plans = load_json(plans_file)
+        dataset_json = load_json(preprocessed_dataset_folder_base / "dataset.json")
+
+        nnunet_trainer = AutoNNUNetTrainer(
+            plans=plans,
+            configuration=cfg.trainer.configuration,
+            fold=cfg.fold,
+            dataset_json=dataset_json,
+            unpack_dataset=not cfg.trainer.use_compressed_data,
+            device=get_device(cfg.device),
+        )
+        nnunet_trainer.set_hp_config(cfg.hp_config)
+
+        nnunet_trainer.disable_checkpointing = cfg.trainer.disable_checkpointing
+
+        maybe_load_checkpoint(
+            nnunet_trainer=nnunet_trainer,
+            continue_training=cfg.pipeline.continue_training,
+            validation_only=cfg.pipeline.run_validation and not cfg.pipeline.run_training,
+            pretrained_weights_file=cfg.trainer.pretrained_weights_file,
+        )
+
+        return nnunet_trainer
+
     def print_to_log_file(self, *args, also_print_to_console=True, add_timestamp=True):
-        args = [str(a) for a in args]
+        new_args = []
+        for a in args:
+            if isinstance(a, tuple | list):
+                new_args += [str(s) for s in a]
+            else:
+                new_args.append(a)
+
+        msg = " ".join(new_args)
         try:
-            logging.getLogger("Trainer").info(*args)
+            logging.getLogger("Trainer").info(msg)
         except Exception as e:
             logging.getLogger("Trainer").error(e)
 
@@ -298,12 +337,16 @@ class AutoNNUNetTrainer(nnUNetTrainer):
             return DummyLRScheduler(optimizer)
         raise ValueError(f"Invalid lr_scheduler: {self.hp_config.lr_scheduler}")
 
-    def configure_optimizers(self) -> tuple[torch.optim.Optimizer, torch.optim.lr_scheduler.LRScheduler]:
+    def configure_optimizers(
+            self
+        ) -> tuple[torch.optim.Optimizer, torch.optim.lr_scheduler.LRScheduler]:
         optimizer = self._get_optimizer()
         lr_scheduler = self._get_lr_scheduler(optimizer)
 
-        logging.getLogger("Trainer").info(f"Set optimizer to {type(optimizer).__name__}")
-        logging.getLogger("Trainer").info(f"Set lr_scheduler to {type(lr_scheduler).__name__}")
+        logging.getLogger("Trainer").info(
+            f"Set optimizer to {type(optimizer).__name__}")
+        logging.getLogger("Trainer").info(
+            f"Set lr_scheduler to {type(lr_scheduler).__name__}")
 
         return optimizer, lr_scheduler
 

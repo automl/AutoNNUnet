@@ -1,20 +1,16 @@
 from __future__ import annotations
 
-import warnings
-
-warnings.filterwarnings("ignore")
-import logging
 import os
 import zipfile
-from typing import Any
 
 import pandas as pd
 import torch
 from omegaconf import DictConfig, OmegaConf
 
-from autonnunet.utils import dataset_name_to_msd_task, get_device
-from autonnunet.utils.paths import (AUTONNUNET_OUTPUT, AUTONNUNET_PREDCITIONS,
-                                    NNUNET_PREPROCESSED, NNUNET_RAW)
+from autonnunet.utils import dataset_name_to_msd_task
+from autonnunet.utils.paths import (AUTONNUNET_MSD_SUBMISSIONS,
+                                    AUTONNUNET_OUTPUT, AUTONNUNET_PREDCITIONS,
+                                    NNUNET_RAW)
 
 # According to the MSD, these predictions should not be included in the submission
 IGNORE_PREDICTIONS = [
@@ -30,37 +26,6 @@ IGNORE_PREDICTIONS = [
     "liver_190.nii.gz",
     "hepaticvessel_247.nii.gz"
 ]
-
-
-def get_prediction_trainer(
-    cfg: DictConfig
-) -> Any:
-    # We do lazy imports here to make everything pickable for SLURM
-    from batchgenerators.utilities.file_and_folder_operations import load_json
-    from torch.backends import cudnn
-
-    from autonnunet.training import AutoNNUNetTrainer
-
-    preprocessed_dataset_folder_base = NNUNET_PREPROCESSED / cfg.dataset.name
-    plans_file = preprocessed_dataset_folder_base / f"{cfg.trainer.plans_identifier}.json"
-    plans = load_json(plans_file)
-    dataset_json = load_json(preprocessed_dataset_folder_base / "dataset.json")
-
-    nnunet_trainer = AutoNNUNetTrainer(
-        plans=plans,
-        configuration=cfg.trainer.configuration,
-        fold=0,
-        dataset_json=dataset_json,
-        unpack_dataset=not cfg.trainer.use_compressed_data,
-        device=get_device(cfg.device),
-    )
-    nnunet_trainer.set_hp_config(cfg.hp_config)
-
-    if torch.cuda.is_available():
-        cudnn.deterministic = True
-        cudnn.benchmark = True
-
-    return nnunet_trainer
 
 
 def run_prediction(
@@ -81,9 +46,6 @@ def run_prediction(
 
     # Read config from yaml
     cfg = DictConfig(OmegaConf.load(model_base_output_dir / "fold_0" / "config.yaml"))
-
-    logger = logging.getLogger(__name__)
-    logger.info("Starting prediction")
 
     predictor = AutoNNUNetPredictor(
         tile_step_size=0.5,
@@ -117,8 +79,6 @@ def run_prediction(
         num_parts=1,
         part_id=0
     )
-
-    logger.info("Finished prediction")
 
 
 def extract_incumbent(dataset_name: str, approach: str, configuration: str, smac_seed: int) -> None:

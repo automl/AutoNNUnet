@@ -1,0 +1,3502 @@
+{
+    "foreground_mean": {
+        "Dice": 0.7362863199869393,
+        "FN": 5667.95138888889,
+        "FP": 5642.871527777777,
+        "IoU": 0.6203136070893817,
+        "TN": 8889669.149305554,
+        "TP": 27020.02777777778,
+        "n_pred": 32662.89930555555,
+        "n_ref": 32687.979166666668
+    },
+    "mean": {
+        "1": {
+            "Dice": 0.8226945634120105,
+            "FN": 8628.739583333334,
+            "FP": 9936.229166666666,
+            "IoU": 0.7079144391443323,
+            "TN": 8857498.166666666,
+            "TP": 51936.864583333336,
+            "n_pred": 61873.09375,
+            "n_ref": 60565.604166666664
+        },
+        "2": {
+            "Dice": 0.6075996009145327,
+            "FN": 4976.677083333333,
+            "FP": 4650.239583333333,
+            "IoU": 0.4732366938625232,
+            "TN": 8906976.020833334,
+            "TP": 11397.0625,
+            "n_pred": 16047.302083333334,
+            "n_ref": 16373.739583333334
+        },
+        "3": {
+            "Dice": 0.7785647956342746,
+            "FN": 3398.4375,
+            "FP": 2342.1458333333335,
+            "IoU": 0.6797896882612892,
+            "TN": 8904533.260416666,
+            "TP": 17726.15625,
+            "n_pred": 20068.302083333332,
+            "n_ref": 21124.59375
+        }
+    },
+    "metric_per_case": [
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9012073490813648,
+                    "FN": 5838,
+                    "FP": 4513,
+                    "IoU": 0.82017962927575,
+                    "TN": 8870437,
+                    "TP": 47212,
+                    "n_pred": 51725,
+                    "n_ref": 53050
+                },
+                "2": {
+                    "Dice": 0.9334109517013446,
+                    "FN": 2336,
+                    "FP": 1210,
+                    "IoU": 0.8751364484664953,
+                    "TN": 8899601,
+                    "TP": 24853,
+                    "n_pred": 26063,
+                    "n_ref": 27189
+                },
+                "3": {
+                    "Dice": 0.9155931612555656,
+                    "FN": 2593,
+                    "FP": 2734,
+                    "IoU": 0.8443262514977059,
+                    "TN": 8893781,
+                    "TP": 28892,
+                    "n_pred": 31626,
+                    "n_ref": 31485
+                }
+            },
+            "prediction_file": "./validation/BRATS_001.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_001.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8833058771665235,
+                    "FN": 14742,
+                    "FP": 10405,
+                    "IoU": 0.7910007396880012,
+                    "TN": 8807679,
+                    "TP": 95174,
+                    "n_pred": 105579,
+                    "n_ref": 109916
+                },
+                "2": {
+                    "Dice": 0.8795554327469222,
+                    "FN": 6769,
+                    "FP": 8923,
+                    "IoU": 0.7850057543705815,
+                    "TN": 8855012,
+                    "TP": 57296,
+                    "n_pred": 66219,
+                    "n_ref": 64065
+                },
+                "3": {
+                    "Dice": 0.9169892175836328,
+                    "FN": 3577,
+                    "FP": 3629,
+                    "IoU": 0.8467036824302764,
+                    "TN": 8880993,
+                    "TP": 39801,
+                    "n_pred": 43430,
+                    "n_ref": 43378
+                }
+            },
+            "prediction_file": "./validation/BRATS_006.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_006.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.862797167425392,
+                    "FN": 1158,
+                    "FP": 1012,
+                    "IoU": 0.7587012120538197,
+                    "TN": 8919007,
+                    "TP": 6823,
+                    "n_pred": 7835,
+                    "n_ref": 7981
+                },
+                "2": {
+                    "Dice": 0.36893203883495146,
+                    "FN": 139,
+                    "FP": 446,
+                    "IoU": 0.2261904761904762,
+                    "TN": 8927244,
+                    "TP": 171,
+                    "n_pred": 617,
+                    "n_ref": 310
+                },
+                "3": {
+                    "Dice": 0.9027932960893855,
+                    "FN": 638,
+                    "FP": 232,
+                    "IoU": 0.8228105906313645,
+                    "TN": 8923090,
+                    "TP": 4040,
+                    "n_pred": 4272,
+                    "n_ref": 4678
+                }
+            },
+            "prediction_file": "./validation/BRATS_013.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_013.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6619739340031142,
+                    "FN": 10436,
+                    "FP": 5411,
+                    "IoU": 0.4947391914296646,
+                    "TN": 8896636,
+                    "TP": 15517,
+                    "n_pred": 20928,
+                    "n_ref": 25953
+                },
+                "2": {
+                    "Dice": 0.11101101794747419,
+                    "FN": 3686,
+                    "FP": 9143,
+                    "IoU": 0.05876742479823918,
+                    "TN": 8914370,
+                    "TP": 801,
+                    "n_pred": 9944,
+                    "n_ref": 4487
+                },
+                "3": {
+                    "Dice": 0.0,
+                    "FN": 0,
+                    "FP": 2511,
+                    "IoU": 0.0,
+                    "TN": 8925489,
+                    "TP": 0,
+                    "n_pred": 2511,
+                    "n_ref": 0
+                }
+            },
+            "prediction_file": "./validation/BRATS_024.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_024.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6170084439083233,
+                    "FN": 4013,
+                    "FP": 9957,
+                    "IoU": 0.4461404273877017,
+                    "TN": 8902777,
+                    "TP": 11253,
+                    "n_pred": 21210,
+                    "n_ref": 15266
+                },
+                "2": {
+                    "Dice": 0.8143401983218916,
+                    "FN": 4159,
+                    "FP": 3143,
+                    "IoU": 0.6868244981986619,
+                    "TN": 8904684,
+                    "TP": 16014,
+                    "n_pred": 19157,
+                    "n_ref": 20173
+                },
+                "3": {
+                    "Dice": 0.0,
+                    "FN": 0,
+                    "FP": 349,
+                    "IoU": 0.0,
+                    "TN": 8927651,
+                    "TP": 0,
+                    "n_pred": 349,
+                    "n_ref": 0
+                }
+            },
+            "prediction_file": "./validation/BRATS_030.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_030.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8445902370279544,
+                    "FN": 12830,
+                    "FP": 6689,
+                    "IoU": 0.7309876236941482,
+                    "TN": 8855442,
+                    "TP": 53039,
+                    "n_pred": 59728,
+                    "n_ref": 65869
+                },
+                "2": {
+                    "Dice": 0.5567069660333909,
+                    "FN": 4197,
+                    "FP": 423,
+                    "IoU": 0.3857199840446749,
+                    "TN": 8920479,
+                    "TP": 2901,
+                    "n_pred": 3324,
+                    "n_ref": 7098
+                },
+                "3": {
+                    "Dice": 0.8976407207876649,
+                    "FN": 1166,
+                    "FP": 1038,
+                    "IoU": 0.8142905291540277,
+                    "TN": 8916132,
+                    "TP": 9664,
+                    "n_pred": 10702,
+                    "n_ref": 10830
+                }
+            },
+            "prediction_file": "./validation/BRATS_035.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_035.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8446119951040392,
+                    "FN": 9615,
+                    "FP": 6254,
+                    "IoU": 0.7310202213671881,
+                    "TN": 8869003,
+                    "TP": 43128,
+                    "n_pred": 49382,
+                    "n_ref": 52743
+                },
+                "2": {
+                    "Dice": 0.7477767555964429,
+                    "FN": 4831,
+                    "FP": 1749,
+                    "IoU": 0.5971592996204237,
+                    "TN": 8911666,
+                    "TP": 9754,
+                    "n_pred": 11503,
+                    "n_ref": 14585
+                },
+                "3": {
+                    "Dice": 0.8953696052035295,
+                    "FN": 1536,
+                    "FP": 2389,
+                    "IoU": 0.8105603552294995,
+                    "TN": 8907281,
+                    "TP": 16794,
+                    "n_pred": 19183,
+                    "n_ref": 18330
+                }
+            },
+            "prediction_file": "./validation/BRATS_037.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_037.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.867172393276811,
+                    "FN": 6235,
+                    "FP": 909,
+                    "IoU": 0.7654936974789915,
+                    "TN": 8897536,
+                    "TP": 23320,
+                    "n_pred": 24229,
+                    "n_ref": 29555
+                },
+                "2": {
+                    "Dice": 0.7603779952750591,
+                    "FN": 457,
+                    "FP": 963,
+                    "IoU": 0.6133950449224067,
+                    "TN": 8924327,
+                    "TP": 2253,
+                    "n_pred": 3216,
+                    "n_ref": 2710
+                },
+                "3": {
+                    "Dice": 0.9524648995781654,
+                    "FN": 457,
+                    "FP": 298,
+                    "IoU": 0.9092438995071523,
+                    "TN": 8919681,
+                    "TP": 7564,
+                    "n_pred": 7862,
+                    "n_ref": 8021
+                }
+            },
+            "prediction_file": "./validation/BRATS_044.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_044.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8674489776027757,
+                    "FN": 6630,
+                    "FP": 6970,
+                    "IoU": 0.76592485499389,
+                    "TN": 8869899,
+                    "TP": 44501,
+                    "n_pred": 51471,
+                    "n_ref": 51131
+                },
+                "2": {
+                    "Dice": 0.6358681921536073,
+                    "FN": 9008,
+                    "FP": 1081,
+                    "IoU": 0.4661339824320034,
+                    "TN": 8909102,
+                    "TP": 8809,
+                    "n_pred": 9890,
+                    "n_ref": 17817
+                },
+                "3": {
+                    "Dice": 0.9484586848757428,
+                    "FN": 1730,
+                    "FP": 1410,
+                    "IoU": 0.9019699665948613,
+                    "TN": 8895969,
+                    "TP": 28891,
+                    "n_pred": 30301,
+                    "n_ref": 30621
+                }
+            },
+            "prediction_file": "./validation/BRATS_059.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_059.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6651838516986662,
+                    "FN": 16360,
+                    "FP": 28649,
+                    "IoU": 0.49833368628718555,
+                    "TN": 8838281,
+                    "TP": 44710,
+                    "n_pred": 73359,
+                    "n_ref": 61070
+                },
+                "2": {
+                    "Dice": 0.677809681947031,
+                    "FN": 27122,
+                    "FP": 7999,
+                    "IoU": 0.5126415408525755,
+                    "TN": 8855936,
+                    "TP": 36943,
+                    "n_pred": 44942,
+                    "n_ref": 64065
+                },
+                "3": {
+                    "Dice": 0.7408180507927041,
+                    "FN": 1761,
+                    "FP": 13884,
+                    "IoU": 0.5883328070729397,
+                    "TN": 8889996,
+                    "TP": 22359,
+                    "n_pred": 36243,
+                    "n_ref": 24120
+                }
+            },
+            "prediction_file": "./validation/BRATS_060.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_060.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8517088493004181,
+                    "FN": 6765,
+                    "FP": 28454,
+                    "IoU": 0.7417185517640933,
+                    "TN": 8791641,
+                    "TP": 101140,
+                    "n_pred": 129594,
+                    "n_ref": 107905
+                },
+                "2": {
+                    "Dice": 0.6669695745826602,
+                    "FN": 7797,
+                    "FP": 11993,
+                    "IoU": 0.5003408488398515,
+                    "TN": 8888393,
+                    "TP": 19817,
+                    "n_pred": 31810,
+                    "n_ref": 27614
+                },
+                "3": {
+                    "Dice": 0.6661498343787441,
+                    "FN": 3540,
+                    "FP": 1197,
+                    "IoU": 0.49941878896755787,
+                    "TN": 8918537,
+                    "TP": 4726,
+                    "n_pred": 5923,
+                    "n_ref": 8266
+                }
+            },
+            "prediction_file": "./validation/BRATS_063.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_063.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8646501068376068,
+                    "FN": 8071,
+                    "FP": 8145,
+                    "IoU": 0.7615714873845791,
+                    "TN": 8859988,
+                    "TP": 51796,
+                    "n_pred": 59941,
+                    "n_ref": 59867
+                },
+                "2": {
+                    "Dice": 0.7724794289679786,
+                    "FN": 11219,
+                    "FP": 2551,
+                    "IoU": 0.629300597641738,
+                    "TN": 8890854,
+                    "TP": 23376,
+                    "n_pred": 25927,
+                    "n_ref": 34595
+                },
+                "3": {
+                    "Dice": 0.9595218083824593,
+                    "FN": 3191,
+                    "FP": 3696,
+                    "IoU": 0.9221930993967056,
+                    "TN": 8839486,
+                    "TP": 81627,
+                    "n_pred": 85323,
+                    "n_ref": 84818
+                }
+            },
+            "prediction_file": "./validation/BRATS_064.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_064.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8512180185084377,
+                    "FN": 22775,
+                    "FP": 3463,
+                    "IoU": 0.7409743817562565,
+                    "TN": 8826705,
+                    "TP": 75057,
+                    "n_pred": 78520,
+                    "n_ref": 97832
+                },
+                "2": {
+                    "Dice": 0.6706115680983191,
+                    "FN": 18812,
+                    "FP": 1450,
+                    "IoU": 0.5044511837213852,
+                    "TN": 8887112,
+                    "TP": 20626,
+                    "n_pred": 22076,
+                    "n_ref": 39438
+                },
+                "3": {
+                    "Dice": 0.7820121694281043,
+                    "FN": 5623,
+                    "FP": 7310,
+                    "IoU": 0.6420525310675044,
+                    "TN": 8891869,
+                    "TP": 23198,
+                    "n_pred": 30508,
+                    "n_ref": 28821
+                }
+            },
+            "prediction_file": "./validation/BRATS_065.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_065.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8823151983656458,
+                    "FN": 19105,
+                    "FP": 3822,
+                    "IoU": 0.7894132559335734,
+                    "TN": 8819128,
+                    "TP": 85945,
+                    "n_pred": 89767,
+                    "n_ref": 105050
+                },
+                "2": {
+                    "Dice": 0.34180725675987983,
+                    "FN": 3152,
+                    "FP": 2544,
+                    "IoU": 0.20613240418118467,
+                    "TN": 8920825,
+                    "TP": 1479,
+                    "n_pred": 4023,
+                    "n_ref": 4631
+                },
+                "3": {
+                    "Dice": 0.3652694610778443,
+                    "FN": 177,
+                    "FP": 35,
+                    "IoU": 0.22344322344322345,
+                    "TN": 8927727,
+                    "TP": 61,
+                    "n_pred": 96,
+                    "n_ref": 238
+                }
+            },
+            "prediction_file": "./validation/BRATS_073.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_073.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7430594701240135,
+                    "FN": 7599,
+                    "FP": 36159,
+                    "IoU": 0.5911651764442077,
+                    "TN": 8820969,
+                    "TP": 63273,
+                    "n_pred": 99432,
+                    "n_ref": 70872
+                },
+                "2": {
+                    "Dice": 0.47034638130104195,
+                    "FN": 5997,
+                    "FP": 12811,
+                    "IoU": 0.30748554806878015,
+                    "TN": 8900841,
+                    "TP": 8351,
+                    "n_pred": 21162,
+                    "n_ref": 14348
+                },
+                "3": {
+                    "Dice": 0.8405144266009196,
+                    "FN": 9855,
+                    "FP": 2112,
+                    "IoU": 0.7249028757959587,
+                    "TN": 8884499,
+                    "TP": 31534,
+                    "n_pred": 33646,
+                    "n_ref": 41389
+                }
+            },
+            "prediction_file": "./validation/BRATS_075.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_075.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7387628385260083,
+                    "FN": 4011,
+                    "FP": 17278,
+                    "IoU": 0.5857445856278337,
+                    "TN": 8876609,
+                    "TP": 30102,
+                    "n_pred": 47380,
+                    "n_ref": 34113
+                },
+                "2": {
+                    "Dice": 0.18363569048500555,
+                    "FN": 1904,
+                    "FP": 301,
+                    "IoU": 0.10110069302894414,
+                    "TN": 8925547,
+                    "TP": 248,
+                    "n_pred": 549,
+                    "n_ref": 2152
+                },
+                "3": {
+                    "Dice": 0.0,
+                    "FN": 314,
+                    "FP": 1,
+                    "IoU": 0.0,
+                    "TN": 8927685,
+                    "TP": 0,
+                    "n_pred": 1,
+                    "n_ref": 314
+                }
+            },
+            "prediction_file": "./validation/BRATS_077.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_077.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6809342455596373,
+                    "FN": 31784,
+                    "FP": 6084,
+                    "IoU": 0.5162246410138485,
+                    "TN": 8849724,
+                    "TP": 40408,
+                    "n_pred": 46492,
+                    "n_ref": 72192
+                },
+                "2": {
+                    "Dice": 0.49089584850691914,
+                    "FN": 4838,
+                    "FP": 4249,
+                    "IoU": 0.3252895752895753,
+                    "TN": 8914532,
+                    "TP": 4381,
+                    "n_pred": 8630,
+                    "n_ref": 9219
+                },
+                "3": {
+                    "Dice": 0.7678122380553227,
+                    "FN": 466,
+                    "FP": 1473,
+                    "IoU": 0.6231292517006802,
+                    "TN": 8922855,
+                    "TP": 3206,
+                    "n_pred": 4679,
+                    "n_ref": 3672
+                }
+            },
+            "prediction_file": "./validation/BRATS_078.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_078.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9035220776748696,
+                    "FN": 8423,
+                    "FP": 7796,
+                    "IoU": 0.8240221342158086,
+                    "TN": 8835835,
+                    "TP": 75946,
+                    "n_pred": 83742,
+                    "n_ref": 84369
+                },
+                "2": {
+                    "Dice": 0.5103588605253422,
+                    "FN": 1312,
+                    "FP": 9276,
+                    "IoU": 0.3426052402831243,
+                    "TN": 8911894,
+                    "TP": 5518,
+                    "n_pred": 14794,
+                    "n_ref": 6830
+                },
+                "3": {
+                    "Dice": 0.8817285822592873,
+                    "FN": 2743,
+                    "FP": 377,
+                    "IoU": 0.7884745762711864,
+                    "TN": 8913250,
+                    "TP": 11630,
+                    "n_pred": 12007,
+                    "n_ref": 14373
+                }
+            },
+            "prediction_file": "./validation/BRATS_081.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_081.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.45361395069152133,
+                    "FN": 2319,
+                    "FP": 43113,
+                    "IoU": 0.2933381033115055,
+                    "TN": 8863709,
+                    "TP": 18859,
+                    "n_pred": 61972,
+                    "n_ref": 21178
+                },
+                "2": {
+                    "Dice": 0.016323615680873312,
+                    "FN": 2357,
+                    "FP": 74777,
+                    "IoU": 0.008228971121454471,
+                    "TN": 8850226,
+                    "TP": 640,
+                    "n_pred": 75417,
+                    "n_ref": 2997
+                },
+                "3": {
+                    "Dice": 0.4930371204319096,
+                    "FN": 78188,
+                    "FP": 1065,
+                    "IoU": 0.3271727041964157,
+                    "TN": 8810209,
+                    "TP": 38538,
+                    "n_pred": 39603,
+                    "n_ref": 116726
+                }
+            },
+            "prediction_file": "./validation/BRATS_082.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_082.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8197741596638656,
+                    "FN": 10931,
+                    "FP": 2795,
+                    "IoU": 0.6945909262844047,
+                    "TN": 8883057,
+                    "TP": 31217,
+                    "n_pred": 34012,
+                    "n_ref": 42148
+                },
+                "2": {
+                    "Dice": 0.7968780487804878,
+                    "FN": 1981,
+                    "FP": 1142,
+                    "IoU": 0.6623418747972754,
+                    "TN": 8918751,
+                    "TP": 6126,
+                    "n_pred": 7268,
+                    "n_ref": 8107
+                },
+                "3": {
+                    "Dice": 0.8893245838668374,
+                    "FN": 1976,
+                    "FP": 790,
+                    "IoU": 0.8007061027451545,
+                    "TN": 8914121,
+                    "TP": 11113,
+                    "n_pred": 11903,
+                    "n_ref": 13089
+                }
+            },
+            "prediction_file": "./validation/BRATS_083.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_083.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.693132598500463,
+                    "FN": 6168,
+                    "FP": 4105,
+                    "IoU": 0.5303771428571429,
+                    "TN": 8906125,
+                    "TP": 11602,
+                    "n_pred": 15707,
+                    "n_ref": 17770
+                },
+                "2": {
+                    "Dice": 0.35057538068115773,
+                    "FN": 2715,
+                    "FP": 2872,
+                    "IoU": 0.21254404510218464,
+                    "TN": 8920905,
+                    "TP": 1508,
+                    "n_pred": 4380,
+                    "n_ref": 4223
+                },
+                "3": {
+                    "Dice": 0.6971554010793012,
+                    "FN": 2591,
+                    "FP": 720,
+                    "IoU": 0.5351024992979501,
+                    "TN": 8920878,
+                    "TP": 3811,
+                    "n_pred": 4531,
+                    "n_ref": 6402
+                }
+            },
+            "prediction_file": "./validation/BRATS_084.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_084.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6858935413076094,
+                    "FN": 10166,
+                    "FP": 15167,
+                    "IoU": 0.5219467089371981,
+                    "TN": 8875008,
+                    "TP": 27659,
+                    "n_pred": 42826,
+                    "n_ref": 37825
+                },
+                "2": {
+                    "Dice": 0.7941669103767315,
+                    "FN": 12298,
+                    "FP": 18670,
+                    "IoU": 0.6586043435122919,
+                    "TN": 8837290,
+                    "TP": 59742,
+                    "n_pred": 78412,
+                    "n_ref": 72040
+                },
+                "3": {
+                    "Dice": 0.024390243902439025,
+                    "FN": 320,
+                    "FP": 0,
+                    "IoU": 0.012345679012345678,
+                    "TN": 8927676,
+                    "TP": 4,
+                    "n_pred": 4,
+                    "n_ref": 324
+                }
+            },
+            "prediction_file": "./validation/BRATS_092.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_092.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7762813756489831,
+                    "FN": 18208,
+                    "FP": 16178,
+                    "IoU": 0.6343626387648335,
+                    "TN": 8833956,
+                    "TP": 59658,
+                    "n_pred": 75836,
+                    "n_ref": 77866
+                },
+                "2": {
+                    "Dice": 0.5044274350892991,
+                    "FN": 7896,
+                    "FP": 5312,
+                    "IoU": 0.33728048168590063,
+                    "TN": 8908070,
+                    "TP": 6722,
+                    "n_pred": 12034,
+                    "n_ref": 14618
+                },
+                "3": {
+                    "Dice": 0.65374712020599,
+                    "FN": 4348,
+                    "FP": 762,
+                    "IoU": 0.4856049929534931,
+                    "TN": 8918066,
+                    "TP": 4824,
+                    "n_pred": 5586,
+                    "n_ref": 9172
+                }
+            },
+            "prediction_file": "./validation/BRATS_106.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_106.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8872474416163737,
+                    "FN": 8678,
+                    "FP": 17104,
+                    "IoU": 0.7973447779847667,
+                    "TN": 8800779,
+                    "TP": 101439,
+                    "n_pred": 118543,
+                    "n_ref": 110117
+                },
+                "2": {
+                    "Dice": 0.4470816850579499,
+                    "FN": 3893,
+                    "FP": 4074,
+                    "IoU": 0.28789774758670006,
+                    "TN": 8916812,
+                    "TP": 3221,
+                    "n_pred": 7295,
+                    "n_ref": 7114
+                },
+                "3": {
+                    "Dice": 0.6586097540070284,
+                    "FN": 714,
+                    "FP": 3269,
+                    "IoU": 0.4909904153354633,
+                    "TN": 8920175,
+                    "TP": 3842,
+                    "n_pred": 7111,
+                    "n_ref": 4556
+                }
+            },
+            "prediction_file": "./validation/BRATS_108.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_108.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8579641280596008,
+                    "FN": 8899,
+                    "FP": 10471,
+                    "IoU": 0.7512584754468872,
+                    "TN": 8850128,
+                    "TP": 58502,
+                    "n_pred": 68973,
+                    "n_ref": 67401
+                },
+                "2": {
+                    "Dice": 0.283624875680103,
+                    "FN": 11736,
+                    "FP": 509,
+                    "IoU": 0.16524643806667122,
+                    "TN": 8913331,
+                    "TP": 2424,
+                    "n_pred": 2933,
+                    "n_ref": 14160
+                },
+                "3": {
+                    "Dice": 0.9517734327924035,
+                    "FN": 851,
+                    "FP": 1470,
+                    "IoU": 0.9079844592451634,
+                    "TN": 8902776,
+                    "TP": 22903,
+                    "n_pred": 24373,
+                    "n_ref": 23754
+                }
+            },
+            "prediction_file": "./validation/BRATS_109.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_109.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8084982660915165,
+                    "FN": 16734,
+                    "FP": 19492,
+                    "IoU": 0.6785539987754776,
+                    "TN": 8815303,
+                    "TP": 76471,
+                    "n_pred": 95963,
+                    "n_ref": 93205
+                },
+                "2": {
+                    "Dice": 0.36490130936095366,
+                    "FN": 14438,
+                    "FP": 1811,
+                    "IoU": 0.22316775828273652,
+                    "TN": 8907083,
+                    "TP": 4668,
+                    "n_pred": 6479,
+                    "n_ref": 19106
+                },
+                "3": {
+                    "Dice": 0.7709677419354839,
+                    "FN": 1627,
+                    "FP": 1071,
+                    "IoU": 0.6272965879265092,
+                    "TN": 8920761,
+                    "TP": 4541,
+                    "n_pred": 5612,
+                    "n_ref": 6168
+                }
+            },
+            "prediction_file": "./validation/BRATS_119.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_119.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7683532332427001,
+                    "FN": 2412,
+                    "FP": 5426,
+                    "IoU": 0.6238422037721361,
+                    "TN": 8907163,
+                    "TP": 12999,
+                    "n_pred": 18425,
+                    "n_ref": 15411
+                },
+                "2": {
+                    "Dice": 0.6418995613093229,
+                    "FN": 2379,
+                    "FP": 9294,
+                    "IoU": 0.4726451321436639,
+                    "TN": 8905865,
+                    "TP": 10462,
+                    "n_pred": 19756,
+                    "n_ref": 12841
+                },
+                "3": {
+                    "Dice": 0.667583677212288,
+                    "FN": 1864,
+                    "FP": 311,
+                    "IoU": 0.5010323468685478,
+                    "TN": 8923641,
+                    "TP": 2184,
+                    "n_pred": 2495,
+                    "n_ref": 4048
+                }
+            },
+            "prediction_file": "./validation/BRATS_120.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_120.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7836269910991033,
+                    "FN": 9194,
+                    "FP": 16914,
+                    "IoU": 0.6442324725761396,
+                    "TN": 8854615,
+                    "TP": 47277,
+                    "n_pred": 64191,
+                    "n_ref": 56471
+                },
+                "2": {
+                    "Dice": 0.6394083212312668,
+                    "FN": 16771,
+                    "FP": 7314,
+                    "IoU": 0.4699487224630824,
+                    "TN": 8882561,
+                    "TP": 21354,
+                    "n_pred": 28668,
+                    "n_ref": 38125
+                },
+                "3": {
+                    "Dice": 0.7910916497676005,
+                    "FN": 10597,
+                    "FP": 1044,
+                    "IoU": 0.6543851315242563,
+                    "TN": 8894318,
+                    "TP": 22041,
+                    "n_pred": 23085,
+                    "n_ref": 32638
+                }
+            },
+            "prediction_file": "./validation/BRATS_125.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_125.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8711265914004324,
+                    "FN": 7005,
+                    "FP": 5871,
+                    "IoU": 0.7716778380678796,
+                    "TN": 8871606,
+                    "TP": 43518,
+                    "n_pred": 49389,
+                    "n_ref": 50523
+                },
+                "2": {
+                    "Dice": 0.2943428328370906,
+                    "FN": 4443,
+                    "FP": 534,
+                    "IoU": 0.17256857855361596,
+                    "TN": 8921985,
+                    "TP": 1038,
+                    "n_pred": 1572,
+                    "n_ref": 5481
+                },
+                "3": {
+                    "Dice": 0.015037593984962405,
+                    "FN": 131,
+                    "FP": 0,
+                    "IoU": 0.007575757575757576,
+                    "TN": 8927868,
+                    "TP": 1,
+                    "n_pred": 1,
+                    "n_ref": 132
+                }
+            },
+            "prediction_file": "./validation/BRATS_130.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_130.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8042589130661707,
+                    "FN": 8627,
+                    "FP": 12000,
+                    "IoU": 0.6726028919257813,
+                    "TN": 8864997,
+                    "TP": 42376,
+                    "n_pred": 54376,
+                    "n_ref": 51003
+                },
+                "2": {
+                    "Dice": 0.6064399242361854,
+                    "FN": 4048,
+                    "FP": 731,
+                    "IoU": 0.4351731473821061,
+                    "TN": 8919539,
+                    "TP": 3682,
+                    "n_pred": 4413,
+                    "n_ref": 7730
+                },
+                "3": {
+                    "Dice": 0.5129770992366413,
+                    "FN": 240,
+                    "FP": 79,
+                    "IoU": 0.34496919917864477,
+                    "TN": 8927513,
+                    "TP": 168,
+                    "n_pred": 247,
+                    "n_ref": 408
+                }
+            },
+            "prediction_file": "./validation/BRATS_134.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_134.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8951449800456409,
+                    "FN": 4113,
+                    "FP": 5582,
+                    "IoU": 0.8101922549825756,
+                    "TN": 8876922,
+                    "TP": 41383,
+                    "n_pred": 46965,
+                    "n_ref": 45496
+                },
+                "2": {
+                    "Dice": 0.7120283155716303,
+                    "FN": 4772,
+                    "FP": 10117,
+                    "IoU": 0.5528291686689092,
+                    "TN": 8894704,
+                    "TP": 18407,
+                    "n_pred": 28524,
+                    "n_ref": 23179
+                },
+                "3": {
+                    "Dice": 0.8774186205326656,
+                    "FN": 1568,
+                    "FP": 2740,
+                    "IoU": 0.7816080300111528,
+                    "TN": 8908274,
+                    "TP": 15418,
+                    "n_pred": 18158,
+                    "n_ref": 16986
+                }
+            },
+            "prediction_file": "./validation/BRATS_139.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_139.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7888295794818383,
+                    "FN": 3669,
+                    "FP": 12551,
+                    "IoU": 0.6512952810921209,
+                    "TN": 8881485,
+                    "TP": 30295,
+                    "n_pred": 42846,
+                    "n_ref": 33964
+                },
+                "2": {
+                    "Dice": 0.9430756482190187,
+                    "FN": 6560,
+                    "FP": 2439,
+                    "IoU": 0.8922830159319153,
+                    "TN": 8844457,
+                    "TP": 74544,
+                    "n_pred": 76983,
+                    "n_ref": 81104
+                },
+                "3": {
+                    "Dice": 0.6173469387755102,
+                    "FN": 583,
+                    "FP": 467,
+                    "IoU": 0.44649446494464945,
+                    "TN": 8926103,
+                    "TP": 847,
+                    "n_pred": 1314,
+                    "n_ref": 1430
+                }
+            },
+            "prediction_file": "./validation/BRATS_143.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_143.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8141461310807394,
+                    "FN": 8220,
+                    "FP": 4277,
+                    "IoU": 0.6865484461611778,
+                    "TN": 8888131,
+                    "TP": 27372,
+                    "n_pred": 31649,
+                    "n_ref": 35592
+                },
+                "2": {
+                    "Dice": 0.5851923698674426,
+                    "FN": 5621,
+                    "FP": 2077,
+                    "IoU": 0.41361974405850094,
+                    "TN": 8914872,
+                    "TP": 5430,
+                    "n_pred": 7507,
+                    "n_ref": 11051
+                },
+                "3": {
+                    "Dice": 0.7430901676483915,
+                    "FN": 553,
+                    "FP": 2282,
+                    "IoU": 0.5912040374909877,
+                    "TN": 8921065,
+                    "TP": 4100,
+                    "n_pred": 6382,
+                    "n_ref": 4653
+                }
+            },
+            "prediction_file": "./validation/BRATS_144.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_144.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8079524291828667,
+                    "FN": 7668,
+                    "FP": 4088,
+                    "IoU": 0.6777853912566808,
+                    "TN": 8891515,
+                    "TP": 24729,
+                    "n_pred": 28817,
+                    "n_ref": 32397
+                },
+                "2": {
+                    "Dice": 0.6361096642833467,
+                    "FN": 4718,
+                    "FP": 2967,
+                    "IoU": 0.46639355645049296,
+                    "TN": 8913598,
+                    "TP": 6717,
+                    "n_pred": 9684,
+                    "n_ref": 11435
+                },
+                "3": {
+                    "Dice": 0.914759273875296,
+                    "FN": 2126,
+                    "FP": 1330,
+                    "IoU": 0.8429090909090909,
+                    "TN": 8906000,
+                    "TP": 18544,
+                    "n_pred": 19874,
+                    "n_ref": 20670
+                }
+            },
+            "prediction_file": "./validation/BRATS_147.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_147.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.907751362060426,
+                    "FN": 17644,
+                    "FP": 13646,
+                    "IoU": 0.8310849110078222,
+                    "TN": 8742759,
+                    "TP": 153951,
+                    "n_pred": 167597,
+                    "n_ref": 171595
+                },
+                "2": {
+                    "Dice": 0.6036732167014423,
+                    "FN": 9183,
+                    "FP": 8102,
+                    "IoU": 0.4323294689480771,
+                    "TN": 8897551,
+                    "TP": 13164,
+                    "n_pred": 21266,
+                    "n_ref": 22347
+                },
+                "3": {
+                    "Dice": 0.8993629321498174,
+                    "FN": 1212,
+                    "FP": 4933,
+                    "IoU": 0.8171294229681874,
+                    "TN": 8894397,
+                    "TP": 27458,
+                    "n_pred": 32391,
+                    "n_ref": 28670
+                }
+            },
+            "prediction_file": "./validation/BRATS_156.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_156.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8175728738393311,
+                    "FN": 2353,
+                    "FP": 1596,
+                    "IoU": 0.6914361619002969,
+                    "TN": 8915202,
+                    "TP": 8849,
+                    "n_pred": 10445,
+                    "n_ref": 11202
+                },
+                "2": {
+                    "Dice": 0.7379485320768394,
+                    "FN": 510,
+                    "FP": 936,
+                    "IoU": 0.5847214244686961,
+                    "TN": 8924518,
+                    "TP": 2036,
+                    "n_pred": 2972,
+                    "n_ref": 2546
+                },
+                "3": {
+                    "Dice": 0.9340646783224774,
+                    "FN": 661,
+                    "FP": 493,
+                    "IoU": 0.8762864493996569,
+                    "TN": 8918672,
+                    "TP": 8174,
+                    "n_pred": 8667,
+                    "n_ref": 8835
+                }
+            },
+            "prediction_file": "./validation/BRATS_167.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_167.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9318107460607276,
+                    "FN": 10835,
+                    "FP": 2087,
+                    "IoU": 0.8723273920088527,
+                    "TN": 8826788,
+                    "TP": 88290,
+                    "n_pred": 90377,
+                    "n_ref": 99125
+                },
+                "2": {
+                    "Dice": 0.593436645396536,
+                    "FN": 5254,
+                    "FP": 98,
+                    "IoU": 0.4219053791315619,
+                    "TN": 8918742,
+                    "TP": 3906,
+                    "n_pred": 4004,
+                    "n_ref": 9160
+                },
+                "3": {
+                    "Dice": 0.9207565174749175,
+                    "FN": 945,
+                    "FP": 5034,
+                    "IoU": 0.8531499447378116,
+                    "TN": 8887285,
+                    "TP": 34736,
+                    "n_pred": 39770,
+                    "n_ref": 35681
+                }
+            },
+            "prediction_file": "./validation/BRATS_172.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_172.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9464970978594403,
+                    "FN": 6984,
+                    "FP": 7488,
+                    "IoU": 0.8984285624048118,
+                    "TN": 8785519,
+                    "TP": 128009,
+                    "n_pred": 135497,
+                    "n_ref": 134993
+                },
+                "2": {
+                    "Dice": 0.5916130692050424,
+                    "FN": 7893,
+                    "FP": 44,
+                    "IoU": 0.4200642992839398,
+                    "TN": 8914314,
+                    "TP": 5749,
+                    "n_pred": 5793,
+                    "n_ref": 13642
+                },
+                "3": {
+                    "Dice": 0.9170141593731385,
+                    "FN": 655,
+                    "FP": 4778,
+                    "IoU": 0.8467462130828467,
+                    "TN": 8892549,
+                    "TP": 30018,
+                    "n_pred": 34796,
+                    "n_ref": 30673
+                }
+            },
+            "prediction_file": "./validation/BRATS_173.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_173.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8443741982774419,
+                    "FN": 2222,
+                    "FP": 4572,
+                    "IoU": 0.7306640237859267,
+                    "TN": 8902775,
+                    "TP": 18431,
+                    "n_pred": 23003,
+                    "n_ref": 20653
+                },
+                "2": {
+                    "Dice": 0.42301545018646775,
+                    "FN": 838,
+                    "FP": 1328,
+                    "IoU": 0.2682432432432432,
+                    "TN": 8925040,
+                    "TP": 794,
+                    "n_pred": 2122,
+                    "n_ref": 1632
+                },
+                "3": {
+                    "Dice": 0.26928746928746927,
+                    "FN": 1477,
+                    "FP": 10,
+                    "IoU": 0.15559341283361727,
+                    "TN": 8926239,
+                    "TP": 274,
+                    "n_pred": 284,
+                    "n_ref": 1751
+                }
+            },
+            "prediction_file": "./validation/BRATS_179.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_179.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.802690784737221,
+                    "FN": 5255,
+                    "FP": 3515,
+                    "IoU": 0.6704122665263632,
+                    "TN": 8901391,
+                    "TP": 17839,
+                    "n_pred": 21354,
+                    "n_ref": 23094
+                },
+                "2": {
+                    "Dice": 0.7391373379200846,
+                    "FN": 2239,
+                    "FP": 2690,
+                    "IoU": 0.5862155809267965,
+                    "TN": 8916088,
+                    "TP": 6983,
+                    "n_pred": 9673,
+                    "n_ref": 9222
+                },
+                "3": {
+                    "Dice": 0.3559870550161812,
+                    "FN": 91,
+                    "FP": 108,
+                    "IoU": 0.21653543307086615,
+                    "TN": 8927746,
+                    "TP": 55,
+                    "n_pred": 163,
+                    "n_ref": 146
+                }
+            },
+            "prediction_file": "./validation/BRATS_186.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_186.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7252459951513999,
+                    "FN": 22447,
+                    "FP": 673,
+                    "IoU": 0.5689301562441734,
+                    "TN": 8874366,
+                    "TP": 30514,
+                    "n_pred": 31187,
+                    "n_ref": 52961
+                },
+                "2": {
+                    "Dice": 0.6945847693687739,
+                    "FN": 4554,
+                    "FP": 1915,
+                    "IoU": 0.5320795660036166,
+                    "TN": 8914175,
+                    "TP": 7356,
+                    "n_pred": 9271,
+                    "n_ref": 11910
+                },
+                "3": {
+                    "Dice": 0.8427294565758435,
+                    "FN": 485,
+                    "FP": 6782,
+                    "IoU": 0.7282043609978681,
+                    "TN": 8901263,
+                    "TP": 19470,
+                    "n_pred": 26252,
+                    "n_ref": 19955
+                }
+            },
+            "prediction_file": "./validation/BRATS_190.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_190.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9358191269176687,
+                    "FN": 7065,
+                    "FP": 13246,
+                    "IoU": 0.8793797657790341,
+                    "TN": 8759612,
+                    "TP": 148077,
+                    "n_pred": 161323,
+                    "n_ref": 155142
+                },
+                "2": {
+                    "Dice": 0.8103526066091522,
+                    "FN": 7882,
+                    "FP": 5989,
+                    "IoU": 0.6811704132763297,
+                    "TN": 8884494,
+                    "TP": 29635,
+                    "n_pred": 35624,
+                    "n_ref": 37517
+                },
+                "3": {
+                    "Dice": 0.8757996102258397,
+                    "FN": 3734,
+                    "FP": 1683,
+                    "IoU": 0.779042258117148,
+                    "TN": 8903484,
+                    "TP": 19099,
+                    "n_pred": 20782,
+                    "n_ref": 22833
+                }
+            },
+            "prediction_file": "./validation/BRATS_202.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_202.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8542901803945867,
+                    "FN": 5325,
+                    "FP": 5022,
+                    "IoU": 0.7456427149143292,
+                    "TN": 8887321,
+                    "TP": 30332,
+                    "n_pred": 35354,
+                    "n_ref": 35657
+                },
+                "2": {
+                    "Dice": 0.6725385694249649,
+                    "FN": 5585,
+                    "FP": 6089,
+                    "IoU": 0.5066351111486772,
+                    "TN": 8904338,
+                    "TP": 11988,
+                    "n_pred": 18077,
+                    "n_ref": 17573
+                },
+                "3": {
+                    "Dice": 0.8584761488920424,
+                    "FN": 4285,
+                    "FP": 901,
+                    "IoU": 0.7520439875687306,
+                    "TN": 8907085,
+                    "TP": 15729,
+                    "n_pred": 16630,
+                    "n_ref": 20014
+                }
+            },
+            "prediction_file": "./validation/BRATS_209.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_209.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8517142399207356,
+                    "FN": 5723,
+                    "FP": 4454,
+                    "IoU": 0.741726728250939,
+                    "TN": 8888596,
+                    "TP": 29227,
+                    "n_pred": 33681,
+                    "n_ref": 34950
+                },
+                "2": {
+                    "Dice": 0.6044077134986225,
+                    "FN": 3668,
+                    "FP": 3512,
+                    "IoU": 0.4330833004342677,
+                    "TN": 8915335,
+                    "TP": 5485,
+                    "n_pred": 8997,
+                    "n_ref": 9153
+                },
+                "3": {
+                    "Dice": 0.8824637625437348,
+                    "FN": 2691,
+                    "FP": 366,
+                    "IoU": 0.7896511387875869,
+                    "TN": 8913467,
+                    "TP": 11476,
+                    "n_pred": 11842,
+                    "n_ref": 14167
+                }
+            },
+            "prediction_file": "./validation/BRATS_211.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_211.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8222141721507779,
+                    "FN": 12997,
+                    "FP": 4671,
+                    "IoU": 0.6981016010799173,
+                    "TN": 8869477,
+                    "TP": 40855,
+                    "n_pred": 45526,
+                    "n_ref": 53852
+                },
+                "2": {
+                    "Dice": 0.8219763014624774,
+                    "FN": 2661,
+                    "FP": 2342,
+                    "IoU": 0.6977587144324292,
+                    "TN": 8911447,
+                    "TP": 11550,
+                    "n_pred": 13892,
+                    "n_ref": 14211
+                },
+                "3": {
+                    "Dice": 0.9256210692998312,
+                    "FN": 1510,
+                    "FP": 3469,
+                    "IoU": 0.8615406006674082,
+                    "TN": 8892040,
+                    "TP": 30981,
+                    "n_pred": 34450,
+                    "n_ref": 32491
+                }
+            },
+            "prediction_file": "./validation/BRATS_219.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_219.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8021645652649224,
+                    "FN": 13462,
+                    "FP": 19112,
+                    "IoU": 0.6696784399622768,
+                    "TN": 8829387,
+                    "TP": 66039,
+                    "n_pred": 85151,
+                    "n_ref": 79501
+                },
+                "2": {
+                    "Dice": 0.6247918593894543,
+                    "FN": 11245,
+                    "FP": 4979,
+                    "IoU": 0.4543253060675367,
+                    "TN": 8898268,
+                    "TP": 13508,
+                    "n_pred": 18487,
+                    "n_ref": 24753
+                },
+                "3": {
+                    "Dice": 0.692502243615893,
+                    "FN": 2340,
+                    "FP": 1429,
+                    "IoU": 0.5296393360788718,
+                    "TN": 8919987,
+                    "TP": 4244,
+                    "n_pred": 5673,
+                    "n_ref": 6584
+                }
+            },
+            "prediction_file": "./validation/BRATS_227.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_227.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.831937649264899,
+                    "FN": 17334,
+                    "FP": 10181,
+                    "IoU": 0.7122373636487236,
+                    "TN": 8832383,
+                    "TP": 68102,
+                    "n_pred": 78283,
+                    "n_ref": 85436
+                },
+                "2": {
+                    "Dice": 0.50393777345649,
+                    "FN": 8055,
+                    "FP": 2149,
+                    "IoU": 0.336842789367648,
+                    "TN": 8912613,
+                    "TP": 5183,
+                    "n_pred": 7332,
+                    "n_ref": 13238
+                },
+                "3": {
+                    "Dice": 0.9267488807712378,
+                    "FN": 1543,
+                    "FP": 1124,
+                    "IoU": 0.8634967755143822,
+                    "TN": 8908462,
+                    "TP": 16871,
+                    "n_pred": 17995,
+                    "n_ref": 18414
+                }
+            },
+            "prediction_file": "./validation/BRATS_228.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_228.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7939191785664879,
+                    "FN": 1967,
+                    "FP": 11440,
+                    "IoU": 0.6582636623164764,
+                    "TN": 8888768,
+                    "TP": 25825,
+                    "n_pred": 37265,
+                    "n_ref": 27792
+                },
+                "2": {
+                    "Dice": 0.25149700598802394,
+                    "FN": 369,
+                    "FP": 256,
+                    "IoU": 0.14383561643835616,
+                    "TN": 8927270,
+                    "TP": 105,
+                    "n_pred": 361,
+                    "n_ref": 474
+                },
+                "3": {
+                    "Dice": 0.6682009973149213,
+                    "FN": 72,
+                    "FP": 793,
+                    "IoU": 0.5017281105990783,
+                    "TN": 8926264,
+                    "TP": 871,
+                    "n_pred": 1664,
+                    "n_ref": 943
+                }
+            },
+            "prediction_file": "./validation/BRATS_232.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_232.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8487407557209056,
+                    "FN": 8090,
+                    "FP": 35291,
+                    "IoU": 0.7372281785692653,
+                    "TN": 8762910,
+                    "TP": 121709,
+                    "n_pred": 157000,
+                    "n_ref": 129799
+                },
+                "2": {
+                    "Dice": 0.6063069669984285,
+                    "FN": 7257,
+                    "FP": 11532,
+                    "IoU": 0.43503623297350935,
+                    "TN": 8894743,
+                    "TP": 14468,
+                    "n_pred": 26000,
+                    "n_ref": 21725
+                },
+                "3": {
+                    "Dice": 0.7849502884141569,
+                    "FN": 5482,
+                    "FP": 1937,
+                    "IoU": 0.6460231881292047,
+                    "TN": 8907041,
+                    "TP": 13540,
+                    "n_pred": 15477,
+                    "n_ref": 19022
+                }
+            },
+            "prediction_file": "./validation/BRATS_236.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_236.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.5939934015849802,
+                    "FN": 15522,
+                    "FP": 8352,
+                    "IoU": 0.42246843098359865,
+                    "TN": 8886662,
+                    "TP": 17464,
+                    "n_pred": 25816,
+                    "n_ref": 32986
+                },
+                "2": {
+                    "Dice": 0.5736585365853658,
+                    "FN": 6954,
+                    "FP": 2660,
+                    "IoU": 0.4021887824897401,
+                    "TN": 8911918,
+                    "TP": 6468,
+                    "n_pred": 9128,
+                    "n_ref": 13422
+                },
+                "3": {
+                    "Dice": 0.916454971555333,
+                    "FN": 2087,
+                    "FP": 248,
+                    "IoU": 0.8457931581032888,
+                    "TN": 8912858,
+                    "TP": 12807,
+                    "n_pred": 13055,
+                    "n_ref": 14894
+                }
+            },
+            "prediction_file": "./validation/BRATS_248.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_248.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9232741938145107,
+                    "FN": 15158,
+                    "FP": 17393,
+                    "IoU": 0.8574831108445234,
+                    "TN": 8699599,
+                    "TP": 195850,
+                    "n_pred": 213243,
+                    "n_ref": 211008
+                },
+                "2": {
+                    "Dice": 0.7036535859269283,
+                    "FN": 19473,
+                    "FP": 7026,
+                    "IoU": 0.5427974947807933,
+                    "TN": 8870041,
+                    "TP": 31460,
+                    "n_pred": 38486,
+                    "n_ref": 50933
+                },
+                "3": {
+                    "Dice": 0.9189734394262019,
+                    "FN": 3104,
+                    "FP": 6295,
+                    "IoU": 0.8500933029234916,
+                    "TN": 8865301,
+                    "TP": 53300,
+                    "n_pred": 59595,
+                    "n_ref": 56404
+                }
+            },
+            "prediction_file": "./validation/BRATS_249.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_249.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8640097241150687,
+                    "FN": 7407,
+                    "FP": 7361,
+                    "IoU": 0.7605784507635939,
+                    "TN": 8866318,
+                    "TP": 46914,
+                    "n_pred": 54275,
+                    "n_ref": 54321
+                },
+                "2": {
+                    "Dice": 0.45294967990638124,
+                    "FN": 2197,
+                    "FP": 5750,
+                    "IoU": 0.2927827712022782,
+                    "TN": 8916763,
+                    "TP": 3290,
+                    "n_pred": 9040,
+                    "n_ref": 5487
+                },
+                "3": {
+                    "Dice": 0.8754339226608541,
+                    "FN": 3788,
+                    "FP": 841,
+                    "IoU": 0.7784637473079684,
+                    "TN": 8907105,
+                    "TP": 16266,
+                    "n_pred": 17107,
+                    "n_ref": 20054
+                }
+            },
+            "prediction_file": "./validation/BRATS_252.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_252.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7228751265460628,
+                    "FN": 7424,
+                    "FP": 5168,
+                    "IoU": 0.5660175771152852,
+                    "TN": 8898985,
+                    "TP": 16423,
+                    "n_pred": 21591,
+                    "n_ref": 23847
+                },
+                "2": {
+                    "Dice": 0.6702933176505182,
+                    "FN": 3899,
+                    "FP": 5071,
+                    "IoU": 0.5040911101282618,
+                    "TN": 8909912,
+                    "TP": 9118,
+                    "n_pred": 14189,
+                    "n_ref": 13017
+                },
+                "3": {
+                    "Dice": 0.8790097006486937,
+                    "FN": 2722,
+                    "FP": 1344,
+                    "IoU": 0.7841367593968995,
+                    "TN": 8909164,
+                    "TP": 14770,
+                    "n_pred": 16114,
+                    "n_ref": 17492
+                }
+            },
+            "prediction_file": "./validation/BRATS_253.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_253.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8683328297434569,
+                    "FN": 8360,
+                    "FP": 791,
+                    "IoU": 0.7673040736408483,
+                    "TN": 8888674,
+                    "TP": 30175,
+                    "n_pred": 30966,
+                    "n_ref": 38535
+                },
+                "2": {
+                    "Dice": 0.39619300575475874,
+                    "FN": 574,
+                    "FP": 2154,
+                    "IoU": 0.24703284570797682,
+                    "TN": 8924377,
+                    "TP": 895,
+                    "n_pred": 3049,
+                    "n_ref": 1469
+                },
+                "3": {
+                    "Dice": 0.9393494088571238,
+                    "FN": 1425,
+                    "FP": 391,
+                    "IoU": 0.8856351155614334,
+                    "TN": 8912121,
+                    "TP": 14063,
+                    "n_pred": 14454,
+                    "n_ref": 15488
+                }
+            },
+            "prediction_file": "./validation/BRATS_258.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_258.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8046254642069985,
+                    "FN": 4375,
+                    "FP": 2096,
+                    "IoU": 0.6731157809658517,
+                    "TN": 8908204,
+                    "TP": 13325,
+                    "n_pred": 15421,
+                    "n_ref": 17700
+                },
+                "2": {
+                    "Dice": 0.40011207621182404,
+                    "FN": 1771,
+                    "FP": 370,
+                    "IoU": 0.2500875656742557,
+                    "TN": 8925145,
+                    "TP": 714,
+                    "n_pred": 1084,
+                    "n_ref": 2485
+                },
+                "3": {
+                    "Dice": 0.8665041971297048,
+                    "FN": 558,
+                    "FP": 428,
+                    "IoU": 0.7644529383659818,
+                    "TN": 8923814,
+                    "TP": 3200,
+                    "n_pred": 3628,
+                    "n_ref": 3758
+                }
+            },
+            "prediction_file": "./validation/BRATS_262.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_262.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8502143622722401,
+                    "FN": 3297,
+                    "FP": 2293,
+                    "IoU": 0.7394546725704964,
+                    "TN": 8906545,
+                    "TP": 15865,
+                    "n_pred": 18158,
+                    "n_ref": 19162
+                },
+                "2": {
+                    "Dice": 0.08257804632426989,
+                    "FN": 692,
+                    "FP": 219,
+                    "IoU": 0.0430672268907563,
+                    "TN": 8927048,
+                    "TP": 41,
+                    "n_pred": 260,
+                    "n_ref": 733
+                },
+                "3": {
+                    "Dice": 0.9367190648931882,
+                    "FN": 517,
+                    "FP": 111,
+                    "IoU": 0.8809704321455648,
+                    "TN": 8922724,
+                    "TP": 4648,
+                    "n_pred": 4759,
+                    "n_ref": 5165
+                }
+            },
+            "prediction_file": "./validation/BRATS_264.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_264.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8543026016503129,
+                    "FN": 24399,
+                    "FP": 10703,
+                    "IoU": 0.7456616405700912,
+                    "TN": 8789987,
+                    "TP": 102911,
+                    "n_pred": 113614,
+                    "n_ref": 127310
+                },
+                "2": {
+                    "Dice": 0.6344992905551295,
+                    "FN": 15502,
+                    "FP": 25971,
+                    "IoU": 0.4646641969253011,
+                    "TN": 8850529,
+                    "TP": 35998,
+                    "n_pred": 61969,
+                    "n_ref": 51500
+                },
+                "3": {
+                    "Dice": 0.6023856858846919,
+                    "FN": 210,
+                    "FP": 190,
+                    "IoU": 0.4310099573257468,
+                    "TN": 8927297,
+                    "TP": 303,
+                    "n_pred": 493,
+                    "n_ref": 513
+                }
+            },
+            "prediction_file": "./validation/BRATS_268.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_268.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.926757887909067,
+                    "FN": 9854,
+                    "FP": 9116,
+                    "IoU": 0.8635124148301639,
+                    "TN": 8789013,
+                    "TP": 120017,
+                    "n_pred": 129133,
+                    "n_ref": 129871
+                },
+                "2": {
+                    "Dice": 0.8572496635597867,
+                    "FN": 3923,
+                    "FP": 1805,
+                    "IoU": 0.7501635626117678,
+                    "TN": 8905073,
+                    "TP": 17199,
+                    "n_pred": 19004,
+                    "n_ref": 21122
+                },
+                "3": {
+                    "Dice": 0.9157104910041898,
+                    "FN": 3138,
+                    "FP": 3018,
+                    "IoU": 0.8445258239676727,
+                    "TN": 8888405,
+                    "TP": 33439,
+                    "n_pred": 36457,
+                    "n_ref": 36577
+                }
+            },
+            "prediction_file": "./validation/BRATS_279.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_279.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9158428400575034,
+                    "FN": 12286,
+                    "FP": 8613,
+                    "IoU": 0.8447509954240209,
+                    "TN": 8793384,
+                    "TP": 113717,
+                    "n_pred": 122330,
+                    "n_ref": 126003
+                },
+                "2": {
+                    "Dice": 0.7211546530166988,
+                    "FN": 3104,
+                    "FP": 3542,
+                    "IoU": 0.5639107611548556,
+                    "TN": 8912760,
+                    "TP": 8594,
+                    "n_pred": 12136,
+                    "n_ref": 11698
+                },
+                "3": {
+                    "Dice": 0.9487453859234375,
+                    "FN": 3803,
+                    "FP": 2376,
+                    "IoU": 0.9024886770716619,
+                    "TN": 8864633,
+                    "TP": 57188,
+                    "n_pred": 59564,
+                    "n_ref": 60991
+                }
+            },
+            "prediction_file": "./validation/BRATS_280.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_280.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8215701136978885,
+                    "FN": 4721,
+                    "FP": 3518,
+                    "IoU": 0.697173521520197,
+                    "TN": 8900793,
+                    "TP": 18968,
+                    "n_pred": 22486,
+                    "n_ref": 23689
+                },
+                "2": {
+                    "Dice": 0.9126900735512777,
+                    "FN": 5700,
+                    "FP": 3108,
+                    "IoU": 0.8394019509526849,
+                    "TN": 8873155,
+                    "TP": 46037,
+                    "n_pred": 49145,
+                    "n_ref": 51737
+                },
+                "3": {
+                    "Dice": 0.9108886484709878,
+                    "FN": 5846,
+                    "FP": 7168,
+                    "IoU": 0.8363595211749321,
+                    "TN": 8848472,
+                    "TP": 66514,
+                    "n_pred": 73682,
+                    "n_ref": 72360
+                }
+            },
+            "prediction_file": "./validation/BRATS_286.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_286.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.862797167425392,
+                    "FN": 1158,
+                    "FP": 1012,
+                    "IoU": 0.7587012120538197,
+                    "TN": 8919007,
+                    "TP": 6823,
+                    "n_pred": 7835,
+                    "n_ref": 7981
+                },
+                "2": {
+                    "Dice": 0.36853448275862066,
+                    "FN": 139,
+                    "FP": 447,
+                    "IoU": 0.22589167767503301,
+                    "TN": 8927243,
+                    "TP": 171,
+                    "n_pred": 618,
+                    "n_ref": 310
+                },
+                "3": {
+                    "Dice": 0.9026706894625097,
+                    "FN": 639,
+                    "FP": 232,
+                    "IoU": 0.8226069246435845,
+                    "TN": 8923090,
+                    "TP": 4039,
+                    "n_pred": 4271,
+                    "n_ref": 4678
+                }
+            },
+            "prediction_file": "./validation/BRATS_288.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_288.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9149524529503044,
+                    "FN": 4580,
+                    "FP": 3970,
+                    "IoU": 0.8432371977044792,
+                    "TN": 8873459,
+                    "TP": 45991,
+                    "n_pred": 49961,
+                    "n_ref": 50571
+                },
+                "2": {
+                    "Dice": 0.8771468629512793,
+                    "FN": 1717,
+                    "FP": 1087,
+                    "IoU": 0.7811768378336195,
+                    "TN": 8915186,
+                    "TP": 10010,
+                    "n_pred": 11097,
+                    "n_ref": 11727
+                },
+                "3": {
+                    "Dice": 0.8801138556541875,
+                    "FN": 2194,
+                    "FP": 2776,
+                    "IoU": 0.785895834230819,
+                    "TN": 8904787,
+                    "TP": 18243,
+                    "n_pred": 21019,
+                    "n_ref": 20437
+                }
+            },
+            "prediction_file": "./validation/BRATS_289.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_289.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8853581488998525,
+                    "FN": 31602,
+                    "FP": 3927,
+                    "IoU": 0.7942983192547519,
+                    "TN": 8755279,
+                    "TP": 137192,
+                    "n_pred": 141119,
+                    "n_ref": 168794
+                },
+                "2": {
+                    "Dice": 0.8921699667402319,
+                    "FN": 1092,
+                    "FP": 2377,
+                    "IoU": 0.805331088664422,
+                    "TN": 8910180,
+                    "TP": 14351,
+                    "n_pred": 16728,
+                    "n_ref": 15443
+                },
+                "3": {
+                    "Dice": 0.8870642681197283,
+                    "FN": 3974,
+                    "FP": 2078,
+                    "IoU": 0.7970489604292421,
+                    "TN": 8898180,
+                    "TP": 23768,
+                    "n_pred": 25846,
+                    "n_ref": 27742
+                }
+            },
+            "prediction_file": "./validation/BRATS_295.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_295.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9556031406138472,
+                    "FN": 3462,
+                    "FP": 3380,
+                    "IoU": 0.9149808638600329,
+                    "TN": 8847524,
+                    "TP": 73634,
+                    "n_pred": 77014,
+                    "n_ref": 77096
+                },
+                "2": {
+                    "Dice": 0.7671876596179386,
+                    "FN": 3392,
+                    "FP": 1166,
+                    "IoU": 0.6223069274113358,
+                    "TN": 8915932,
+                    "TP": 7510,
+                    "n_pred": 8676,
+                    "n_ref": 10902
+                },
+                "3": {
+                    "Dice": 0.8992574754164158,
+                    "FN": 2055,
+                    "FP": 957,
+                    "IoU": 0.8169553327256153,
+                    "TN": 8911545,
+                    "TP": 13443,
+                    "n_pred": 14400,
+                    "n_ref": 15498
+                }
+            },
+            "prediction_file": "./validation/BRATS_298.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_298.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8313832808385397,
+                    "FN": 26327,
+                    "FP": 6329,
+                    "IoU": 0.7114251124484151,
+                    "TN": 8814837,
+                    "TP": 80507,
+                    "n_pred": 86836,
+                    "n_ref": 106834
+                },
+                "2": {
+                    "Dice": 0.6891889442682374,
+                    "FN": 6346,
+                    "FP": 10803,
+                    "IoU": 0.5257729107903324,
+                    "TN": 8891838,
+                    "TP": 19013,
+                    "n_pred": 29816,
+                    "n_ref": 25359
+                },
+                "3": {
+                    "Dice": 0.7616017833714545,
+                    "FN": 18103,
+                    "FP": 2430,
+                    "IoU": 0.6149894057865032,
+                    "TN": 8874669,
+                    "TP": 32798,
+                    "n_pred": 35228,
+                    "n_ref": 50901
+                }
+            },
+            "prediction_file": "./validation/BRATS_303.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_303.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.831268710379894,
+                    "FN": 4609,
+                    "FP": 28476,
+                    "IoU": 0.7112573418395399,
+                    "TN": 8813417,
+                    "TP": 81498,
+                    "n_pred": 109974,
+                    "n_ref": 86107
+                },
+                "2": {
+                    "Dice": 0.3526427753231877,
+                    "FN": 21586,
+                    "FP": 2150,
+                    "IoU": 0.21406575941194,
+                    "TN": 8897799,
+                    "TP": 6465,
+                    "n_pred": 8615,
+                    "n_ref": 28051
+                },
+                "3": {
+                    "Dice": 0.6673191840098908,
+                    "FN": 77,
+                    "FP": 12839,
+                    "IoU": 0.500734441437959,
+                    "TN": 8902130,
+                    "TP": 12954,
+                    "n_pred": 25793,
+                    "n_ref": 13031
+                }
+            },
+            "prediction_file": "./validation/BRATS_310.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_310.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9076977207865827,
+                    "FN": 2654,
+                    "FP": 4429,
+                    "IoU": 0.8309949892627058,
+                    "TN": 8886090,
+                    "TP": 34827,
+                    "n_pred": 39256,
+                    "n_ref": 37481
+                },
+                "2": {
+                    "Dice": 0.8353395412218941,
+                    "FN": 3221,
+                    "FP": 404,
+                    "IoU": 0.7172386895475819,
+                    "TN": 8915180,
+                    "TP": 9195,
+                    "n_pred": 9599,
+                    "n_ref": 12416
+                },
+                "3": {
+                    "Dice": 0.8849199756327186,
+                    "FN": 2242,
+                    "FP": 1914,
+                    "IoU": 0.7935932455922523,
+                    "TN": 8907865,
+                    "TP": 15979,
+                    "n_pred": 17893,
+                    "n_ref": 18221
+                }
+            },
+            "prediction_file": "./validation/BRATS_316.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_316.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8428313272451515,
+                    "FN": 11412,
+                    "FP": 8070,
+                    "IoU": 0.7283565024609936,
+                    "TN": 8856281,
+                    "TP": 52237,
+                    "n_pred": 60307,
+                    "n_ref": 63649
+                },
+                "2": {
+                    "Dice": 0.8036181439276371,
+                    "FN": 1914,
+                    "FP": 2515,
+                    "IoU": 0.6717070639685716,
+                    "TN": 8914509,
+                    "TP": 9062,
+                    "n_pred": 11577,
+                    "n_ref": 10976
+                },
+                "3": {
+                    "Dice": 0.8442527054694355,
+                    "FN": 3162,
+                    "FP": 5358,
+                    "IoU": 0.7304820954068075,
+                    "TN": 8896388,
+                    "TP": 23092,
+                    "n_pred": 28450,
+                    "n_ref": 26254
+                }
+            },
+            "prediction_file": "./validation/BRATS_332.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_332.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.758629824886746,
+                    "FN": 3018,
+                    "FP": 6093,
+                    "IoU": 0.611122967262794,
+                    "TN": 8904571,
+                    "TP": 14318,
+                    "n_pred": 20411,
+                    "n_ref": 17336
+                },
+                "2": {
+                    "Dice": 0.3743455497382199,
+                    "FN": 259,
+                    "FP": 219,
+                    "IoU": 0.23027375201288244,
+                    "TN": 8927379,
+                    "TP": 143,
+                    "n_pred": 362,
+                    "n_ref": 402
+                },
+                "3": {
+                    "Dice": 0.7920184190330007,
+                    "FN": 380,
+                    "FP": 162,
+                    "IoU": 0.6556543837357052,
+                    "TN": 8926426,
+                    "TP": 1032,
+                    "n_pred": 1194,
+                    "n_ref": 1412
+                }
+            },
+            "prediction_file": "./validation/BRATS_338.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_338.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7708472025239514,
+                    "FN": 1431,
+                    "FP": 6486,
+                    "IoU": 0.6271370037206235,
+                    "TN": 8906767,
+                    "TP": 13316,
+                    "n_pred": 19802,
+                    "n_ref": 14747
+                },
+                "2": {
+                    "Dice": 0.880297849707469,
+                    "FN": 6697,
+                    "FP": 1180,
+                    "IoU": 0.7861892999647132,
+                    "TN": 8891159,
+                    "TP": 28964,
+                    "n_pred": 30144,
+                    "n_ref": 35661
+                },
+                "3": {
+                    "Dice": 0.8730479622630454,
+                    "FN": 2574,
+                    "FP": 6092,
+                    "IoU": 0.7746984193011647,
+                    "TN": 8889536,
+                    "TP": 29798,
+                    "n_pred": 35890,
+                    "n_ref": 32372
+                }
+            },
+            "prediction_file": "./validation/BRATS_344.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_344.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9226693345190455,
+                    "FN": 4412,
+                    "FP": 12284,
+                    "IoU": 0.8564402407566638,
+                    "TN": 8811700,
+                    "TP": 99604,
+                    "n_pred": 111888,
+                    "n_ref": 104016
+                },
+                "2": {
+                    "Dice": 0.8510739856801909,
+                    "FN": 883,
+                    "FP": 365,
+                    "IoU": 0.7407561279601164,
+                    "TN": 8923186,
+                    "TP": 3566,
+                    "n_pred": 3931,
+                    "n_ref": 4449
+                },
+                "3": {
+                    "Dice": 0.8898058633969975,
+                    "FN": 1784,
+                    "FP": 1020,
+                    "IoU": 0.8014867256637168,
+                    "TN": 8913875,
+                    "TP": 11321,
+                    "n_pred": 12341,
+                    "n_ref": 13105
+                }
+            },
+            "prediction_file": "./validation/BRATS_345.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_345.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8100461893764435,
+                    "FN": 10659,
+                    "FP": 4475,
+                    "IoU": 0.6807375060650169,
+                    "TN": 8880597,
+                    "TP": 32269,
+                    "n_pred": 36744,
+                    "n_ref": 42928
+                },
+                "2": {
+                    "Dice": 0.7621311875152402,
+                    "FN": 400,
+                    "FP": 3502,
+                    "IoU": 0.615680094553334,
+                    "TN": 8917847,
+                    "TP": 6251,
+                    "n_pred": 9753,
+                    "n_ref": 6651
+                },
+                "3": {
+                    "Dice": 0.8579034462911,
+                    "FN": 7147,
+                    "FP": 753,
+                    "IoU": 0.7511654277434799,
+                    "TN": 8896252,
+                    "TP": 23848,
+                    "n_pred": 24601,
+                    "n_ref": 30995
+                }
+            },
+            "prediction_file": "./validation/BRATS_348.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_348.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8633335060359567,
+                    "FN": 11136,
+                    "FP": 2053,
+                    "IoU": 0.75953105912812,
+                    "TN": 8873153,
+                    "TP": 41658,
+                    "n_pred": 43711,
+                    "n_ref": 52794
+                },
+                "2": {
+                    "Dice": 0.9237084447325069,
+                    "FN": 1256,
+                    "FP": 1569,
+                    "IoU": 0.8582325488031314,
+                    "TN": 8908073,
+                    "TP": 17102,
+                    "n_pred": 18671,
+                    "n_ref": 18358
+                },
+                "3": {
+                    "Dice": 0.8523543971610056,
+                    "FN": 1881,
+                    "FP": 3070,
+                    "IoU": 0.7426982642136992,
+                    "TN": 8908758,
+                    "TP": 14291,
+                    "n_pred": 17361,
+                    "n_ref": 16172
+                }
+            },
+            "prediction_file": "./validation/BRATS_354.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_354.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.4805571677307023,
+                    "FN": 3484,
+                    "FP": 23366,
+                    "IoU": 0.3162719633307869,
+                    "TN": 8888730,
+                    "TP": 12420,
+                    "n_pred": 35786,
+                    "n_ref": 15904
+                },
+                "2": {
+                    "Dice": 0.8464100621670695,
+                    "FN": 9406,
+                    "FP": 3367,
+                    "IoU": 0.7337183122081388,
+                    "TN": 8880032,
+                    "TP": 35195,
+                    "n_pred": 38562,
+                    "n_ref": 44601
+                },
+                "3": {
+                    "Dice": 0.7561296642076586,
+                    "FN": 10608,
+                    "FP": 5326,
+                    "IoU": 0.607884634314401,
+                    "TN": 8887364,
+                    "TP": 24702,
+                    "n_pred": 30028,
+                    "n_ref": 35310
+                }
+            },
+            "prediction_file": "./validation/BRATS_358.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_358.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8645523339852054,
+                    "FN": 2841,
+                    "FP": 3531,
+                    "IoU": 0.7614197993110678,
+                    "TN": 8901292,
+                    "TP": 20336,
+                    "n_pred": 23867,
+                    "n_ref": 23177
+                },
+                "2": {
+                    "Dice": 0.6296858071505959,
+                    "FN": 4073,
+                    "FP": 1054,
+                    "IoU": 0.4595192915876028,
+                    "TN": 8918514,
+                    "TP": 4359,
+                    "n_pred": 5413,
+                    "n_ref": 8432
+                },
+                "3": {
+                    "Dice": 0.8203715140861799,
+                    "FN": 1961,
+                    "FP": 1820,
+                    "IoU": 0.6954490535642368,
+                    "TN": 8915585,
+                    "TP": 8634,
+                    "n_pred": 10454,
+                    "n_ref": 10595
+                }
+            },
+            "prediction_file": "./validation/BRATS_370.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_370.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9081573846073243,
+                    "FN": 3820,
+                    "FP": 3192,
+                    "IoU": 0.8317658349328215,
+                    "TN": 8886320,
+                    "TP": 34668,
+                    "n_pred": 37860,
+                    "n_ref": 38488
+                },
+                "2": {
+                    "Dice": 0.8698947368421053,
+                    "FN": 637,
+                    "FP": 290,
+                    "IoU": 0.7697466467958272,
+                    "TN": 8923974,
+                    "TP": 3099,
+                    "n_pred": 3389,
+                    "n_ref": 3736
+                },
+                "3": {
+                    "Dice": 0.9058757833343675,
+                    "FN": 659,
+                    "FP": 858,
+                    "IoU": 0.8279460133832369,
+                    "TN": 8919183,
+                    "TP": 7300,
+                    "n_pred": 8158,
+                    "n_ref": 7959
+                }
+            },
+            "prediction_file": "./validation/BRATS_371.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_371.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8353273935794089,
+                    "FN": 2704,
+                    "FP": 8940,
+                    "IoU": 0.7172207785899896,
+                    "TN": 8886823,
+                    "TP": 29533,
+                    "n_pred": 38473,
+                    "n_ref": 32237
+                },
+                "2": {
+                    "Dice": 0.5848235862735621,
+                    "FN": 1643,
+                    "FP": 75,
+                    "IoU": 0.41325136612021857,
+                    "TN": 8925072,
+                    "TP": 1210,
+                    "n_pred": 1285,
+                    "n_ref": 2853
+                },
+                "3": {
+                    "Dice": 0.797716939150624,
+                    "FN": 198,
+                    "FP": 1893,
+                    "IoU": 0.6635017701963308,
+                    "TN": 8921786,
+                    "TP": 4123,
+                    "n_pred": 6016,
+                    "n_ref": 4321
+                }
+            },
+            "prediction_file": "./validation/BRATS_372.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_372.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8524785844684736,
+                    "FN": 1711,
+                    "FP": 2491,
+                    "IoU": 0.7428868628770727,
+                    "TN": 8911657,
+                    "TP": 12141,
+                    "n_pred": 14632,
+                    "n_ref": 13852
+                },
+                "2": {
+                    "Dice": 0.9464057847724373,
+                    "FN": 330,
+                    "FP": 678,
+                    "IoU": 0.8982640290674203,
+                    "TN": 8918092,
+                    "TP": 8900,
+                    "n_pred": 9578,
+                    "n_ref": 9230
+                },
+                "3": {
+                    "Dice": 0.8188710053650572,
+                    "FN": 1429,
+                    "FP": 1677,
+                    "IoU": 0.6932951515749975,
+                    "TN": 8917873,
+                    "TP": 7021,
+                    "n_pred": 8698,
+                    "n_ref": 8450
+                }
+            },
+            "prediction_file": "./validation/BRATS_375.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_375.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8335129181332759,
+                    "FN": 2786,
+                    "FP": 4167,
+                    "IoU": 0.7145496346169636,
+                    "TN": 8903642,
+                    "TP": 17405,
+                    "n_pred": 21572,
+                    "n_ref": 20191
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 455,
+                    "FP": 0,
+                    "IoU": 0.0,
+                    "TN": 8927545,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 455
+                },
+                "3": {
+                    "Dice": 0.6691449814126395,
+                    "FN": 16,
+                    "FP": 73,
+                    "IoU": 0.5027932960893855,
+                    "TN": 8927821,
+                    "TP": 90,
+                    "n_pred": 163,
+                    "n_ref": 106
+                }
+            },
+            "prediction_file": "./validation/BRATS_380.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_380.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6520617693364151,
+                    "FN": 24498,
+                    "FP": 6663,
+                    "IoU": 0.4837475149105368,
+                    "TN": 8867640,
+                    "TP": 29199,
+                    "n_pred": 35862,
+                    "n_ref": 53697
+                },
+                "2": {
+                    "Dice": 0.8723342890589213,
+                    "FN": 6519,
+                    "FP": 1006,
+                    "IoU": 0.7735752542576879,
+                    "TN": 8894766,
+                    "TP": 25709,
+                    "n_pred": 26715,
+                    "n_ref": 32228
+                },
+                "3": {
+                    "Dice": 0.9090980139308148,
+                    "FN": 5597,
+                    "FP": 3708,
+                    "IoU": 0.8333452734892718,
+                    "TN": 8872166,
+                    "TP": 46529,
+                    "n_pred": 50237,
+                    "n_ref": 52126
+                }
+            },
+            "prediction_file": "./validation/BRATS_383.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_383.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.876416205052981,
+                    "FN": 8290,
+                    "FP": 10919,
+                    "IoU": 0.7800185522382932,
+                    "TN": 8840679,
+                    "TP": 68112,
+                    "n_pred": 79031,
+                    "n_ref": 76402
+                },
+                "2": {
+                    "Dice": 0.3884796398608553,
+                    "FN": 952,
+                    "FP": 11002,
+                    "IoU": 0.24106405942479842,
+                    "TN": 8912249,
+                    "TP": 3797,
+                    "n_pred": 14799,
+                    "n_ref": 4749
+                },
+                "3": {
+                    "Dice": 0.9261419354838709,
+                    "FN": 2143,
+                    "FP": 2150,
+                    "IoU": 0.8624435259059886,
+                    "TN": 8896791,
+                    "TP": 26916,
+                    "n_pred": 29066,
+                    "n_ref": 29059
+                }
+            },
+            "prediction_file": "./validation/BRATS_388.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_388.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8396047737489446,
+                    "FN": 1197,
+                    "FP": 5832,
+                    "IoU": 0.7235506961378116,
+                    "TN": 8902574,
+                    "TP": 18397,
+                    "n_pred": 24229,
+                    "n_ref": 19594
+                },
+                "2": {
+                    "Dice": 0.7377793930583318,
+                    "FN": 257,
+                    "FP": 1186,
+                    "IoU": 0.5845090699683271,
+                    "TN": 8924527,
+                    "TP": 2030,
+                    "n_pred": 3216,
+                    "n_ref": 2287
+                },
+                "3": {
+                    "Dice": 0.946390625948637,
+                    "FN": 815,
+                    "FP": 68,
+                    "IoU": 0.8982367177595943,
+                    "TN": 8919323,
+                    "TP": 7794,
+                    "n_pred": 7862,
+                    "n_ref": 8609
+                }
+            },
+            "prediction_file": "./validation/BRATS_390.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_390.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8803361258597032,
+                    "FN": 5750,
+                    "FP": 8291,
+                    "IoU": 0.7862503615521624,
+                    "TN": 8862311,
+                    "TP": 51648,
+                    "n_pred": 59939,
+                    "n_ref": 57398
+                },
+                "2": {
+                    "Dice": 0.8164181375532562,
+                    "FN": 5192,
+                    "FP": 4460,
+                    "IoU": 0.6897859484476442,
+                    "TN": 8896886,
+                    "TP": 21462,
+                    "n_pred": 25922,
+                    "n_ref": 26654
+                },
+                "3": {
+                    "Dice": 0.9246332336691189,
+                    "FN": 3330,
+                    "FP": 9097,
+                    "IoU": 0.8598305830334886,
+                    "TN": 8839343,
+                    "TP": 76230,
+                    "n_pred": 85327,
+                    "n_ref": 79560
+                }
+            },
+            "prediction_file": "./validation/BRATS_399.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_399.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9334061135371179,
+                    "FN": 6257,
+                    "FP": 3503,
+                    "IoU": 0.8751279426816786,
+                    "TN": 8849840,
+                    "TP": 68400,
+                    "n_pred": 71903,
+                    "n_ref": 74657
+                },
+                "2": {
+                    "Dice": 0.7241843604350078,
+                    "FN": 4986,
+                    "FP": 340,
+                    "IoU": 0.5676246143854522,
+                    "TN": 8915682,
+                    "TP": 6992,
+                    "n_pred": 7332,
+                    "n_ref": 11978
+                },
+                "3": {
+                    "Dice": 0.8677379480840544,
+                    "FN": 237,
+                    "FP": 3722,
+                    "IoU": 0.7663755458515283,
+                    "TN": 8911054,
+                    "TP": 12987,
+                    "n_pred": 16709,
+                    "n_ref": 13224
+                }
+            },
+            "prediction_file": "./validation/BRATS_421.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_421.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8597380700775341,
+                    "FN": 3691,
+                    "FP": 31748,
+                    "IoU": 0.7539829643667868,
+                    "TN": 8783949,
+                    "TP": 108612,
+                    "n_pred": 140360,
+                    "n_ref": 112303
+                },
+                "2": {
+                    "Dice": 0.8138062899716489,
+                    "FN": 3639,
+                    "FP": 2009,
+                    "IoU": 0.6860652548496471,
+                    "TN": 8910009,
+                    "TP": 12343,
+                    "n_pred": 14352,
+                    "n_ref": 15982
+                },
+                "3": {
+                    "Dice": 0.911509961483567,
+                    "FN": 740,
+                    "FP": 8312,
+                    "IoU": 0.8374077200797514,
+                    "TN": 8872327,
+                    "TP": 46621,
+                    "n_pred": 54933,
+                    "n_ref": 47361
+                }
+            },
+            "prediction_file": "./validation/BRATS_426.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_426.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8481868724587172,
+                    "FN": 10195,
+                    "FP": 26395,
+                    "IoU": 0.7363927812398688,
+                    "TN": 8789195,
+                    "TP": 102215,
+                    "n_pred": 128610,
+                    "n_ref": 112410
+                },
+                "2": {
+                    "Dice": 0.2957641071695854,
+                    "FN": 4398,
+                    "FP": 23832,
+                    "IoU": 0.17354646056560688,
+                    "TN": 8893842,
+                    "TP": 5928,
+                    "n_pred": 29760,
+                    "n_ref": 10326
+                },
+                "3": {
+                    "Dice": 0.5086303939962477,
+                    "FN": 30916,
+                    "FP": 512,
+                    "IoU": 0.34104918857717953,
+                    "TN": 8880306,
+                    "TP": 16266,
+                    "n_pred": 16778,
+                    "n_ref": 47182
+                }
+            },
+            "prediction_file": "./validation/BRATS_427.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_427.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7652754370311622,
+                    "FN": 8555,
+                    "FP": 5651,
+                    "IoU": 0.6197944545551868,
+                    "TN": 8890636,
+                    "TP": 23158,
+                    "n_pred": 28809,
+                    "n_ref": 31713
+                },
+                "2": {
+                    "Dice": 0.30422535211267604,
+                    "FN": 248,
+                    "FP": 7903,
+                    "IoU": 0.17940199335548174,
+                    "TN": 8918067,
+                    "TP": 1782,
+                    "n_pred": 9685,
+                    "n_ref": 2030
+                },
+                "3": {
+                    "Dice": 0.8340759694710372,
+                    "FN": 6557,
+                    "FP": 965,
+                    "IoU": 0.71537762978659,
+                    "TN": 8901572,
+                    "TP": 18906,
+                    "n_pred": 19871,
+                    "n_ref": 25463
+                }
+            },
+            "prediction_file": "./validation/BRATS_434.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_434.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7649912517894067,
+                    "FN": 9750,
+                    "FP": 7980,
+                    "IoU": 0.6194217270912487,
+                    "TN": 8881413,
+                    "TP": 28857,
+                    "n_pred": 36837,
+                    "n_ref": 38607
+                },
+                "2": {
+                    "Dice": 0.6618570126318531,
+                    "FN": 6081,
+                    "FP": 6902,
+                    "IoU": 0.49460858733309976,
+                    "TN": 8902311,
+                    "TP": 12706,
+                    "n_pred": 19608,
+                    "n_ref": 18787
+                },
+                "3": {
+                    "Dice": 0.8746120422098076,
+                    "FN": 1666,
+                    "FP": 6818,
+                    "IoU": 0.7771649200220628,
+                    "TN": 8889927,
+                    "TP": 29589,
+                    "n_pred": 36407,
+                    "n_ref": 31255
+                }
+            },
+            "prediction_file": "./validation/BRATS_435.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_435.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7943998186991665,
+                    "FN": 1714,
+                    "FP": 6451,
+                    "IoU": 0.6589247671164209,
+                    "TN": 8904061,
+                    "TP": 15774,
+                    "n_pred": 22225,
+                    "n_ref": 17488
+                },
+                "2": {
+                    "Dice": 0.5049143846201397,
+                    "FN": 7610,
+                    "FP": 399,
+                    "IoU": 0.3377160340692963,
+                    "TN": 8915907,
+                    "TP": 4084,
+                    "n_pred": 4483,
+                    "n_ref": 11694
+                },
+                "3": {
+                    "Dice": 0.7827873283598227,
+                    "FN": 219,
+                    "FP": 7817,
+                    "IoU": 0.6430982412506662,
+                    "TN": 8905484,
+                    "TP": 14480,
+                    "n_pred": 22297,
+                    "n_ref": 14699
+                }
+            },
+            "prediction_file": "./validation/BRATS_436.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_436.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9001390655975382,
+                    "FN": 2506,
+                    "FP": 7619,
+                    "IoU": 0.8184117077370063,
+                    "TN": 8872242,
+                    "TP": 45633,
+                    "n_pred": 53252,
+                    "n_ref": 48139
+                },
+                "2": {
+                    "Dice": 0.3935810810810811,
+                    "FN": 270,
+                    "FP": 1166,
+                    "IoU": 0.24500525762355416,
+                    "TN": 8926098,
+                    "TP": 466,
+                    "n_pred": 1632,
+                    "n_ref": 736
+                },
+                "3": {
+                    "Dice": 0.9618869789664451,
+                    "FN": 426,
+                    "FP": 962,
+                    "IoU": 0.9265725017193038,
+                    "TN": 8909097,
+                    "TP": 17515,
+                    "n_pred": 18477,
+                    "n_ref": 17941
+                }
+            },
+            "prediction_file": "./validation/BRATS_440.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_440.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9320159743494317,
+                    "FN": 3385,
+                    "FP": 15613,
+                    "IoU": 0.8726871862916574,
+                    "TN": 8778777,
+                    "TP": 130225,
+                    "n_pred": 145838,
+                    "n_ref": 133610
+                },
+                "2": {
+                    "Dice": 0.6603662138216184,
+                    "FN": 1513,
+                    "FP": 3087,
+                    "IoU": 0.4929453262786596,
+                    "TN": 8918928,
+                    "TP": 4472,
+                    "n_pred": 7559,
+                    "n_ref": 5985
+                },
+                "3": {
+                    "Dice": 0.7953276173995123,
+                    "FN": 4412,
+                    "FP": 792,
+                    "IoU": 0.6602024159320927,
+                    "TN": 8912685,
+                    "TP": 10111,
+                    "n_pred": 10903,
+                    "n_ref": 14523
+                }
+            },
+            "prediction_file": "./validation/BRATS_441.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_441.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8197978731890505,
+                    "FN": 3726,
+                    "FP": 25641,
+                    "IoU": 0.6946249753033785,
+                    "TN": 8831833,
+                    "TP": 66800,
+                    "n_pred": 92441,
+                    "n_ref": 70526
+                },
+                "2": {
+                    "Dice": 0.0021008403361344537,
+                    "FN": 45,
+                    "FP": 1855,
+                    "IoU": 0.0010515247108307045,
+                    "TN": 8926098,
+                    "TP": 2,
+                    "n_pred": 1857,
+                    "n_ref": 47
+                },
+                "3": {
+                    "Dice": 0.8067542213883677,
+                    "FN": 853,
+                    "FP": 280,
+                    "IoU": 0.6761006289308176,
+                    "TN": 8924502,
+                    "TP": 2365,
+                    "n_pred": 2645,
+                    "n_ref": 3218
+                }
+            },
+            "prediction_file": "./validation/BRATS_457.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_457.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.889696378490428,
+                    "FN": 2665,
+                    "FP": 6381,
+                    "IoU": 0.8013090845194166,
+                    "TN": 8882472,
+                    "TP": 36482,
+                    "n_pred": 42863,
+                    "n_ref": 39147
+                },
+                "2": {
+                    "Dice": 0.6914878698639741,
+                    "FN": 1392,
+                    "FP": 3008,
+                    "IoU": 0.5284535419569178,
+                    "TN": 8918669,
+                    "TP": 4931,
+                    "n_pred": 7939,
+                    "n_ref": 6323
+                },
+                "3": {
+                    "Dice": 0.9518961567828964,
+                    "FN": 1466,
+                    "FP": 1369,
+                    "IoU": 0.9082078678970374,
+                    "TN": 8897115,
+                    "TP": 28050,
+                    "n_pred": 29419,
+                    "n_ref": 29516
+                }
+            },
+            "prediction_file": "./validation/BRATS_476.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_476.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7413159947984396,
+                    "FN": 11829,
+                    "FP": 37903,
+                    "IoU": 0.5889611624005091,
+                    "TN": 8807009,
+                    "TP": 71259,
+                    "n_pred": 109162,
+                    "n_ref": 83088
+                },
+                "2": {
+                    "Dice": 0.8135534418456735,
+                    "FN": 1756,
+                    "FP": 4693,
+                    "IoU": 0.6857059310882596,
+                    "TN": 8907481,
+                    "TP": 14070,
+                    "n_pred": 18763,
+                    "n_ref": 15826
+                },
+                "3": {
+                    "Dice": 0.9455519696104017,
+                    "FN": 2476,
+                    "FP": 4576,
+                    "IoU": 0.8967269532108076,
+                    "TN": 8859715,
+                    "TP": 61233,
+                    "n_pred": 65809,
+                    "n_ref": 63709
+                }
+            },
+            "prediction_file": "./validation/BRATS_477.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_477.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8799780129174111,
+                    "FN": 5877,
+                    "FP": 2857,
+                    "IoU": 0.7856792304672163,
+                    "TN": 8887248,
+                    "TP": 32018,
+                    "n_pred": 34875,
+                    "n_ref": 37895
+                },
+                "2": {
+                    "Dice": 0.5424072341752416,
+                    "FN": 680,
+                    "FP": 5190,
+                    "IoU": 0.3721253610011766,
+                    "TN": 8918651,
+                    "TP": 3479,
+                    "n_pred": 8669,
+                    "n_ref": 4159
+                },
+                "3": {
+                    "Dice": 0.954133263240899,
+                    "FN": 594,
+                    "FP": 802,
+                    "IoU": 0.9122895199798945,
+                    "TN": 8912084,
+                    "TP": 14520,
+                    "n_pred": 15322,
+                    "n_ref": 15114
+                }
+            },
+            "prediction_file": "./validation/BRATS_481.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_481.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7594577484773735,
+                    "FN": 2761,
+                    "FP": 8258,
+                    "IoU": 0.6121982121489407,
+                    "TN": 8899586,
+                    "TP": 17395,
+                    "n_pred": 25653,
+                    "n_ref": 20156
+                },
+                "2": {
+                    "Dice": 0.9580771840368444,
+                    "FN": 1434,
+                    "FP": 605,
+                    "IoU": 0.9195279816875839,
+                    "TN": 8902662,
+                    "TP": 23299,
+                    "n_pred": 23904,
+                    "n_ref": 24733
+                },
+                "3": {
+                    "Dice": 0.9050260466911055,
+                    "FN": 695,
+                    "FP": 3243,
+                    "IoU": 0.8265274657504075,
+                    "TN": 8905299,
+                    "TP": 18763,
+                    "n_pred": 22006,
+                    "n_ref": 19458
+                }
+            },
+            "prediction_file": "./validation/BRATS_483.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset001_BrainTumour/gt_segmentations/BRATS_483.nii.gz"
+        }
+    ]
+}

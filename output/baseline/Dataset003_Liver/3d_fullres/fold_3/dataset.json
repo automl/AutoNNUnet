@@ -1,0 +1,19 @@
+{
+    "name": "Liver",
+    "description": "Liver, and cancer segmentation",
+    "reference": "xxxx",
+    "licence": "CC-BY-SA 4.0",
+    "release": "1.0 04/05/2018",
+    "tensorImageSize": "3D",
+    "labels": {
+        "background": 0,
+        "liver": 1,
+        "cancer": 2
+    },
+    "numTraining": 131,
+    "numTest": 70,
+    "file_ending": ".nii.gz",
+    "channel_names": {
+        "0": "CT"
+    }
+}

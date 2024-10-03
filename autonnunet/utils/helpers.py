@@ -17,7 +17,7 @@ def seed_everything(seed: int) -> None:
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.enabled = False
-    np.random.seed(seed)
+    np.random.seed(seed)    # noqa: NPY002
     random.seed(seed)
 
 
@@ -27,7 +27,7 @@ def get_device(device: str) -> torch.device:
         "cpu",
         "cuda",
         "mps",
-    ], f"-device must be either cpu, mps or cuda. Other devices are not tested/supported. Got: {device}."
+    ], f"-device must be either cpu, mps or cuda. Got: {device}."
     if device == "cpu":
         # let's allow torch to use hella threads
         import multiprocessing

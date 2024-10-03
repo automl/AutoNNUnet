@@ -1,0 +1,23 @@
+{
+    "name": "BRATS",
+    "description": "Gliomas segmentation tumour and oedema in on brain images",
+    "reference": "https://www.med.upenn.edu/sbia/brats2017.html",
+    "licence": "CC-BY-SA 4.0",
+    "release": "2.0 04/05/2018",
+    "tensorImageSize": "4D",
+    "labels": {
+        "background": 0,
+        "edema": 1,
+        "non-enhancing tumor": 2,
+        "enhancing tumour": 3
+    },
+    "numTraining": 484,
+    "numTest": 266,
+    "file_ending": ".nii.gz",
+    "channel_names": {
+        "0": "FLAIR",
+        "1": "T1w",
+        "2": "t1gd",
+        "3": "T2w"
+    }
+}

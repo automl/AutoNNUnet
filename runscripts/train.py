@@ -14,7 +14,6 @@ import hydra
 import torch
 from autonnunet.utils import (
     check_if_job_already_done,
-    get_device,
     read_metrics,
     seed_everything,
     write_performance,
@@ -27,49 +26,16 @@ if TYPE_CHECKING:
     from omegaconf import DictConfig
 
 
-def get_trainer(
-    cfg: DictConfig
-) -> Any:
-    # We do lazy imports here to make everything pickable for SLURM
+@hydra.main(version_base=None, config_path="configs", config_name="train")
+def run(cfg: DictConfig):
+    # We have to do lazy imports here to make everything pickable for SLURM
     from autonnunet.training import AutoNNUNetTrainer
-    from batchgenerators.utilities.file_and_folder_operations import load_json
-    from nnunetv2.run.run_training import maybe_load_checkpoint
     from torch.backends import cudnn
-
-    preprocessed_dataset_folder_base = NNUNET_PREPROCESSED / cfg.dataset.name  # noqa: SIM112
-    plans_file = preprocessed_dataset_folder_base / f"{cfg.trainer.plans_identifier}.json"
-    plans = load_json(plans_file)
-    dataset_json = load_json(preprocessed_dataset_folder_base / "dataset.json")
-
-    nnunet_trainer = AutoNNUNetTrainer(
-        plans=plans,
-        configuration=cfg.trainer.configuration,
-        fold=cfg.fold,
-        dataset_json=dataset_json,
-        unpack_dataset=not cfg.trainer.use_compressed_data,
-        device=get_device(cfg.device),
-    )
-    nnunet_trainer.set_hp_config(cfg.hp_config)
-
-    nnunet_trainer.disable_checkpointing = cfg.trainer.disable_checkpointing
-
-    maybe_load_checkpoint(
-        nnunet_trainer=nnunet_trainer,
-        continue_training=cfg.pipeline.continue_training,
-        validation_only=cfg.pipeline.run_validation and not cfg.pipeline.run_training,
-        pretrained_weights_file=cfg.trainer.pretrained_weights_file,
-    )
-
+    
     if torch.cuda.is_available():
         cudnn.deterministic = True
         cudnn.benchmark = True
-
-    return nnunet_trainer
-
-
-@hydra.main(version_base=None, config_path="configs", config_name="train")
-def run(cfg: DictConfig):
-
+    
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
     logger.info("Starting training script")
@@ -91,7 +57,7 @@ def run(cfg: DictConfig):
     tracker.start()
 
     logger.info("Creating trainer")
-    nnunet_trainer: AutoNNUNetTrainer = get_trainer(cfg)
+    nnunet_trainer = AutoNNUNetTrainer.from_config(cfg)
 
     if cfg.pipeline.run_training:
         logger.info("Starting training")

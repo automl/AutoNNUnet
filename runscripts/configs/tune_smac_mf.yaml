@@ -3,16 +3,22 @@ defaults:
   - base
   - cluster: kisski_gpu
   - search_space: default
-  - dataset: Dataset002_Heart
+  - dataset: Dataset001_BrainTumour
   - override hydra/sweeper: HyperSMAC
 
 smac_seed: 0
 
-# HPO configuration
-n_trials: 127
-min_budget: 15
-max_budget: 1000
-eta: 4
+# SMAC HPO configuration
+n_trials: 127     # Total number of configs
+min_budget: 15    # Minimum number of epochs
+max_budget: 1000  # Maximum number of epochs
+eta: 4            # Reduction factor for successive halving
+min_trials: 2     # Minimum number of trials per budget to fit the surrogate model
+
+# Number of randomly sampled initial configurations, resulting
+# in 30 + 1 = 31 total configurations including the default configs.
+# This leads to SMAC's default of 127 * 0.25 = 31 initial configs.
+initial_design_configs: 30  
 
 hydra:
   sweeper:
@@ -22,20 +28,15 @@ hydra:
     sweeper_kwargs:
       min_budget: ${min_budget}
       max_budget: ${max_budget}
-      # seeds: [0, 1, 2, 3, 4] # these are the folds in our case
-      job_array_size_limit: 5
+      job_array_size_limit: 1   # only one config at a time
+      seeds: [0, 1, 2, 3, 4]    # these are the folds in our case
       seed_keyword: fold
       deterministic: true
       optimizer_kwargs:
         smac_facade:
           _target_: smac.facade.multi_fidelity_facade.MultiFidelityFacade
           _partial_: true
-        intensifier:
-          _target_: smac.facade.multi_fidelity_facade.MultiFidelityFacade.get_intensifier
-          _partial_: true
-          eta: ${eta}
-          n_seeds: 1
-          incumbent_selection: highest_budget
+          overwrite: true
         scenario:
           seed: ${smac_seed}
           n_trials: ${hydra.sweeper.n_trials}
@@ -44,13 +45,22 @@ hydra:
           max_budget: ${hydra.sweeper.sweeper_kwargs.max_budget}
           deterministic: true
           n_workers: 1
-          name: ${dataset.name}
-          output_directory: output/smac_mf/${dataset.name}/${trainer.configuration}/${smac_seed}/smac_output
+          name: smac_output
+          output_directory: output/smac_mf/${dataset.name}/${trainer.configuration}/${smac_seed}
+        intensifier:
+          _target_: smac.facade.multi_fidelity_facade.MultiFidelityFacade.get_intensifier
+          _partial_: true
+          eta: ${eta}
+          n_seeds: 1
+        initial_design:
+          _target_: smac.facade.multi_fidelity_facade.MultiFidelityFacade.get_initial_design
+          _partial_: true
+          n_configs: ${initial_design_configs}
         config_selector:
           _target_: smac.main.config_selector.ConfigSelector
           _partial_: true
           retrain_after: 1
-          min_trials: 2
+          min_trials: ${min_trials}
   run:  
     dir: output/smac_mf/${dataset.name}/${trainer.configuration}/${smac_seed}
   sweep:
