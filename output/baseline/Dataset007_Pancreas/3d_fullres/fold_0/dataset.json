@@ -1,0 +1,19 @@
+{
+    "name": "Pancreas",
+    "description": "Pancreas and cancer segmentation",
+    "reference": "Memorial Sloan Kettering Cancer Center ",
+    "licence": "CC-BY-SA 4.0",
+    "relase": "1.0 04/05/2018",
+    "tensorImageSize": "3D",
+    "labels": {
+        "background": 0,
+        "pancreas": 1,
+        "cancer": 2
+    },
+    "numTraining": 281,
+    "numTest": 139,
+    "file_ending": ".nii.gz",
+    "channel_names": {
+        "0": "CT"
+    }
+}

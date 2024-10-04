@@ -1,0 +1,1492 @@
+{
+    "foreground_mean": {
+        "Dice": 0.6719540875757306,
+        "FN": 7189.8839285714275,
+        "FP": 5077.625,
+        "IoU": 0.560591133807409,
+        "TN": 26742375.0,
+        "TP": 21494.633928571428,
+        "n_pred": 26572.25892857143,
+        "n_ref": 28684.517857142855
+    },
+    "mean": {
+        "1": {
+            "Dice": 0.810507974825785,
+            "FN": 9546.17857142857,
+            "FP": 9679.089285714286,
+            "IoU": 0.6878545846045362,
+            "TN": 26718870.23214286,
+            "TP": 38041.642857142855,
+            "n_pred": 47720.732142857145,
+            "n_ref": 47587.82142857143
+        },
+        "2": {
+            "Dice": 0.5334002003256763,
+            "FN": 4833.589285714285,
+            "FP": 476.1607142857143,
+            "IoU": 0.43332768301028174,
+            "TN": 26765879.76785714,
+            "TP": 4947.625,
+            "n_pred": 5423.785714285715,
+            "n_ref": 9781.214285714286
+        }
+    },
+    "metric_per_case": [
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6629389206675664,
+                    "FN": 25206,
+                    "FP": 21993,
+                    "IoU": 0.49581797788815896,
+                    "TN": 27955793,
+                    "TP": 46416,
+                    "n_pred": 68409,
+                    "n_ref": 71622
+                },
+                "2": {
+                    "Dice": 0.10766947055912915,
+                    "FN": 26816,
+                    "FP": 235,
+                    "IoU": 0.05689781403618868,
+                    "TN": 28020725,
+                    "TP": 1632,
+                    "n_pred": 1867,
+                    "n_ref": 28448
+                }
+            },
+            "prediction_file": "./validation/pancreas_004.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_004.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8718177757927646,
+                    "FN": 8754,
+                    "FP": 2726,
+                    "IoU": 0.7727632620744259,
+                    "TN": 22231720,
+                    "TP": 39040,
+                    "n_pred": 41766,
+                    "n_ref": 47794
+                },
+                "2": {
+                    "Dice": 0.8042744656917885,
+                    "FN": 427,
+                    "FP": 965,
+                    "IoU": 0.6726246472248354,
+                    "TN": 22277988,
+                    "TP": 2860,
+                    "n_pred": 3825,
+                    "n_ref": 3287
+                }
+            },
+            "prediction_file": "./validation/pancreas_019.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_019.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8306363193372858,
+                    "FN": 31458,
+                    "FP": 1908,
+                    "IoU": 0.7103318950923281,
+                    "TN": 25837069,
+                    "TP": 81821,
+                    "n_pred": 83729,
+                    "n_ref": 113279
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 1167,
+                    "FP": 573,
+                    "IoU": 0.0,
+                    "TN": 25950516,
+                    "TP": 0,
+                    "n_pred": 573,
+                    "n_ref": 1167
+                }
+            },
+            "prediction_file": "./validation/pancreas_029.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_029.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8187726183801417,
+                    "FN": 11866,
+                    "FP": 2356,
+                    "IoU": 0.693154113357354,
+                    "TN": 23284467,
+                    "TP": 32127,
+                    "n_pred": 34483,
+                    "n_ref": 43993
+                },
+                "2": {
+                    "Dice": 0.37882797731568996,
+                    "FN": 1379,
+                    "FP": 264,
+                    "IoU": 0.23367537313432835,
+                    "TN": 23328672,
+                    "TP": 501,
+                    "n_pred": 765,
+                    "n_ref": 1880
+                }
+            },
+            "prediction_file": "./validation/pancreas_032.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_032.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8415779862267236,
+                    "FN": 18009,
+                    "FP": 3592,
+                    "IoU": 0.7264865275526742,
+                    "TN": 18533248,
+                    "TP": 57375,
+                    "n_pred": 60967,
+                    "n_ref": 75384
+                },
+                "2": {
+                    "Dice": 0.9432908092001118,
+                    "FN": 353,
+                    "FP": 256,
+                    "IoU": 0.8926683115967572,
+                    "TN": 18606550,
+                    "TP": 5065,
+                    "n_pred": 5321,
+                    "n_ref": 5418
+                }
+            },
+            "prediction_file": "./validation/pancreas_037.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_037.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7060182010432198,
+                    "FN": 61900,
+                    "FP": 4549,
+                    "IoU": 0.5456167943107221,
+                    "TN": 35767488,
+                    "TP": 79791,
+                    "n_pred": 84340,
+                    "n_ref": 141691
+                },
+                "2": {
+                    "Dice": 0.00663839203392956,
+                    "FN": 2094,
+                    "FP": 3293,
+                    "IoU": 0.0033302497687326548,
+                    "TN": 35908323,
+                    "TP": 18,
+                    "n_pred": 3311,
+                    "n_ref": 2112
+                }
+            },
+            "prediction_file": "./validation/pancreas_041.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_041.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6859982046303835,
+                    "FN": 7115,
+                    "FP": 7926,
+                    "IoU": 0.5220679355597216,
+                    "TN": 22250769,
+                    "TP": 16430,
+                    "n_pred": 24356,
+                    "n_ref": 23545
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 3194,
+                    "FP": 0,
+                    "IoU": 0.0,
+                    "TN": 22279046,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 3194
+                }
+            },
+            "prediction_file": "./validation/pancreas_050.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_050.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8525125533280478,
+                    "FN": 1833,
+                    "FP": 13793,
+                    "IoU": 0.7429384572359221,
+                    "TN": 25891469,
+                    "TP": 45161,
+                    "n_pred": 58954,
+                    "n_ref": 46994
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 1186,
+                    "FP": 0,
+                    "IoU": 0.0,
+                    "TN": 25951070,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 1186
+                }
+            },
+            "prediction_file": "./validation/pancreas_051.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_051.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8190709581427915,
+                    "FN": 5634,
+                    "FP": 2635,
+                    "IoU": 0.6935818572593196,
+                    "TN": 23828118,
+                    "TP": 18717,
+                    "n_pred": 21352,
+                    "n_ref": 24351
+                },
+                "2": {
+                    "Dice": 0.5030343897505057,
+                    "FN": 1392,
+                    "FP": 819,
+                    "IoU": 0.33603603603603605,
+                    "TN": 23851774,
+                    "TP": 1119,
+                    "n_pred": 1938,
+                    "n_ref": 2511
+                }
+            },
+            "prediction_file": "./validation/pancreas_058.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_058.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7455981746954238,
+                    "FN": 17644,
+                    "FP": 5994,
+                    "IoU": 0.5943854350773032,
+                    "TN": 24321115,
+                    "TP": 34639,
+                    "n_pred": 40633,
+                    "n_ref": 52283
+                },
+                "2": {
+                    "Dice": 0.5112584950462622,
+                    "FN": 5920,
+                    "FP": 49,
+                    "IoU": 0.34341656583434166,
+                    "TN": 24370301,
+                    "TP": 3122,
+                    "n_pred": 3171,
+                    "n_ref": 9042
+                }
+            },
+            "prediction_file": "./validation/pancreas_064.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_064.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8152753108348135,
+                    "FN": 2750,
+                    "FP": 7442,
+                    "IoU": 0.6881559220389805,
+                    "TN": 9666645,
+                    "TP": 22491,
+                    "n_pred": 29933,
+                    "n_ref": 25241
+                },
+                "2": {
+                    "Dice": 0.9233993902439024,
+                    "FN": 315,
+                    "FP": 87,
+                    "IoU": 0.8576991150442478,
+                    "TN": 9696503,
+                    "TP": 2423,
+                    "n_pred": 2510,
+                    "n_ref": 2738
+                }
+            },
+            "prediction_file": "./validation/pancreas_074.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_074.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8421220328182253,
+                    "FN": 17154,
+                    "FP": 2666,
+                    "IoU": 0.7272977435332967,
+                    "TN": 19850264,
+                    "TP": 52860,
+                    "n_pred": 55526,
+                    "n_ref": 70014
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 1220,
+                    "FP": 0,
+                    "IoU": 0.0,
+                    "TN": 19921724,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 1220
+                }
+            },
+            "prediction_file": "./validation/pancreas_078.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_078.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8777824978759559,
+                    "FN": 2958,
+                    "FP": 2796,
+                    "IoU": 0.782185713744937,
+                    "TN": 12294351,
+                    "TP": 20663,
+                    "n_pred": 23459,
+                    "n_ref": 23621
+                },
+                "2": {
+                    "Dice": 0.8745827372436814,
+                    "FN": 31,
+                    "FP": 758,
+                    "IoU": 0.7771186440677966,
+                    "TN": 12317228,
+                    "TP": 2751,
+                    "n_pred": 3509,
+                    "n_ref": 2782
+                }
+            },
+            "prediction_file": "./validation/pancreas_081.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_081.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8102503256425798,
+                    "FN": 9438,
+                    "FP": 5275,
+                    "IoU": 0.681025885617656,
+                    "TN": 20138962,
+                    "TP": 31413,
+                    "n_pred": 36688,
+                    "n_ref": 40851
+                },
+                "2": {
+                    "Dice": 0.7824484625129563,
+                    "FN": 1615,
+                    "FP": 274,
+                    "IoU": 0.642640938327658,
+                    "TN": 20179802,
+                    "TP": 3397,
+                    "n_pred": 3671,
+                    "n_ref": 5012
+                }
+            },
+            "prediction_file": "./validation/pancreas_087.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_087.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8252203439137806,
+                    "FN": 28741,
+                    "FP": 9710,
+                    "IoU": 0.7024469138859655,
+                    "TN": 26871608,
+                    "TP": 90773,
+                    "n_pred": 100483,
+                    "n_ref": 119514
+                },
+                "2": {
+                    "Dice": 0.8728055783429041,
+                    "FN": 5767,
+                    "FP": 435,
+                    "IoU": 0.7743168006986645,
+                    "TN": 26973351,
+                    "TP": 21279,
+                    "n_pred": 21714,
+                    "n_ref": 27046
+                }
+            },
+            "prediction_file": "./validation/pancreas_088.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_088.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9031454101641243,
+                    "FN": 8514,
+                    "FP": 4699,
+                    "IoU": 0.8233957523022842,
+                    "TN": 28236735,
+                    "TP": 61604,
+                    "n_pred": 66303,
+                    "n_ref": 70118
+                },
+                "2": {
+                    "Dice": 0.8992555459952863,
+                    "FN": 2112,
+                    "FP": 581,
+                    "IoU": 0.8169521479064709,
+                    "TN": 28296840,
+                    "TP": 12019,
+                    "n_pred": 12600,
+                    "n_ref": 14131
+                }
+            },
+            "prediction_file": "./validation/pancreas_096.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_096.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7730850018480623,
+                    "FN": 5892,
+                    "FP": 19279,
+                    "IoU": 0.630104777439786,
+                    "TN": 26670639,
+                    "TP": 42878,
+                    "n_pred": 62157,
+                    "n_ref": 48770
+                },
+                "2": {
+                    "Dice": 0.9108706852138073,
+                    "FN": 316,
+                    "FP": 30,
+                    "IoU": 0.836329233680227,
+                    "TN": 26736574,
+                    "TP": 1768,
+                    "n_pred": 1798,
+                    "n_ref": 2084
+                }
+            },
+            "prediction_file": "./validation/pancreas_107.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_107.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8319074324232129,
+                    "FN": 7873,
+                    "FP": 4446,
+                    "IoU": 0.712193070579165,
+                    "TN": 17258701,
+                    "TP": 30484,
+                    "n_pred": 34930,
+                    "n_ref": 38357
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 2626,
+                    "FP": 0,
+                    "IoU": 0.0,
+                    "TN": 17298878,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 2626
+                }
+            },
+            "prediction_file": "./validation/pancreas_158.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_158.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.781566706712257,
+                    "FN": 9168,
+                    "FP": 5014,
+                    "IoU": 0.6414521919401325,
+                    "TN": 19621246,
+                    "TP": 25372,
+                    "n_pred": 30386,
+                    "n_ref": 34540
+                },
+                "2": {
+                    "Dice": 0.7720875221762271,
+                    "FN": 2896,
+                    "FP": 958,
+                    "IoU": 0.628780581776151,
+                    "TN": 19650418,
+                    "TP": 6528,
+                    "n_pred": 7486,
+                    "n_ref": 9424
+                }
+            },
+            "prediction_file": "./validation/pancreas_160.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_160.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7871400034603709,
+                    "FN": 2085,
+                    "FP": 11448,
+                    "IoU": 0.6489949422902347,
+                    "TN": 13330789,
+                    "TP": 25022,
+                    "n_pred": 36470,
+                    "n_ref": 27107
+                },
+                "2": {
+                    "Dice": 0.7796768906579256,
+                    "FN": 785,
+                    "FP": 156,
+                    "IoU": 0.6389102072141213,
+                    "TN": 13366738,
+                    "TP": 1665,
+                    "n_pred": 1821,
+                    "n_ref": 2450
+                }
+            },
+            "prediction_file": "./validation/pancreas_186.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_186.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8699579831932773,
+                    "FN": 1604,
+                    "FP": 8300,
+                    "IoU": 0.7698456962260644,
+                    "TN": 29054952,
+                    "TP": 33128,
+                    "n_pred": 41428,
+                    "n_ref": 34732
+                },
+                "2": {
+                    "Dice": 0.8589965397923875,
+                    "FN": 58,
+                    "FP": 920,
+                    "IoU": 0.7528430629264594,
+                    "TN": 29094027,
+                    "TP": 2979,
+                    "n_pred": 3899,
+                    "n_ref": 3037
+                }
+            },
+            "prediction_file": "./validation/pancreas_198.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_198.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7962574867443112,
+                    "FN": 1626,
+                    "FP": 16165,
+                    "IoU": 0.6614848923053505,
+                    "TN": 19870388,
+                    "TP": 34765,
+                    "n_pred": 50930,
+                    "n_ref": 36391
+                },
+                "2": {
+                    "Dice": 0.820292725872125,
+                    "FN": 962,
+                    "FP": 671,
+                    "IoU": 0.6953358208955224,
+                    "TN": 19917584,
+                    "TP": 3727,
+                    "n_pred": 4398,
+                    "n_ref": 4689
+                }
+            },
+            "prediction_file": "./validation/pancreas_201.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_201.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7306481330316953,
+                    "FN": 4000,
+                    "FP": 7549,
+                    "IoU": 0.5756072465365818,
+                    "TN": 19109299,
+                    "TP": 15664,
+                    "n_pred": 23213,
+                    "n_ref": 19664
+                },
+                "2": {
+                    "Dice": 0.8411134903640257,
+                    "FN": 821,
+                    "FP": 663,
+                    "IoU": 0.7257945306725795,
+                    "TN": 19131100,
+                    "TP": 3928,
+                    "n_pred": 4591,
+                    "n_ref": 4749
+                }
+            },
+            "prediction_file": "./validation/pancreas_204.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_204.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8516531449009858,
+                    "FN": 1699,
+                    "FP": 5103,
+                    "IoU": 0.7416340638887834,
+                    "TN": 22780201,
+                    "TP": 19525,
+                    "n_pred": 24628,
+                    "n_ref": 21224
+                },
+                "2": {
+                    "Dice": 0.7568317381051464,
+                    "FN": 1005,
+                    "FP": 748,
+                    "IoU": 0.6087926802053113,
+                    "TN": 22802047,
+                    "TP": 2728,
+                    "n_pred": 3476,
+                    "n_ref": 3733
+                }
+            },
+            "prediction_file": "./validation/pancreas_229.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_229.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6643067282164128,
+                    "FN": 1048,
+                    "FP": 12987,
+                    "IoU": 0.49734976004584197,
+                    "TN": 25137902,
+                    "TP": 13887,
+                    "n_pred": 26874,
+                    "n_ref": 14935
+                },
+                "2": {
+                    "Dice": 0.7687819110138585,
+                    "FN": 435,
+                    "FP": 833,
+                    "IoU": 0.6244075829383886,
+                    "TN": 25162448,
+                    "TP": 2108,
+                    "n_pred": 2941,
+                    "n_ref": 2543
+                }
+            },
+            "prediction_file": "./validation/pancreas_230.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_230.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.872554074292308,
+                    "FN": 1665,
+                    "FP": 13908,
+                    "IoU": 0.7739209964722791,
+                    "TN": 25883373,
+                    "TP": 53310,
+                    "n_pred": 67218,
+                    "n_ref": 54975
+                },
+                "2": {
+                    "Dice": 0.7147323891852124,
+                    "FN": 790,
+                    "FP": 761,
+                    "IoU": 0.5560961648540355,
+                    "TN": 25948762,
+                    "TP": 1943,
+                    "n_pred": 2704,
+                    "n_ref": 2733
+                }
+            },
+            "prediction_file": "./validation/pancreas_255.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_255.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8588341381115829,
+                    "FN": 2355,
+                    "FP": 7351,
+                    "IoU": 0.7525936121944381,
+                    "TN": 19883713,
+                    "TP": 29525,
+                    "n_pred": 36876,
+                    "n_ref": 31880
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 3750,
+                    "FP": 0,
+                    "IoU": 0.0,
+                    "TN": 19919194,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 3750
+                }
+            },
+            "prediction_file": "./validation/pancreas_262.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_262.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8683273027005127,
+                    "FN": 1778,
+                    "FP": 7647,
+                    "IoU": 0.7672954422003851,
+                    "TN": 22766026,
+                    "TP": 31077,
+                    "n_pred": 38724,
+                    "n_ref": 32855
+                },
+                "2": {
+                    "Dice": 0.7158885269634455,
+                    "FN": 742,
+                    "FP": 43,
+                    "IoU": 0.5574971815107103,
+                    "TN": 22804754,
+                    "TP": 989,
+                    "n_pred": 1032,
+                    "n_ref": 1731
+                }
+            },
+            "prediction_file": "./validation/pancreas_270.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_270.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8342411816308628,
+                    "FN": 5436,
+                    "FP": 10814,
+                    "IoU": 0.7156207343110147,
+                    "TN": 30089418,
+                    "TP": 40892,
+                    "n_pred": 51706,
+                    "n_ref": 46328
+                },
+                "2": {
+                    "Dice": 0.18268364852695226,
+                    "FN": 6336,
+                    "FP": 17,
+                    "IoU": 0.10052385671810846,
+                    "TN": 30139497,
+                    "TP": 710,
+                    "n_pred": 727,
+                    "n_ref": 7046
+                }
+            },
+            "prediction_file": "./validation/pancreas_274.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_274.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8785482996104472,
+                    "FN": 2437,
+                    "FP": 4952,
+                    "IoU": 0.7834027085653984,
+                    "TN": 25393854,
+                    "TP": 26725,
+                    "n_pred": 31677,
+                    "n_ref": 29162
+                },
+                "2": {
+                    "Dice": 0.8485320862561704,
+                    "FN": 255,
+                    "FP": 911,
+                    "IoU": 0.7369133574007221,
+                    "TN": 25423536,
+                    "TP": 3266,
+                    "n_pred": 4177,
+                    "n_ref": 3521
+                }
+            },
+            "prediction_file": "./validation/pancreas_290.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_290.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8396953098254023,
+                    "FN": 13984,
+                    "FP": 8492,
+                    "IoU": 0.7236851810872612,
+                    "TN": 21676610,
+                    "TP": 58866,
+                    "n_pred": 67358,
+                    "n_ref": 72850
+                },
+                "2": {
+                    "Dice": 0.7178981937602628,
+                    "FN": 2001,
+                    "FP": 576,
+                    "IoU": 0.5599385245901639,
+                    "TN": 21752096,
+                    "TP": 3279,
+                    "n_pred": 3855,
+                    "n_ref": 5280
+                }
+            },
+            "prediction_file": "./validation/pancreas_299.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_299.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7810564663023679,
+                    "FN": 1213,
+                    "FP": 11408,
+                    "IoU": 0.6407650926479378,
+                    "TN": 29587139,
+                    "TP": 22512,
+                    "n_pred": 33920,
+                    "n_ref": 23725
+                },
+                "2": {
+                    "Dice": 0.7576136837713809,
+                    "FN": 264,
+                    "FP": 317,
+                    "IoU": 0.6098052384150436,
+                    "TN": 29620783,
+                    "TP": 908,
+                    "n_pred": 1225,
+                    "n_ref": 1172
+                }
+            },
+            "prediction_file": "./validation/pancreas_303.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_303.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7982058633126792,
+                    "FN": 969,
+                    "FP": 12123,
+                    "IoU": 0.6641785302039246,
+                    "TN": 24340407,
+                    "TP": 25893,
+                    "n_pred": 38016,
+                    "n_ref": 26862
+                },
+                "2": {
+                    "Dice": 0.6959761549925484,
+                    "FN": 405,
+                    "FP": 3,
+                    "IoU": 0.5337142857142857,
+                    "TN": 24378517,
+                    "TP": 467,
+                    "n_pred": 470,
+                    "n_ref": 872
+                }
+            },
+            "prediction_file": "./validation/pancreas_304.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_304.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8611300945872332,
+                    "FN": 7542,
+                    "FP": 6479,
+                    "IoU": 0.756126832831823,
+                    "TN": 29564779,
+                    "TP": 43472,
+                    "n_pred": 49951,
+                    "n_ref": 51014
+                },
+                "2": {
+                    "Dice": 0.7935349322210636,
+                    "FN": 119,
+                    "FP": 277,
+                    "IoU": 0.6577355229040622,
+                    "TN": 29621115,
+                    "TP": 761,
+                    "n_pred": 1038,
+                    "n_ref": 880
+                }
+            },
+            "prediction_file": "./validation/pancreas_308.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_308.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8454793189973828,
+                    "FN": 117,
+                    "FP": 5610,
+                    "IoU": 0.732320635662538,
+                    "TN": 19639405,
+                    "TP": 15668,
+                    "n_pred": 21278,
+                    "n_ref": 15785
+                },
+                "2": {
+                    "Dice": 0.5075528700906344,
+                    "FN": 1141,
+                    "FP": 0,
+                    "IoU": 0.340080971659919,
+                    "TN": 19659071,
+                    "TP": 588,
+                    "n_pred": 588,
+                    "n_ref": 1729
+                }
+            },
+            "prediction_file": "./validation/pancreas_312.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_312.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7877563062398584,
+                    "FN": 116,
+                    "FP": 14272,
+                    "IoU": 0.6498332887147412,
+                    "TN": 23289727,
+                    "TP": 26701,
+                    "n_pred": 40973,
+                    "n_ref": 26817
+                },
+                "2": {
+                    "Dice": 0.7816979051819184,
+                    "FN": 390,
+                    "FP": 6,
+                    "IoU": 0.6416289592760182,
+                    "TN": 23329711,
+                    "TP": 709,
+                    "n_pred": 715,
+                    "n_ref": 1099
+                }
+            },
+            "prediction_file": "./validation/pancreas_316.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_316.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7680599350387634,
+                    "FN": 2773,
+                    "FP": 36359,
+                    "IoU": 0.6234556021708171,
+                    "TN": 27421196,
+                    "TP": 64792,
+                    "n_pred": 101151,
+                    "n_ref": 67565
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 407,
+                    "FP": 4479,
+                    "IoU": 0.0,
+                    "TN": 27520234,
+                    "TP": 0,
+                    "n_pred": 4479,
+                    "n_ref": 407
+                }
+            },
+            "prediction_file": "./validation/pancreas_318.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_318.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8466596172652032,
+                    "FN": 1068,
+                    "FP": 18219,
+                    "IoU": 0.734093447120621,
+                    "TN": 23782571,
+                    "TP": 53246,
+                    "n_pred": 71465,
+                    "n_ref": 54314
+                },
+                "2": {
+                    "Dice": 0.8485325979909395,
+                    "FN": 245,
+                    "FP": 524,
+                    "IoU": 0.7369141293191926,
+                    "TN": 23852181,
+                    "TP": 2154,
+                    "n_pred": 2678,
+                    "n_ref": 2399
+                }
+            },
+            "prediction_file": "./validation/pancreas_320.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_320.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7388625145408243,
+                    "FN": 972,
+                    "FP": 15640,
+                    "IoU": 0.5858699174831102,
+                    "TN": 23290703,
+                    "TP": 23501,
+                    "n_pred": 39141,
+                    "n_ref": 24473
+                },
+                "2": {
+                    "Dice": 0.6412982652490207,
+                    "FN": 910,
+                    "FP": 1013,
+                    "IoU": 0.471993410214168,
+                    "TN": 23327174,
+                    "TP": 1719,
+                    "n_pred": 2732,
+                    "n_ref": 2629
+                }
+            },
+            "prediction_file": "./validation/pancreas_326.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_326.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8040921540196553,
+                    "FN": 4135,
+                    "FP": 5593,
+                    "IoU": 0.6723696618617809,
+                    "TN": 24873988,
+                    "TP": 19964,
+                    "n_pred": 25557,
+                    "n_ref": 24099
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 491,
+                    "FP": 0,
+                    "IoU": 0.0,
+                    "TN": 24903189,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 491
+                }
+            },
+            "prediction_file": "./validation/pancreas_328.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_328.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8394902153400718,
+                    "FN": 3968,
+                    "FP": 8450,
+                    "IoU": 0.7233805577831239,
+                    "TN": 25383076,
+                    "TP": 32474,
+                    "n_pred": 40924,
+                    "n_ref": 36442
+                },
+                "2": {
+                    "Dice": 0.6186380938953898,
+                    "FN": 2590,
+                    "FP": 115,
+                    "IoU": 0.44784649928556847,
+                    "TN": 25423069,
+                    "TP": 2194,
+                    "n_pred": 2309,
+                    "n_ref": 4784
+                }
+            },
+            "prediction_file": "./validation/pancreas_333.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_333.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8864526674745653,
+                    "FN": 809,
+                    "FP": 3220,
+                    "IoU": 0.7960619558615104,
+                    "TN": 22524628,
+                    "TP": 15727,
+                    "n_pred": 18947,
+                    "n_ref": 16536
+                },
+                "2": {
+                    "Dice": 0.10649161196207148,
+                    "FN": 559,
+                    "FP": 666,
+                    "IoU": 0.05624036979969183,
+                    "TN": 22543086,
+                    "TP": 73,
+                    "n_pred": 739,
+                    "n_ref": 632
+                }
+            },
+            "prediction_file": "./validation/pancreas_343.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_343.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8616918445690298,
+                    "FN": 2171,
+                    "FP": 7845,
+                    "IoU": 0.7569934735667322,
+                    "TN": 23289599,
+                    "TP": 31201,
+                    "n_pred": 39046,
+                    "n_ref": 33372
+                },
+                "2": {
+                    "Dice": 0.6210123351765207,
+                    "FN": 460,
+                    "FP": 431,
+                    "IoU": 0.45033929673041334,
+                    "TN": 23329195,
+                    "TP": 730,
+                    "n_pred": 1161,
+                    "n_ref": 1190
+                }
+            },
+            "prediction_file": "./validation/pancreas_348.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_348.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8129340903196057,
+                    "FN": 4609,
+                    "FP": 14864,
+                    "IoU": 0.6848264141781986,
+                    "TN": 23269031,
+                    "TP": 42312,
+                    "n_pred": 57176,
+                    "n_ref": 46921
+                },
+                "2": {
+                    "Dice": 0.7449095022624435,
+                    "FN": 256,
+                    "FP": 646,
+                    "IoU": 0.5935105903560163,
+                    "TN": 23328597,
+                    "TP": 1317,
+                    "n_pred": 1963,
+                    "n_ref": 1573
+                }
+            },
+            "prediction_file": "./validation/pancreas_350.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_350.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.840132203078618,
+                    "FN": 5749,
+                    "FP": 4699,
+                    "IoU": 0.7243344502783567,
+                    "TN": 12545011,
+                    "TP": 27453,
+                    "n_pred": 32152,
+                    "n_ref": 33202
+                },
+                "2": {
+                    "Dice": 0.837061828430509,
+                    "FN": 661,
+                    "FP": 264,
+                    "IoU": 0.7197818842774917,
+                    "TN": 12579611,
+                    "TP": 2376,
+                    "n_pred": 2640,
+                    "n_ref": 3037
+                }
+            },
+            "prediction_file": "./validation/pancreas_362.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_362.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9196582439556444,
+                    "FN": 1815,
+                    "FP": 9234,
+                    "IoU": 0.8512660357801499,
+                    "TN": 31645137,
+                    "TP": 63238,
+                    "n_pred": 72472,
+                    "n_ref": 65053
+                },
+                "2": {
+                    "Dice": 0.8168351751704679,
+                    "FN": 750,
+                    "FP": 29,
+                    "IoU": 0.6903815580286169,
+                    "TN": 31716908,
+                    "TP": 1737,
+                    "n_pred": 1766,
+                    "n_ref": 2487
+                }
+            },
+            "prediction_file": "./validation/pancreas_366.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_366.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8643248205094581,
+                    "FN": 5875,
+                    "FP": 10679,
+                    "IoU": 0.761066928395133,
+                    "TN": 25358685,
+                    "TP": 52729,
+                    "n_pred": 63408,
+                    "n_ref": 58604
+                },
+                "2": {
+                    "Dice": 0.5103280680437424,
+                    "FN": 1603,
+                    "FP": 9,
+                    "IoU": 0.3425774877650897,
+                    "TN": 25425516,
+                    "TP": 840,
+                    "n_pred": 849,
+                    "n_ref": 2443
+                }
+            },
+            "prediction_file": "./validation/pancreas_369.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_369.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8925132602709346,
+                    "FN": 1560,
+                    "FP": 10072,
+                    "IoU": 0.8058906967042136,
+                    "TN": 24319467,
+                    "TP": 48293,
+                    "n_pred": 58365,
+                    "n_ref": 49853
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 868,
+                    "FP": 0,
+                    "IoU": 0.0,
+                    "TN": 24378524,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 868
+                }
+            },
+            "prediction_file": "./validation/pancreas_378.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_378.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.5797033640574557,
+                    "FN": 1342,
+                    "FP": 7641,
+                    "IoU": 0.4081565423639478,
+                    "TN": 14927030,
+                    "TP": 6195,
+                    "n_pred": 13836,
+                    "n_ref": 7537
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 4590,
+                    "FP": 0,
+                    "IoU": 0.0,
+                    "TN": 14937618,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 4590
+                }
+            },
+            "prediction_file": "./validation/pancreas_388.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_388.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8697248442656662,
+                    "FN": 4614,
+                    "FP": 8373,
+                    "IoU": 0.7694806347403174,
+                    "TN": 27993070,
+                    "TP": 43351,
+                    "n_pred": 51724,
+                    "n_ref": 47965
+                },
+                "2": {
+                    "Dice": 0.4152082076041038,
+                    "FN": 1938,
+                    "FP": 0,
+                    "IoU": 0.261995430312262,
+                    "TN": 28046782,
+                    "TP": 688,
+                    "n_pred": 688,
+                    "n_ref": 2626
+                }
+            },
+            "prediction_file": "./validation/pancreas_400.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_400.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8012061693934517,
+                    "FN": 1447,
+                    "FP": 8310,
+                    "IoU": 0.6683435874774806,
+                    "TN": 31427861,
+                    "TP": 19662,
+                    "n_pred": 27972,
+                    "n_ref": 21109
+                },
+                "2": {
+                    "Dice": 0.6666666666666666,
+                    "FN": 1860,
+                    "FP": 8,
+                    "IoU": 0.5,
+                    "TN": 31453544,
+                    "TP": 1868,
+                    "n_pred": 1876,
+                    "n_ref": 3728
+                }
+            },
+            "prediction_file": "./validation/pancreas_401.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_401.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9054583467667087,
+                    "FN": 2665,
+                    "FP": 7012,
+                    "IoU": 0.8272488708784833,
+                    "TN": 18818351,
+                    "TP": 46340,
+                    "n_pred": 53352,
+                    "n_ref": 49005
+                },
+                "2": {
+                    "Dice": 0.8955620515546107,
+                    "FN": 41,
+                    "FP": 352,
+                    "IoU": 0.8108758421559191,
+                    "TN": 18872290,
+                    "TP": 1685,
+                    "n_pred": 2037,
+                    "n_ref": 1726
+                }
+            },
+            "prediction_file": "./validation/pancreas_406.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_406.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.5009965519572713,
+                    "FN": 140939,
+                    "FP": 43580,
+                    "IoU": 0.3342197461996702,
+                    "TN": 196592997,
+                    "TP": 92628,
+                    "n_pred": 136208,
+                    "n_ref": 233567
+                },
+                "2": {
+                    "Dice": 0.6640314097462112,
+                    "FN": 162173,
+                    "FP": 1609,
+                    "IoU": 0.4970411838949505,
+                    "TN": 196544507,
+                    "TP": 161855,
+                    "n_pred": 163464,
+                    "n_ref": 324028
+                }
+            },
+            "prediction_file": "./validation/pancreas_409.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_409.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8529131339641791,
+                    "FN": 4124,
+                    "FP": 10223,
+                    "IoU": 0.7435471185471185,
+                    "TN": 22226296,
+                    "TP": 41597,
+                    "n_pred": 51820,
+                    "n_ref": 45721
+                },
+                "2": {
+                    "Dice": 0.001145475372279496,
+                    "FN": 3488,
+                    "FP": 0,
+                    "IoU": 0.0005730659025787965,
+                    "TN": 22278750,
+                    "TP": 2,
+                    "n_pred": 2,
+                    "n_ref": 3490
+                }
+            },
+            "prediction_file": "./validation/pancreas_413.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_413.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.789435996798787,
+                    "FN": 3067,
+                    "FP": 6931,
+                    "IoU": 0.6521224773834378,
+                    "TN": 30379964,
+                    "TP": 18742,
+                    "n_pred": 25673,
+                    "n_ref": 21809
+                },
+                "2": {
+                    "Dice": 0.014044943820224719,
+                    "FN": 2808,
+                    "FP": 0,
+                    "IoU": 0.007072135785007072,
+                    "TN": 30405876,
+                    "TP": 20,
+                    "n_pred": 20,
+                    "n_ref": 2828
+                }
+            },
+            "prediction_file": "./validation/pancreas_416.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_416.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7930480070230121,
+                    "FN": 9303,
+                    "FP": 11678,
+                    "IoU": 0.657066736405093,
+                    "TN": 34279683,
+                    "TP": 40200,
+                    "n_pred": 51878,
+                    "n_ref": 49503
+                },
+                "2": {
+                    "Dice": 0.6363973772114314,
+                    "FN": 2898,
+                    "FP": 41,
+                    "IoU": 0.4667029577209218,
+                    "TN": 34335353,
+                    "TP": 2572,
+                    "n_pred": 2613,
+                    "n_ref": 5470
+                }
+            },
+            "prediction_file": "./validation/pancreas_421.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset007_Pancreas/gt_segmentations/pancreas_421.nii.gz"
+        }
+    ]
+}
