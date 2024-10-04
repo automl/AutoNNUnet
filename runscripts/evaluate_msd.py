@@ -5,7 +5,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import argparse
-from autonnunet.datasets.msd_dataset import MSD_URLS
+from autonnunet.datasets import ALL_DATASETS
 
 from autonnunet.evaluation import run_prediction, extract_incumbent, compress_msd_submission
 import logging
@@ -20,9 +20,10 @@ if __name__  == "__main__":
     args = argparser.parse_args()
 
     logger = logging.getLogger("Prediction")
+    logger.setLevel(logging.INFO)
     logger.info("Starting MSD evaluation.")
 
-    for dataset_name in MSD_URLS.keys():
+    for dataset_name in ALL_DATASETS[1:2]:
         if args.approach == "smac_mf":
             logger.info(f"Extracting incumbent for {dataset_name}.")
             extract_incumbent(

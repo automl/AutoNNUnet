@@ -1,0 +1,18 @@
+{
+    "name": "Lung",
+    "description": "Lung and cancer segmentation",
+    "reference": "The Cancer Imaging Archive",
+    "licence": "CC-BY-SA 4.0",
+    "relase": "1.0 04/05/2018",
+    "tensorImageSize": "3D",
+    "labels": {
+        "background": 0,
+        "cancer": 1
+    },
+    "numTraining": 63,
+    "numTest": 32,
+    "file_ending": ".nii.gz",
+    "channel_names": {
+        "0": "CT"
+    }
+}

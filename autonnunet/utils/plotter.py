@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import ast
-import json
+import logging
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
@@ -11,7 +12,9 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from autonnunet.utils.paths import AUTONNUNET_OUTPUT, AUTONNUNET_PLOTS
+from autonnunet.utils import format_dataset_name, load_json
+from autonnunet.utils.paths import (AUTONNUNET_OUTPUT, AUTONNUNET_PLOTS,
+                                    AUTONNUNET_TABLES)
 
 PROGRESS_REPLACEMENT_MAP = {
     "mean_fg_dice": "Mean Foreground Dice",
@@ -75,9 +78,18 @@ class Plotter:
         self.figsize = figsize
         # TODO add font size
 
+        self.logger = logging.getLogger("Plotter")
+
+        AUTONNUNET_PLOTS.mkdir(parents=True, exist_ok=True)
+        AUTONNUNET_TABLES.mkdir(parents=True, exist_ok=True)
+
     def _load_validation_metrics(self, path: Path) -> pd.DataFrame:
-        with open(path) as f:
-            metrics = json.load(f)
+        metrics_path = path / "validation" / VALIDATION_METRICS_FILENAME
+        dataset_info_path = path / "dataset.json"
+
+        metrics = load_json(metrics_path)
+        dataset_info = load_json(dataset_info_path)
+        labels = list(dataset_info["labels"].keys())
 
         rows = []
 
@@ -87,7 +99,8 @@ class Plotter:
 
             for class_id, metrics in case["metrics"].items():
                 row = {
-                    "class_id": class_id, **metrics,
+                    "class_id": labels[int(class_id)],
+                    **metrics,
                     "prediction_file": prediction_file,
                     "reference_file": reference_file
                 }
@@ -106,10 +119,10 @@ class Plotter:
                 fold_dir = self.baseline_dir / dataset \
                       / self.configuration / f"fold_{fold}"
                 if not (fold_dir).exists():
+                    self.logger.info(f"Skipping {fold_dir}.")
                     continue
 
-                with open(fold_dir / "dataset.json") as f:
-                    dataset_info = json.load(f)
+                dataset_info = load_json(fold_dir / "dataset.json")
 
                 labels = list(dataset_info["labels"].keys())
                 if labels[0] == "background":
@@ -130,13 +143,11 @@ class Plotter:
                     axis=1
                 ).drop(columns=["dice_per_class_or_region"])
 
-                if (fold_dir / self.EMISSIONS_FILENAME).is_file():
-                    emissions = pd.read_csv(fold_dir / self.EMISSIONS_FILENAME)
+                if (fold_dir / EMISSIONS_FILENAME).is_file():
+                    emissions = pd.read_csv(fold_dir / EMISSIONS_FILENAME)
                 else:
                     emissions = pd.DataFrame()
-                metrics = self._load_validation_metrics(
-                    fold_dir / "validation" / VALIDATION_METRICS_FILENAME
-                )
+                metrics = self._load_validation_metrics(fold_dir)
 
                 for df in [progress, emissions, metrics]:
                     df["Approach"] = "Baseline"
@@ -275,3 +286,73 @@ class Plotter:
 
         plt.tight_layout()
         plt.savefig(AUTONNUNET_PLOTS / f"{self.configuration}_hpo.png", dpi=400)
+
+    def plot_metrics(
+            self,
+            datasets: list[str],
+            metric: Literal["Dice", "IoU"] = "Dice"
+            ) -> None:
+        baseline = self._load_baseline_data(datasets=datasets)
+        hpo = self._load_baseline_data(datasets=datasets)
+        hpo.metrics["Approach"] = "SMAC MF"
+
+        # We can drop all other metrics
+        baseline.metrics = baseline.metrics[["Dataset", "Fold", "Approach", metric]]
+        hpo.metrics = hpo.metrics[["Dataset", "Fold", "Approach", metric]]
+
+        # Then, we average over all prediction files
+        baseline.metrics = baseline.metrics.groupby(["Dataset", "Fold", "Approach"]).mean().reset_index()
+        hpo.metrics = hpo.metrics.groupby(["Dataset", "Fold", "Approach"]).mean().reset_index()
+
+        metrics = pd.concat([baseline.metrics, hpo.metrics])
+
+        # Now, we can create the boxplot the metrics with variance over folds
+        plt.figure(1, figsize=self.figsize)
+        sns.boxplot(
+            x="Dataset",
+            y=metric,
+            data=metrics,
+            hue="Approach",
+        )
+        plt.tight_layout()
+        plt.savefig(AUTONNUNET_PLOTS / f"{self.configuration}_metrics.png", dpi=400)
+
+    def create_table(self, datasets: list[str]):
+        baseline = self._load_baseline_data(datasets=datasets)
+        hpo = self._load_baseline_data(datasets=datasets)
+        hpo.metrics["Approach"] = "SMAC MF"
+
+        print(baseline.metrics)
+        sys.exit()
+
+        # We remove all background classes, since we compute the mean foreground Dice
+        baseline.metrics = baseline.metrics[baseline.metrics["class_id"] != 0]
+        hpo.metrics = hpo.metrics[hpo.metrics["class_id"] != 0]
+
+        # We can drop all other metrics
+        baseline.metrics = baseline.metrics[["Dataset", "Fold", "Approach", "Dice"]]
+        hpo.metrics = hpo.metrics[["Dataset", "Fold", "Approach", "Dice"]]
+
+        # Then, we average over all prediction files
+        baseline.metrics = baseline.metrics.groupby(["Dataset", "Fold", "Approach"]).mean().reset_index()
+        hpo.metrics = hpo.metrics.groupby(["Dataset", "Fold", "Approach"]).mean().reset_index()
+
+        metrics = pd.concat([baseline.metrics, hpo.metrics])
+        metrics["Dataset"] = metrics["Dataset"].apply(format_dataset_name)
+
+        grouped_metrics = metrics.groupby(["Dataset", "Approach"])["Dice"].agg(["mean", "std"]).reset_index()
+
+        # First, we add the mean and standard deviation
+        grouped_metrics["mean"] = grouped_metrics["mean"].round(2)
+        grouped_metrics["std"] = grouped_metrics["std"].round(2)
+        grouped_metrics["mean_std"] = grouped_metrics["mean"].astype(str) + " $\\pm$ " + grouped_metrics["std"].astype(str)
+
+        # We highlight the best approach per dataset
+        max_mean = grouped_metrics.groupby("Dataset")["mean"].transform("max") == grouped_metrics["mean"]
+        grouped_metrics["mean_std"] = grouped_metrics.apply(lambda row: "\\textbf{" + row["mean_std"] + "}" if max_mean.loc[row.name] else row["mean_std"], axis=1)
+
+        table = grouped_metrics.pivot(index="Dataset", columns="Approach", values="mean_std")
+        table.to_latex(AUTONNUNET_TABLES / f"{self.configuration}_table.tex")
+
+
+

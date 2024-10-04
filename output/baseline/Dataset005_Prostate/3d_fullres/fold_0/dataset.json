@@ -1,0 +1,24 @@
+{
+    "name": "PROSTATE",
+    "description": "Prostate transitional zone and peripheral zone segmentation",
+    "reference": "Radboud University, Nijmegen Medical Centre",
+    "licence": "CC-BY-SA 4.0",
+    "relase": "1.0 04/05/2018",
+    "tensorImageSize": "4D",
+    "quantitative": [
+        0,
+        1
+    ],
+    "labels": {
+        "background": 0,
+        "PZ": 1,
+        "TZ": 2
+    },
+    "numTraining": 32,
+    "numTest": 16,
+    "file_ending": ".nii.gz",
+    "channel_names": {
+        "0": "T2",
+        "1": "ADC"
+    }
+}

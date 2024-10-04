@@ -121,3 +121,6 @@ data/
 # nnU-Net
 **/progress.png
 **/*.nii.gz
+
+**.egg-info/
+.ruff_cache

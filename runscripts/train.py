@@ -8,7 +8,7 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import hydra
 import torch
@@ -18,11 +18,9 @@ from autonnunet.utils import (
     seed_everything,
     write_performance,
 )
-from autonnunet.utils.paths import NNUNET_PREPROCESSED
 from codecarbon import OfflineEmissionsTracker
 
 if TYPE_CHECKING:
-    from autonnunet.training import AutoNNUNetTrainer
     from omegaconf import DictConfig
 
 

@@ -80,3 +80,14 @@ def set_environment_variables() -> None:
 
 def dataset_name_to_msd_task(dataset_name: str) -> str:
     return f"Task{dataset_name[8:]}"
+
+def format_dataset_name(dataset_name: str) -> str:
+    # Extract number from Dataset002_Heart
+    name = dataset_name[11:]
+    id = int(dataset_name[7:10])
+
+    return f"D{id}: {name}"
+
+def load_json(file: Path) -> dict:
+    with open(file) as f:
+        return json.load(f)

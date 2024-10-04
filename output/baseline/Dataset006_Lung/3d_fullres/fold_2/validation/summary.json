@@ -1,0 +1,234 @@
+{
+    "foreground_mean": {
+        "Dice": 0.7216252699407514,
+        "FN": 3519.4615384615386,
+        "FP": 9240.76923076923,
+        "IoU": 0.5965696408069564,
+        "TN": 79678801.46153846,
+        "TP": 20379.23076923077,
+        "n_pred": 29620.0,
+        "n_ref": 23898.69230769231
+    },
+    "mean": {
+        "1": {
+            "Dice": 0.7216252699407514,
+            "FN": 3519.4615384615386,
+            "FP": 9240.76923076923,
+            "IoU": 0.5965696408069564,
+            "TN": 79678801.46153846,
+            "TP": 20379.23076923077,
+            "n_pred": 29620.0,
+            "n_ref": 23898.69230769231
+        }
+    },
+    "metric_per_case": [
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.828892653626983,
+                    "FN": 28,
+                    "FP": 1083,
+                    "IoU": 0.7077853761178328,
+                    "TN": 79687974,
+                    "TP": 2691,
+                    "n_pred": 3774,
+                    "n_ref": 2719
+                }
+            },
+            "prediction_file": "./validation/lung_001.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset006_Lung/gt_segmentations/lung_001.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7750443469330595,
+                    "FN": 22,
+                    "FP": 9616,
+                    "IoU": 0.6327121679814032,
+                    "TN": 86219135,
+                    "TP": 16603,
+                    "n_pred": 26219,
+                    "n_ref": 16625
+                }
+            },
+            "prediction_file": "./validation/lung_005.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset006_Lung/gt_segmentations/lung_005.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7885971258187506,
+                    "FN": 5542,
+                    "FP": 48519,
+                    "IoU": 0.6509784173590801,
+                    "TN": 78750451,
+                    "TP": 100832,
+                    "n_pred": 149351,
+                    "n_ref": 106374
+                }
+            },
+            "prediction_file": "./validation/lung_009.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset006_Lung/gt_segmentations/lung_009.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7423713325283118,
+                    "FN": 6531,
+                    "FP": 9257,
+                    "IoU": 0.590294537433502,
+                    "TN": 59468153,
+                    "TP": 22747,
+                    "n_pred": 32004,
+                    "n_ref": 29278
+                }
+            },
+            "prediction_file": "./validation/lung_026.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset006_Lung/gt_segmentations/lung_026.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.774294670846395,
+                    "FN": 262,
+                    "FP": 26,
+                    "IoU": 0.6317135549872123,
+                    "TN": 33029362,
+                    "TP": 494,
+                    "n_pred": 520,
+                    "n_ref": 756
+                }
+            },
+            "prediction_file": "./validation/lung_037.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset006_Lung/gt_segmentations/lung_037.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6987445788632732,
+                    "FN": 6047,
+                    "FP": 552,
+                    "IoU": 0.5369772663485827,
+                    "TN": 73910356,
+                    "TP": 7653,
+                    "n_pred": 8205,
+                    "n_ref": 13700
+                }
+            },
+            "prediction_file": "./validation/lung_044.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset006_Lung/gt_segmentations/lung_044.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8992693110647182,
+                    "FN": 1275,
+                    "FP": 269,
+                    "IoU": 0.8169748696064486,
+                    "TN": 166715148,
+                    "TP": 6892,
+                    "n_pred": 7161,
+                    "n_ref": 8167
+                }
+            },
+            "prediction_file": "./validation/lung_047.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset006_Lung/gt_segmentations/lung_047.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7737361618585373,
+                    "FN": 758,
+                    "FP": 3391,
+                    "IoU": 0.6309703815707551,
+                    "TN": 76272661,
+                    "TP": 7094,
+                    "n_pred": 10485,
+                    "n_ref": 7852
+                }
+            },
+            "prediction_file": "./validation/lung_049.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset006_Lung/gt_segmentations/lung_049.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7897928810616396,
+                    "FN": 7395,
+                    "FP": 26503,
+                    "IoU": 0.6526096803615532,
+                    "TN": 96633557,
+                    "TP": 63681,
+                    "n_pred": 90184,
+                    "n_ref": 71076
+                }
+            },
+            "prediction_file": "./validation/lung_074.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset006_Lung/gt_segmentations/lung_074.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.884757790805307,
+                    "FN": 540,
+                    "FP": 954,
+                    "IoU": 0.7933324111218703,
+                    "TN": 30139331,
+                    "TP": 5735,
+                    "n_pred": 6689,
+                    "n_ref": 6275
+                }
+            },
+            "prediction_file": "./validation/lung_078.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset006_Lung/gt_segmentations/lung_078.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.0,
+                    "FN": 4883,
+                    "FP": 2707,
+                    "IoU": 0.0,
+                    "TN": 117957210,
+                    "TP": 0,
+                    "n_pred": 2707,
+                    "n_ref": 4883
+                }
+            },
+            "prediction_file": "./validation/lung_080.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset006_Lung/gt_segmentations/lung_080.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7560067681895093,
+                    "FN": 718,
+                    "FP": 3,
+                    "IoU": 0.6077257889009793,
+                    "TN": 67107026,
+                    "TP": 1117,
+                    "n_pred": 1120,
+                    "n_ref": 1835
+                }
+            },
+            "prediction_file": "./validation/lung_083.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset006_Lung/gt_segmentations/lung_083.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6696208876332816,
+                    "FN": 11752,
+                    "FP": 17250,
+                    "IoU": 0.5033308787012142,
+                    "TN": 69934055,
+                    "TP": 29391,
+                    "n_pred": 46641,
+                    "n_ref": 41143
+                }
+            },
+            "prediction_file": "./validation/lung_086.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset006_Lung/gt_segmentations/lung_086.nii.gz"
+        }
+    ]
+}

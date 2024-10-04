@@ -22,6 +22,8 @@ MSD_URLS = {
     "Dataset010_Colon": "https://msd-for-monai.s3-us-west-2.amazonaws.com/Task10_Colon.tar",
 }
 
+MSD_DATASETS = list(MSD_URLS.keys())
+
 
 class MSDDataset(Dataset):
     def __init__(self, name: str):

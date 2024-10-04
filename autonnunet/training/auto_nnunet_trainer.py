@@ -93,7 +93,7 @@ class AutoNNUNetTrainer(nnUNetTrainer):
             if isinstance(a, tuple | list):
                 new_args += [str(s) for s in a]
             else:
-                new_args.append(a)
+                new_args.append(str(a))
 
         msg = " ".join(new_args)
         try:
