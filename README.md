@@ -11,7 +11,7 @@ Integration of Automated Machine Learning (AutoML) methods into nnU-Net.
 
 - TODO
 
-## Download datasets
+## Download Datasets
 ```bash
 python autonnunet/datasets/msd_dataset.py --dataset_name=Dataset001_BrainTumour
 python autonnunet/datasets/msd_dataset.py --dataset_name=Dataset002_Heart
@@ -25,13 +25,30 @@ python autonnunet/datasets/msd_dataset.py --dataset_name=Dataset009_Spleen
 python autonnunet/datasets/msd_dataset.py --dataset_name=Dataset010_Colon
 ```
 
-## Convert and preprocess
+## Convert and Preprocess Datasets
 
+Important: This has to be executed on the same cluster/compute environment as the target for the training to get the right nnU-Net configuration.
+
+```bash
+python runscripts/convert_and_preprocess.py -m "dataset=glob(*)"
+```
+
+## Baseline Training
+
+```bash
+python runscripts/train.py -m "dataset=glob(*)" "fold=range(5)"
+```
 
 ## Compute Hyperband budgets
 
 ```bash
 python autonnunet/utils/hyperband.py --b_min=15 --b_max=1000 --eta=4
+```
+
+## HPO
+
+```bash
+python runscripts/train.py --config-name=tune_smac_mf -m "dataset=glob(*)" "fold=range(5)"
 ```
 
 ## Credits
