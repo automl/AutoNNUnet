@@ -1,0 +1,154 @@
+{
+    "foreground_mean": {
+        "Dice": 0.9697993058554268,
+        "FN": 2827.625,
+        "FP": 6124.0,
+        "IoU": 0.9422930264480895,
+        "TN": 22014802.125,
+        "TP": 160182.25,
+        "n_pred": 166306.25,
+        "n_ref": 163009.875
+    },
+    "mean": {
+        "1": {
+            "Dice": 0.9697993058554268,
+            "FN": 2827.625,
+            "FP": 6124.0,
+            "IoU": 0.9422930264480895,
+            "TN": 22014802.125,
+            "TP": 160182.25,
+            "n_pred": 166306.25,
+            "n_ref": 163009.875
+        }
+    },
+    "metric_per_case": [
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9830471409019347,
+                    "FN": 7248,
+                    "FP": 11047,
+                    "IoU": 0.966659498625923,
+                    "TN": 43491460,
+                    "TP": 530437,
+                    "n_pred": 541484,
+                    "n_ref": 537685
+                }
+            },
+            "prediction_file": "./validation/spleen_12.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset009_Spleen/gt_segmentations/spleen_12.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9808524968728952,
+                    "FN": 2457,
+                    "FP": 1523,
+                    "IoU": 0.9624244712990937,
+                    "TN": 15884864,
+                    "TP": 101940,
+                    "n_pred": 103463,
+                    "n_ref": 104397
+                }
+            },
+            "prediction_file": "./validation/spleen_49.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset009_Spleen/gt_segmentations/spleen_49.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9776212370286653,
+                    "FN": 2493,
+                    "FP": 4477,
+                    "IoU": 0.9562221677878062,
+                    "TN": 35230227,
+                    "TP": 152243,
+                    "n_pred": 156720,
+                    "n_ref": 154736
+                }
+            },
+            "prediction_file": "./validation/spleen_6.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset009_Spleen/gt_segmentations/spleen_6.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9780409573155687,
+                    "FN": 1082,
+                    "FP": 1321,
+                    "IoU": 0.95702559150169,
+                    "TN": 26420627,
+                    "TP": 53514,
+                    "n_pred": 54835,
+                    "n_ref": 54596
+                }
+            },
+            "prediction_file": "./validation/spleen_61.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset009_Spleen/gt_segmentations/spleen_61.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9754684880267271,
+                    "FN": 2446,
+                    "FP": 3509,
+                    "IoU": 0.9521117472979927,
+                    "TN": 20847168,
+                    "TP": 118397,
+                    "n_pred": 121906,
+                    "n_ref": 120843
+                }
+            },
+            "prediction_file": "./validation/spleen_62.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset009_Spleen/gt_segmentations/spleen_62.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9092365843073397,
+                    "FN": 3574,
+                    "FP": 20895,
+                    "IoU": 0.8335781813235394,
+                    "TN": 15581610,
+                    "TP": 122561,
+                    "n_pred": 143456,
+                    "n_ref": 126135
+                }
+            },
+            "prediction_file": "./validation/spleen_63.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset009_Spleen/gt_segmentations/spleen_63.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9753980400667017,
+                    "FN": 1727,
+                    "FP": 3658,
+                    "IoU": 0.9519775270878852,
+                    "TN": 8014329,
+                    "TP": 106750,
+                    "n_pred": 110408,
+                    "n_ref": 108477
+                }
+            },
+            "prediction_file": "./validation/spleen_8.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset009_Spleen/gt_segmentations/spleen_8.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9787295023235818,
+                    "FN": 1594,
+                    "FP": 2562,
+                    "IoU": 0.9583450266607866,
+                    "TN": 10648132,
+                    "TP": 95616,
+                    "n_pred": 98178,
+                    "n_ref": 97210
+                }
+            },
+            "prediction_file": "./validation/spleen_9.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset009_Spleen/gt_segmentations/spleen_9.nii.gz"
+        }
+    ]
+}

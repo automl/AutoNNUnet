@@ -26,8 +26,8 @@ hp_config:
   total_epochs: 1000
   enable_deep_supervision: true
   normalization: InstanceNorm
-  n_conv_per_stage: 2
-  n_conv_per_stage_decoder: ${hp_config.n_conv_per_stage}
+  n_conv_per_stage_encoder: 2
+  n_conv_per_stage_decoder: 2
   loss: DiceAndCrossEntropyLoss
 dataset:
   _target_: automis.datasets.msd_dataset.MSDDataset

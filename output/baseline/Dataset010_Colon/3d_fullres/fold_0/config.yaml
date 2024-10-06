@@ -29,7 +29,6 @@ hp_config:
   n_conv_per_stage_encoder: 2
   n_conv_per_stage_decoder: 2
   loss_function: DiceAndCrossEntropyLoss
-cluster: {}
 dataset:
   _target_: automis.datasets.msd_dataset.MSDDataset
   name: Dataset010_Colon

@@ -67,7 +67,7 @@ class AutoNNUNetPredictor(nnUNetPredictor):
             configuration_manager = plans_manager.get_configuration(configuration_name)
 
             # Update hyperparameter configuration stored in configuration manager
-            configuration_manager.configuration["architecture"]["arch_kwargs"]["n_conv_per_stage"] = [hp_config.n_conv_per_stage] * len(configuration_manager.configuration["architecture"]["arch_kwargs"]["n_conv_per_stage"])
+            configuration_manager.configuration["architecture"]["arch_kwargs"]["n_conv_per_stage"] = [hp_config.n_conv_per_stage_encoder] * len(configuration_manager.configuration["architecture"]["arch_kwargs"]["n_conv_per_stage"])
             configuration_manager.configuration["architecture"]["arch_kwargs"]["n_conv_per_stage_decoder"] = [hp_config.n_conv_per_stage_decoder] * len(configuration_manager.configuration["architecture"]["arch_kwargs"]["n_conv_per_stage_decoder"])
 
             # the following part is taken from https://github.com/MIC-DKFZ/nnUNet/blob/master/nnunetv2/training/nnUNetTrainer/variants/network_architecture/nnUNetTrainerBN.py

@@ -124,3 +124,7 @@ data/
 
 **.egg-info/
 .ruff_cache
+
+# output
+output/predictions/
+output/msd_submissions/

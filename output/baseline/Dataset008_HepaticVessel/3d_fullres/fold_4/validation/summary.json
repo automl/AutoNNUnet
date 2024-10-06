@@ -1,0 +1,1596 @@
+{
+    "foreground_mean": {
+        "Dice": 0.6403897374785911,
+        "FN": 8068.916666666666,
+        "FP": 8114.908333333333,
+        "IoU": 0.5109488758704372,
+        "TN": 16600535.783333333,
+        "TP": 38162.525,
+        "n_pred": 46277.433333333334,
+        "n_ref": 46231.441666666666
+    },
+    "mean": {
+        "1": {
+            "Dice": 0.6163747170416712,
+            "FN": 7163.683333333333,
+            "FP": 5781.766666666666,
+            "IoU": 0.4628341776298013,
+            "TN": 16630390.183333334,
+            "TP": 11546.5,
+            "n_pred": 17328.266666666666,
+            "n_ref": 18710.183333333334
+        },
+        "2": {
+            "Dice": 0.6644047579155109,
+            "FN": 8974.15,
+            "FP": 10448.05,
+            "IoU": 0.5590635741110732,
+            "TN": 16570681.383333333,
+            "TP": 64778.55,
+            "n_pred": 75226.6,
+            "n_ref": 73752.7
+        }
+    },
+    "metric_per_case": [
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7564752731357,
+                    "FN": 5275,
+                    "FP": 1880,
+                    "IoU": 0.6083315086490038,
+                    "TN": 12302500,
+                    "TP": 11113,
+                    "n_pred": 12993,
+                    "n_ref": 16388
+                },
+                "2": {
+                    "Dice": 0.774890043982407,
+                    "FN": 525,
+                    "FP": 38,
+                    "IoU": 0.6325065274151436,
+                    "TN": 12319236,
+                    "TP": 969,
+                    "n_pred": 1007,
+                    "n_ref": 1494
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_008.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_008.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6404563948346012,
+                    "FN": 6545,
+                    "FP": 1585,
+                    "IoU": 0.471081907488127,
+                    "TN": 10208245,
+                    "TP": 7241,
+                    "n_pred": 8826,
+                    "n_ref": 13786
+                },
+                "2": {
+                    "Dice": 0.81998556998557,
+                    "FN": 3368,
+                    "FP": 624,
+                    "IoU": 0.69489452766738,
+                    "TN": 10210532,
+                    "TP": 9092,
+                    "n_pred": 9716,
+                    "n_ref": 12460
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_020.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_020.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7108063371955545,
+                    "FN": 2873,
+                    "FP": 3242,
+                    "IoU": 0.5513573000733676,
+                    "TN": 15715010,
+                    "TP": 7515,
+                    "n_pred": 10757,
+                    "n_ref": 10388
+                },
+                "2": {
+                    "Dice": 0.810893301736809,
+                    "FN": 95896,
+                    "FP": 4972,
+                    "IoU": 0.68193485321477,
+                    "TN": 15411510,
+                    "TP": 216262,
+                    "n_pred": 221234,
+                    "n_ref": 312158
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_032.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_032.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6938730933051804,
+                    "FN": 2776,
+                    "FP": 14042,
+                    "IoU": 0.5312447739561849,
+                    "TN": 36139994,
+                    "TP": 19060,
+                    "n_pred": 33102,
+                    "n_ref": 21836
+                },
+                "2": {
+                    "Dice": 0.9150188813891945,
+                    "FN": 20531,
+                    "FP": 2333,
+                    "IoU": 0.8433500507002111,
+                    "TN": 36029916,
+                    "TP": 123092,
+                    "n_pred": 125425,
+                    "n_ref": 143623
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_033.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_033.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6245104594517146,
+                    "FN": 2420,
+                    "FP": 1511,
+                    "IoU": 0.45402777777777775,
+                    "TN": 6808544,
+                    "TP": 3269,
+                    "n_pred": 4780,
+                    "n_ref": 5689
+                },
+                "2": {
+                    "Dice": 0.7592767028521132,
+                    "FN": 15198,
+                    "FP": 391,
+                    "IoU": 0.6119629611191317,
+                    "TN": 6775570,
+                    "TP": 24585,
+                    "n_pred": 24976,
+                    "n_ref": 39783
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_049.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_049.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.5469155643466436,
+                    "FN": 17482,
+                    "FP": 843,
+                    "IoU": 0.37638250808235496,
+                    "TN": 9932087,
+                    "TP": 11060,
+                    "n_pred": 11903,
+                    "n_ref": 28542
+                },
+                "2": {
+                    "Dice": 0.6476194675308451,
+                    "FN": 37888,
+                    "FP": 105971,
+                    "IoU": 0.4788736986241822,
+                    "TN": 9685418,
+                    "TP": 132195,
+                    "n_pred": 238166,
+                    "n_ref": 170083
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_057.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_057.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7759637665894249,
+                    "FN": 6204,
+                    "FP": 2304,
+                    "IoU": 0.6339385595043456,
+                    "TN": 9676086,
+                    "TP": 14734,
+                    "n_pred": 17038,
+                    "n_ref": 20938
+                },
+                "2": {
+                    "Dice": 0.8299385788157607,
+                    "FN": 6191,
+                    "FP": 814,
+                    "IoU": 0.7093119760976014,
+                    "TN": 9675230,
+                    "TP": 17093,
+                    "n_pred": 17907,
+                    "n_ref": 23284
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_059.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_059.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.754459828985633,
+                    "FN": 2768,
+                    "FP": 2889,
+                    "IoU": 0.6057290214664065,
+                    "TN": 10471412,
+                    "TP": 8691,
+                    "n_pred": 11580,
+                    "n_ref": 11459
+                },
+                "2": {
+                    "Dice": 0.8411095834044219,
+                    "FN": 31120,
+                    "FP": 544,
+                    "IoU": 0.7257887125128818,
+                    "TN": 10370287,
+                    "TP": 83809,
+                    "n_pred": 84353,
+                    "n_ref": 114929
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_067.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_067.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7256093444061846,
+                    "FN": 5981,
+                    "FP": 2147,
+                    "IoU": 0.5693774834437086,
+                    "TN": 12826181,
+                    "TP": 10747,
+                    "n_pred": 12894,
+                    "n_ref": 16728
+                },
+                "2": {
+                    "Dice": 0.9617027045346709,
+                    "FN": 23376,
+                    "FP": 12784,
+                    "IoU": 0.9262305784044914,
+                    "TN": 12354880,
+                    "TP": 454016,
+                    "n_pred": 466800,
+                    "n_ref": 477392
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_070.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_070.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.017603182496270513,
+                    "FN": 7739,
+                    "FP": 12017,
+                    "IoU": 0.008879747152962424,
+                    "TN": 9679395,
+                    "TP": 177,
+                    "n_pred": 12194,
+                    "n_ref": 7916
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 25271,
+                    "FP": 6220,
+                    "IoU": 0.0,
+                    "TN": 9667837,
+                    "TP": 0,
+                    "n_pred": 6220,
+                    "n_ref": 25271
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_075.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_075.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7388527245499832,
+                    "FN": 4544,
+                    "FP": 4001,
+                    "IoU": 0.5858576067464741,
+                    "TN": 14659431,
+                    "TP": 12088,
+                    "n_pred": 16089,
+                    "n_ref": 16632
+                },
+                "2": {
+                    "Dice": 0.916456158505037,
+                    "FN": 1741,
+                    "FP": 25709,
+                    "IoU": 0.8457951800460648,
+                    "TN": 14502054,
+                    "TP": 150560,
+                    "n_pred": 176269,
+                    "n_ref": 152301
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_088.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_088.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7645493686807605,
+                    "FN": 1933,
+                    "FP": 2934,
+                    "IoU": 0.6188425092019735,
+                    "TN": 12307999,
+                    "TP": 7902,
+                    "n_pred": 10836,
+                    "n_ref": 9835
+                },
+                "2": {
+                    "Dice": 0.943755767763175,
+                    "FN": 6472,
+                    "FP": 30157,
+                    "IoU": 0.8935014639223816,
+                    "TN": 11976829,
+                    "TP": 307310,
+                    "n_pred": 337467,
+                    "n_ref": 313782
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_089.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_089.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6668655952939171,
+                    "FN": 6814,
+                    "FP": 1001,
+                    "IoU": 0.5002238281000192,
+                    "TN": 9421547,
+                    "TP": 7822,
+                    "n_pred": 8823,
+                    "n_ref": 14636
+                },
+                "2": {
+                    "Dice": 0.8658805811784437,
+                    "FN": 1336,
+                    "FP": 6501,
+                    "IoU": 0.7634827221970726,
+                    "TN": 9404049,
+                    "TP": 25298,
+                    "n_pred": 31799,
+                    "n_ref": 26634
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_092.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_092.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7449741527857553,
+                    "FN": 4226,
+                    "FP": 1990,
+                    "IoU": 0.5935926773455378,
+                    "TN": 10732609,
+                    "TP": 9079,
+                    "n_pred": 11069,
+                    "n_ref": 13305
+                },
+                "2": {
+                    "Dice": 0.9252597880038241,
+                    "FN": 8242,
+                    "FP": 27641,
+                    "IoU": 0.8609148310225472,
+                    "TN": 10489911,
+                    "TP": 222110,
+                    "n_pred": 249751,
+                    "n_ref": 230352
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_094.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_094.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8017105758791074,
+                    "FN": 5713,
+                    "FP": 3236,
+                    "IoU": 0.6690458579881656,
+                    "TN": 10983008,
+                    "TP": 18091,
+                    "n_pred": 21327,
+                    "n_ref": 23804
+                },
+                "2": {
+                    "Dice": 0.7298117789921068,
+                    "FN": 272,
+                    "FP": 173,
+                    "IoU": 0.5745697896749522,
+                    "TN": 11009002,
+                    "TP": 601,
+                    "n_pred": 774,
+                    "n_ref": 873
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_108.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_108.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7975183991241409,
+                    "FN": 1945,
+                    "FP": 1384,
+                    "IoU": 0.6632271117855336,
+                    "TN": 8378723,
+                    "TP": 6556,
+                    "n_pred": 7940,
+                    "n_ref": 8501
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 1097,
+                    "FP": 210,
+                    "IoU": 0.0,
+                    "TN": 8387301,
+                    "TP": 0,
+                    "n_pred": 210,
+                    "n_ref": 1097
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_111.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_111.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7831095877368371,
+                    "FN": 7481,
+                    "FP": 1631,
+                    "IoU": 0.643533369845865,
+                    "TN": 9673766,
+                    "TP": 16450,
+                    "n_pred": 18081,
+                    "n_ref": 23931
+                },
+                "2": {
+                    "Dice": 0.8798892091177901,
+                    "FN": 280,
+                    "FP": 2929,
+                    "IoU": 0.7855376595602486,
+                    "TN": 9684365,
+                    "TP": 11754,
+                    "n_pred": 14683,
+                    "n_ref": 12034
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_113.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_113.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8198316547462657,
+                    "FN": 2467,
+                    "FP": 1236,
+                    "IoU": 0.6946734828496042,
+                    "TN": 10211488,
+                    "TP": 8425,
+                    "n_pred": 9661,
+                    "n_ref": 10892
+                },
+                "2": {
+                    "Dice": 0.4933481152993348,
+                    "FN": 10992,
+                    "FP": 1804,
+                    "IoU": 0.3274466519499632,
+                    "TN": 10204590,
+                    "TP": 6230,
+                    "n_pred": 8034,
+                    "n_ref": 17222
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_115.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_115.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.3854253465646542,
+                    "FN": 541,
+                    "FP": 7572,
+                    "IoU": 0.23871633668011635,
+                    "TN": 11261535,
+                    "TP": 2544,
+                    "n_pred": 10116,
+                    "n_ref": 3085
+                },
+                "2": {
+                    "Dice": 0.9043821555467825,
+                    "FN": 4634,
+                    "FP": 210,
+                    "IoU": 0.8254540213317959,
+                    "TN": 11244440,
+                    "TP": 22908,
+                    "n_pred": 23118,
+                    "n_ref": 27542
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_119.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_119.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.1951070802530295,
+                    "FN": 514,
+                    "FP": 10047,
+                    "IoU": 0.10809897812684739,
+                    "TN": 10211775,
+                    "TP": 1280,
+                    "n_pred": 11327,
+                    "n_ref": 1794
+                },
+                "2": {
+                    "Dice": 0.7750509703239448,
+                    "FN": 6357,
+                    "FP": 8538,
+                    "IoU": 0.6327209961780298,
+                    "TN": 10183061,
+                    "TP": 25660,
+                    "n_pred": 34198,
+                    "n_ref": 32017
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_121.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_121.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.3289597000937207,
+                    "FN": 2221,
+                    "FP": 7803,
+                    "IoU": 0.1968592260235558,
+                    "TN": 14405439,
+                    "TP": 2457,
+                    "n_pred": 10260,
+                    "n_ref": 4678
+                },
+                "2": {
+                    "Dice": 0.44639680914137875,
+                    "FN": 2087,
+                    "FP": 8184,
+                    "IoU": 0.2873300027754649,
+                    "TN": 14403508,
+                    "TP": 4141,
+                    "n_pred": 12325,
+                    "n_ref": 6228
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_123.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_123.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.24936857019651326,
+                    "FN": 619,
+                    "FP": 11566,
+                    "IoU": 0.14244492927018088,
+                    "TN": 13617279,
+                    "TP": 2024,
+                    "n_pred": 13590,
+                    "n_ref": 2643
+                },
+                "2": {
+                    "Dice": 0.8344801871123013,
+                    "FN": 4711,
+                    "FP": 172,
+                    "IoU": 0.7159725453699395,
+                    "TN": 13614296,
+                    "TP": 12309,
+                    "n_pred": 12481,
+                    "n_ref": 17020
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_124.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_124.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.5590335634372768,
+                    "FN": 713,
+                    "FP": 6697,
+                    "IoU": 0.38795738002808294,
+                    "TN": 11522229,
+                    "TP": 4697,
+                    "n_pred": 11394,
+                    "n_ref": 5410
+                },
+                "2": {
+                    "Dice": 0.8587502163752813,
+                    "FN": 1433,
+                    "FP": 199,
+                    "IoU": 0.7524647353253451,
+                    "TN": 11527743,
+                    "TP": 4961,
+                    "n_pred": 5160,
+                    "n_ref": 6394
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_136.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_136.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.5214747989801922,
+                    "FN": 2466,
+                    "FP": 12174,
+                    "IoU": 0.3526992969889906,
+                    "TN": 10987431,
+                    "TP": 7977,
+                    "n_pred": 20151,
+                    "n_ref": 10443
+                },
+                "2": {
+                    "Dice": 0.8762684124386252,
+                    "FN": 485,
+                    "FP": 271,
+                    "IoU": 0.7797844450917565,
+                    "TN": 11006615,
+                    "TP": 2677,
+                    "n_pred": 2948,
+                    "n_ref": 3162
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_154.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_154.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7174749807544265,
+                    "FN": 6914,
+                    "FP": 1160,
+                    "IoU": 0.5594237695078031,
+                    "TN": 12040298,
+                    "TP": 10252,
+                    "n_pred": 11412,
+                    "n_ref": 17166
+                },
+                "2": {
+                    "Dice": 0.5679475164011246,
+                    "FN": 1155,
+                    "FP": 1150,
+                    "IoU": 0.39659685863874344,
+                    "TN": 12054804,
+                    "TP": 1515,
+                    "n_pred": 2665,
+                    "n_ref": 2670
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_158.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_158.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6233064054449462,
+                    "FN": 10745,
+                    "FP": 1099,
+                    "IoU": 0.4527560874185649,
+                    "TN": 12036981,
+                    "TP": 9799,
+                    "n_pred": 10898,
+                    "n_ref": 20544
+                },
+                "2": {
+                    "Dice": 0.7450063431257928,
+                    "FN": 20092,
+                    "FP": 410,
+                    "IoU": 0.593633552683739,
+                    "TN": 12008172,
+                    "TP": 29950,
+                    "n_pred": 30360,
+                    "n_ref": 50042
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_159.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_159.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.651892075343628,
+                    "FN": 16222,
+                    "FP": 4292,
+                    "IoU": 0.4835607471929913,
+                    "TN": 27485398,
+                    "TP": 19208,
+                    "n_pred": 23500,
+                    "n_ref": 35430
+                },
+                "2": {
+                    "Dice": 0.5960518305939647,
+                    "FN": 4516,
+                    "FP": 129,
+                    "IoU": 0.42455401387512387,
+                    "TN": 27517048,
+                    "TP": 3427,
+                    "n_pred": 3556,
+                    "n_ref": 7943
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_173.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_173.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.635422902591294,
+                    "FN": 2500,
+                    "FP": 1763,
+                    "IoU": 0.46565555277011783,
+                    "TN": 8380630,
+                    "TP": 3715,
+                    "n_pred": 5478,
+                    "n_ref": 6215
+                },
+                "2": {
+                    "Dice": 0.003641513251062108,
+                    "FN": 39393,
+                    "FP": 7,
+                    "IoU": 0.0018240778273206323,
+                    "TN": 8349136,
+                    "TP": 72,
+                    "n_pred": 79,
+                    "n_ref": 39465
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_174.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_174.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7317904414678609,
+                    "FN": 6362,
+                    "FP": 406,
+                    "IoU": 0.5770264358477595,
+                    "TN": 13877631,
+                    "TP": 9233,
+                    "n_pred": 9639,
+                    "n_ref": 15595
+                },
+                "2": {
+                    "Dice": 0.8582964235138149,
+                    "FN": 3856,
+                    "FP": 847,
+                    "IoU": 0.7517681832576797,
+                    "TN": 13874686,
+                    "TP": 14243,
+                    "n_pred": 15090,
+                    "n_ref": 18099
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_181.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_181.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7428904344026508,
+                    "FN": 4704,
+                    "FP": 2357,
+                    "IoU": 0.5909512223380836,
+                    "TN": 14138514,
+                    "TP": 10201,
+                    "n_pred": 12558,
+                    "n_ref": 14905
+                },
+                "2": {
+                    "Dice": 0.7813863834739598,
+                    "FN": 11063,
+                    "FP": 959,
+                    "IoU": 0.6412092995493479,
+                    "TN": 14122269,
+                    "TP": 21485,
+                    "n_pred": 22444,
+                    "n_ref": 32548
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_189.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_189.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6052980440495849,
+                    "FN": 14500,
+                    "FP": 2471,
+                    "IoU": 0.43399813233724654,
+                    "TN": 9931488,
+                    "TP": 13013,
+                    "n_pred": 15484,
+                    "n_ref": 27513
+                },
+                "2": {
+                    "Dice": 0.6069167072576717,
+                    "FN": 1455,
+                    "FP": 159,
+                    "IoU": 0.43566433566433566,
+                    "TN": 9958612,
+                    "TP": 1246,
+                    "n_pred": 1405,
+                    "n_ref": 2701
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_195.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_195.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7794292690370822,
+                    "FN": 5151,
+                    "FP": 2076,
+                    "IoU": 0.6385777155431086,
+                    "TN": 7844324,
+                    "TP": 12769,
+                    "n_pred": 14845,
+                    "n_ref": 17920
+                },
+                "2": {
+                    "Dice": 0.6997866353929013,
+                    "FN": 24791,
+                    "FP": 36134,
+                    "IoU": 0.5382090774035109,
+                    "TN": 7732388,
+                    "TP": 71007,
+                    "n_pred": 107141,
+                    "n_ref": 95798
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_200.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_200.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6176712395015557,
+                    "FN": 42696,
+                    "FP": 4738,
+                    "IoU": 0.4468338192419825,
+                    "TN": 21410058,
+                    "TP": 38316,
+                    "n_pred": 43054,
+                    "n_ref": 81012
+                },
+                "2": {
+                    "Dice": 0.9239654459046448,
+                    "FN": 23884,
+                    "FP": 42640,
+                    "IoU": 0.8586763709288517,
+                    "TN": 21025087,
+                    "TP": 404197,
+                    "n_pred": 446837,
+                    "n_ref": 428081
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_207.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_207.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.4621540823804483,
+                    "FN": 42070,
+                    "FP": 4167,
+                    "IoU": 0.3005204078545278,
+                    "TN": 27459018,
+                    "TP": 19865,
+                    "n_pred": 24032,
+                    "n_ref": 61935
+                },
+                "2": {
+                    "Dice": 0.9455127322238793,
+                    "FN": 19674,
+                    "FP": 91096,
+                    "IoU": 0.8966563761532512,
+                    "TN": 26453259,
+                    "TP": 961091,
+                    "n_pred": 1052187,
+                    "n_ref": 980765
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_208.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_208.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.5166102276136997,
+                    "FN": 10716,
+                    "FP": 561,
+                    "IoU": 0.3482633069409929,
+                    "TN": 13614185,
+                    "TP": 6026,
+                    "n_pred": 6587,
+                    "n_ref": 16742
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 3324,
+                    "FP": 2077,
+                    "IoU": 0.0,
+                    "TN": 13626087,
+                    "TP": 0,
+                    "n_pred": 2077,
+                    "n_ref": 3324
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_211.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_211.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7299524622359268,
+                    "FN": 10840,
+                    "FP": 3873,
+                    "IoU": 0.5747442048673334,
+                    "TN": 25917658,
+                    "TP": 19885,
+                    "n_pred": 23758,
+                    "n_ref": 30725
+                },
+                "2": {
+                    "Dice": 0.8607090377826946,
+                    "FN": 3913,
+                    "FP": 4334,
+                    "IoU": 0.7554778070981706,
+                    "TN": 25918529,
+                    "TP": 25480,
+                    "n_pred": 29814,
+                    "n_ref": 29393
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_223.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_223.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6306799985766645,
+                    "FN": 8879,
+                    "FP": 1500,
+                    "IoU": 0.46057897198690295,
+                    "TN": 11777239,
+                    "TP": 8862,
+                    "n_pred": 10362,
+                    "n_ref": 17741
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 1363,
+                    "FP": 548,
+                    "IoU": 0.0,
+                    "TN": 11794569,
+                    "TP": 0,
+                    "n_pred": 548,
+                    "n_ref": 1363
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_237.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_237.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.4496728627756835,
+                    "FN": 10453,
+                    "FP": 2248,
+                    "IoU": 0.29005030743432086,
+                    "TN": 16497182,
+                    "TP": 5189,
+                    "n_pred": 7437,
+                    "n_ref": 15642
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 2052,
+                    "FP": 6583,
+                    "IoU": 0.0,
+                    "TN": 16506437,
+                    "TP": 0,
+                    "n_pred": 6583,
+                    "n_ref": 2052
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_262.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_262.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7011257622348465,
+                    "FN": 3157,
+                    "FP": 19781,
+                    "IoU": 0.5397949561623497,
+                    "TN": 36912461,
+                    "TP": 26905,
+                    "n_pred": 46686,
+                    "n_ref": 30062
+                },
+                "2": {
+                    "Dice": 0.8652984234115698,
+                    "FN": 8392,
+                    "FP": 55593,
+                    "IoU": 0.7625779687494202,
+                    "TN": 36692805,
+                    "TP": 205514,
+                    "n_pred": 261107,
+                    "n_ref": 213906
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_271.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_271.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.4671638200625451,
+                    "FN": 2147,
+                    "FP": 4498,
+                    "IoU": 0.30477087256748275,
+                    "TN": 9165482,
+                    "TP": 2913,
+                    "n_pred": 7411,
+                    "n_ref": 5060
+                },
+                "2": {
+                    "Dice": 0.8328611898016998,
+                    "FN": 67,
+                    "FP": 287,
+                    "IoU": 0.7135922330097088,
+                    "TN": 9173804,
+                    "TP": 882,
+                    "n_pred": 1169,
+                    "n_ref": 949
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_278.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_278.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6034813771918597,
+                    "FN": 3524,
+                    "FP": 2672,
+                    "IoU": 0.43213271010906423,
+                    "TN": 11523425,
+                    "TP": 4715,
+                    "n_pred": 7387,
+                    "n_ref": 8239
+                },
+                "2": {
+                    "Dice": 0.8748838969348791,
+                    "FN": 1787,
+                    "FP": 1850,
+                    "IoU": 0.777594325200269,
+                    "TN": 11517983,
+                    "TP": 12716,
+                    "n_pred": 14566,
+                    "n_ref": 14503
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_293.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_293.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.755758474389653,
+                    "FN": 6877,
+                    "FP": 9760,
+                    "IoU": 0.6074049602378648,
+                    "TN": 31677047,
+                    "TP": 25740,
+                    "n_pred": 35500,
+                    "n_ref": 32617
+                },
+                "2": {
+                    "Dice": 0.8939404682558816,
+                    "FN": 8412,
+                    "FP": 6546,
+                    "IoU": 0.8082209344068927,
+                    "TN": 31641428,
+                    "TP": 63038,
+                    "n_pred": 69584,
+                    "n_ref": 71450
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_305.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_305.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.636278254335984,
+                    "FN": 2202,
+                    "FP": 3607,
+                    "IoU": 0.466574839302112,
+                    "TN": 12309878,
+                    "TP": 5081,
+                    "n_pred": 8688,
+                    "n_ref": 7283
+                },
+                "2": {
+                    "Dice": 0.08937128536837292,
+                    "FN": 986,
+                    "FP": 52793,
+                    "IoU": 0.046775851678542306,
+                    "TN": 12264350,
+                    "TP": 2639,
+                    "n_pred": 55432,
+                    "n_ref": 3625
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_308.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_308.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6701902079311327,
+                    "FN": 1705,
+                    "FP": 8716,
+                    "IoU": 0.5039744871245657,
+                    "TN": 14396911,
+                    "TP": 10588,
+                    "n_pred": 19304,
+                    "n_ref": 12293
+                },
+                "2": {
+                    "Dice": 0.7333085777942815,
+                    "FN": 546,
+                    "FP": 3045,
+                    "IoU": 0.5789165103189493,
+                    "TN": 14409392,
+                    "TP": 4937,
+                    "n_pred": 7982,
+                    "n_ref": 5483
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_335.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_335.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.5466354429366318,
+                    "FN": 41975,
+                    "FP": 3327,
+                    "IoU": 0.3761172241885062,
+                    "TN": 25879643,
+                    "TP": 27311,
+                    "n_pred": 30638,
+                    "n_ref": 69286
+                },
+                "2": {
+                    "Dice": 0.6883858141473739,
+                    "FN": 10823,
+                    "FP": 3754,
+                    "IoU": 0.5248386465871309,
+                    "TN": 25921578,
+                    "TP": 16101,
+                    "n_pred": 19855,
+                    "n_ref": 26924
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_344.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_344.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.814044091916482,
+                    "FN": 6759,
+                    "FP": 9183,
+                    "IoU": 0.6864033362184279,
+                    "TN": 44775788,
+                    "TP": 34894,
+                    "n_pred": 44077,
+                    "n_ref": 41653
+                },
+                "2": {
+                    "Dice": 0.8463213417032805,
+                    "FN": 7757,
+                    "FP": 19980,
+                    "IoU": 0.7335849854003381,
+                    "TN": 44722512,
+                    "TP": 76375,
+                    "n_pred": 96355,
+                    "n_ref": 84132
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_350.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_350.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6222487562189055,
+                    "FN": 10068,
+                    "FP": 8914,
+                    "IoU": 0.45164085971804946,
+                    "TN": 27490504,
+                    "TP": 15634,
+                    "n_pred": 24548,
+                    "n_ref": 25702
+                },
+                "2": {
+                    "Dice": 0.7427313795899455,
+                    "FN": 791,
+                    "FP": 1430,
+                    "IoU": 0.5907499539340335,
+                    "TN": 27519693,
+                    "TP": 3206,
+                    "n_pred": 4636,
+                    "n_ref": 3997
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_372.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_372.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6270475198240435,
+                    "FN": 8596,
+                    "FP": 17178,
+                    "IoU": 0.45671465609915474,
+                    "TN": 20924079,
+                    "TP": 21667,
+                    "n_pred": 38845,
+                    "n_ref": 30263
+                },
+                "2": {
+                    "Dice": 0.8852318389092059,
+                    "FN": 812,
+                    "FP": 4272,
+                    "IoU": 0.7940950143777085,
+                    "TN": 20946829,
+                    "TP": 19607,
+                    "n_pred": 23879,
+                    "n_ref": 20419
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_373.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_373.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.66092262027456,
+                    "FN": 1675,
+                    "FP": 6550,
+                    "IoU": 0.49356566713872296,
+                    "TN": 9945231,
+                    "TP": 8016,
+                    "n_pred": 14566,
+                    "n_ref": 9691
+                },
+                "2": {
+                    "Dice": 0.750314578464857,
+                    "FN": 256,
+                    "FP": 1133,
+                    "IoU": 0.6004027617951668,
+                    "TN": 9957996,
+                    "TP": 2087,
+                    "n_pred": 3220,
+                    "n_ref": 2343
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_378.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_378.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.5847206286666811,
+                    "FN": 3333,
+                    "FP": 15850,
+                    "IoU": 0.4131485560450318,
+                    "TN": 42172496,
+                    "TP": 13505,
+                    "n_pred": 29355,
+                    "n_ref": 16838
+                },
+                "2": {
+                    "Dice": 0.5079434167573449,
+                    "FN": 1978,
+                    "FP": 283,
+                    "IoU": 0.34043173862310383,
+                    "TN": 42201756,
+                    "TP": 1167,
+                    "n_pred": 1450,
+                    "n_ref": 3145
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_379.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_379.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6408447498975923,
+                    "FN": 5026,
+                    "FP": 10756,
+                    "IoU": 0.4715022436541424,
+                    "TN": 10980186,
+                    "TP": 14080,
+                    "n_pred": 24836,
+                    "n_ref": 19106
+                },
+                "2": {
+                    "Dice": 0.006311139160618492,
+                    "FN": 14980,
+                    "FP": 765,
+                    "IoU": 0.0031655587211142765,
+                    "TN": 10994253,
+                    "TP": 50,
+                    "n_pred": 815,
+                    "n_ref": 15030
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_386.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_386.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.676230688033778,
+                    "FN": 3830,
+                    "FP": 2918,
+                    "IoU": 0.510837259876767,
+                    "TN": 14404125,
+                    "TP": 7047,
+                    "n_pred": 9965,
+                    "n_ref": 10877
+                },
+                "2": {
+                    "Dice": 0.020633750921149593,
+                    "FN": 1222,
+                    "FP": 107,
+                    "IoU": 0.010424422933730455,
+                    "TN": 14416577,
+                    "TP": 14,
+                    "n_pred": 121,
+                    "n_ref": 1236
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_393.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_393.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.41815505397448477,
+                    "FN": 2380,
+                    "FP": 9478,
+                    "IoU": 0.2643464234754017,
+                    "TN": 13877513,
+                    "TP": 4261,
+                    "n_pred": 13739,
+                    "n_ref": 6641
+                },
+                "2": {
+                    "Dice": 0.6083369728732955,
+                    "FN": 1389,
+                    "FP": 22824,
+                    "IoU": 0.4371295069391171,
+                    "TN": 13850615,
+                    "TP": 18804,
+                    "n_pred": 41628,
+                    "n_ref": 20193
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_396.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_396.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.5904298459042985,
+                    "FN": 4487,
+                    "FP": 21773,
+                    "IoU": 0.4188722669735328,
+                    "TN": 42159996,
+                    "TP": 18928,
+                    "n_pred": 40701,
+                    "n_ref": 23415
+                },
+                "2": {
+                    "Dice": 0.9243082223737573,
+                    "FN": 2831,
+                    "FP": 3496,
+                    "IoU": 0.8592686507406914,
+                    "TN": 42160226,
+                    "TP": 38631,
+                    "n_pred": 42127,
+                    "n_ref": 41462
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_397.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_397.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.42821797881114,
+                    "FN": 1043,
+                    "FP": 7970,
+                    "IoU": 0.27244107200516626,
+                    "TN": 7851932,
+                    "TP": 3375,
+                    "n_pred": 11345,
+                    "n_ref": 4418
+                },
+                "2": {
+                    "Dice": 0.8531715946424059,
+                    "FN": 637,
+                    "FP": 5173,
+                    "IoU": 0.74394006170119,
+                    "TN": 7841630,
+                    "TP": 16880,
+                    "n_pred": 22053,
+                    "n_ref": 17517
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_402.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_402.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8034677215722582,
+                    "FN": 12117,
+                    "FP": 4228,
+                    "IoU": 0.671496904895892,
+                    "TN": 38747556,
+                    "TP": 33411,
+                    "n_pred": 37639,
+                    "n_ref": 45528
+                },
+                "2": {
+                    "Dice": 0.7523549359457423,
+                    "FN": 629,
+                    "FP": 4629,
+                    "IoU": 0.6030200075500188,
+                    "TN": 38784067,
+                    "TP": 7987,
+                    "n_pred": 12616,
+                    "n_ref": 8616
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_404.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_404.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.4651783068260397,
+                    "FN": 544,
+                    "FP": 10284,
+                    "IoU": 0.30308296324901846,
+                    "TN": 8897359,
+                    "TP": 4709,
+                    "n_pred": 14993,
+                    "n_ref": 5253
+                },
+                "2": {
+                    "Dice": 0.6235807860262009,
+                    "FN": 363,
+                    "FP": 68,
+                    "IoU": 0.4530456852791878,
+                    "TN": 8912108,
+                    "TP": 357,
+                    "n_pred": 425,
+                    "n_ref": 720
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_425.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_425.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.5289115192876757,
+                    "FN": 1315,
+                    "FP": 16356,
+                    "IoU": 0.35953753035410096,
+                    "TN": 38769721,
+                    "TP": 9920,
+                    "n_pred": 26276,
+                    "n_ref": 11235
+                },
+                "2": {
+                    "Dice": 0.7773900907187719,
+                    "FN": 278,
+                    "FP": 41,
+                    "IoU": 0.6358447488584474,
+                    "TN": 38796436,
+                    "TP": 557,
+                    "n_pred": 598,
+                    "n_ref": 835
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_432.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_432.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7704873985705841,
+                    "FN": 1654,
+                    "FP": 2617,
+                    "IoU": 0.6266608391608391,
+                    "TN": 8115024,
+                    "TP": 7169,
+                    "n_pred": 9786,
+                    "n_ref": 8823
+                },
+                "2": {
+                    "Dice": 0.4349825562955915,
+                    "FN": 3099,
+                    "FP": 4027,
+                    "IoU": 0.2779410274597224,
+                    "TN": 8116595,
+                    "TP": 2743,
+                    "n_pred": 6770,
+                    "n_ref": 5842
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_454.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_454.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.4732430143945809,
+                    "FN": 10395,
+                    "FP": 2047,
+                    "IoU": 0.30996616937496535,
+                    "TN": 12302737,
+                    "TP": 5589,
+                    "n_pred": 7636,
+                    "n_ref": 15984
+                },
+                "2": {
+                    "Dice": 0.7532376618830942,
+                    "FN": 380,
+                    "FP": 325,
+                    "IoU": 0.6041549691184728,
+                    "TN": 12318987,
+                    "TP": 1076,
+                    "n_pred": 1401,
+                    "n_ref": 1456
+                }
+            },
+            "prediction_file": "./validation/hepaticvessel_455.nii.gz",
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset008_HepaticVessel/gt_segmentations/hepaticvessel_455.nii.gz"
+        }
+    ]
+}

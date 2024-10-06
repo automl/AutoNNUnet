@@ -1,0 +1,34 @@
+seed: 42
+fold: 4
+device: cuda
+pipeline:
+  return_if_done: true
+  run_training: true
+  run_validation: true
+  validate_with_best: true
+  continue_training: false
+trainer:
+  configuration: 3d_fullres
+  fold: ${fold}
+  plans_identifier: nnUNetPlans
+  pretrained_weights_file: null
+  use_compressed_data: false
+  export_validation_probabilities: false
+  disable_checkpointing: false
+hp_config:
+  optimizer: SGD
+  momentum: 0.99
+  initial_lr: 0.01
+  weight_decay: 3.0e-05
+  lr_scheduler: PolyLRScheduler
+  oversample_foreground_percent: 0.33
+  num_epochs: 1000
+  total_epochs: 1000
+  enable_deep_supervision: true
+  normalization: InstanceNorm
+  n_conv_per_stage_encoder: 2
+  n_conv_per_stage_decoder: 2
+  loss_function: DiceAndCrossEntropyLoss
+dataset:
+  _target_: automis.datasets.msd_dataset.MSDDataset
+  name: Dataset010_Colon

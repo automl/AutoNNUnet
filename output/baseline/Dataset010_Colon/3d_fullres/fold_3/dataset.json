@@ -1,0 +1,18 @@
+{
+    "name": "Colon",
+    "description": "Colon Cancer segmentation",
+    "reference": " Memorial Sloan Kettering Cancer Center",
+    "licence": "CC-BY-SA 4.0",
+    "release": "1.0 06/08/2018",
+    "tensorImageSize": "3D",
+    "labels": {
+        "background": 0,
+        "colon cancer primaries": 1
+    },
+    "numTraining": 126,
+    "numTest": 64,
+    "file_ending": ".nii.gz",
+    "channel_names": {
+        "0": "CT"
+    }
+}
