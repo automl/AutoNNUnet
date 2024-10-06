@@ -23,7 +23,7 @@ if __name__  == "__main__":
     logger.setLevel(logging.INFO)
     logger.info("Starting MSD evaluation.")
 
-    for dataset_name in ALL_DATASETS[1:2]:
+    for dataset_name in ALL_DATASETS:
         if args.approach == "smac_mf":
             logger.info(f"Extracting incumbent for {dataset_name}.")
             extract_incumbent(

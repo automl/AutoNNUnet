@@ -8,6 +8,7 @@ pipeline:
   run_validation: true
   validate_with_best: true
   continue_training: false
+  remove_validation_files: true
 
 trainer:
   configuration: 3d_fullres

@@ -13,7 +13,7 @@ n_trials: 127     # Total number of configs
 min_budget: 15    # Minimum number of epochs
 max_budget: 1000  # Maximum number of epochs
 eta: 4            # Reduction factor for successive halving
-min_trials: 2     # Minimum number of trials per budget to fit the surrogate model
+min_trials: 4     # Minimum number of trials per budget to fit the surrogate model
 
 # Number of randomly sampled initial configurations, resulting
 # in 30 + 1 = 31 total configurations including the default configs.

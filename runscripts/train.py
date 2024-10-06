@@ -69,9 +69,18 @@ def run(cfg: DictConfig):
                 str(Path(nnunet_trainer.output_folder) /  "checkpoint_best.pth")
             )
 
-        nnunet_trainer.perform_actual_validation(cfg.trainer.export_validation_probabilities)
+        nnunet_trainer.perform_actual_validation(
+            save_probabilities=cfg.trainer.export_validation_probabilities
+        )
         metrics = read_metrics()
         logger.info("Validation finished")
+
+        if cfg.pipeline.remove_validation_files:
+            logger.info("Removing validation files")
+            # remove all .nii.gz files in the validation folder
+            for file_path in (Path(nnunet_trainer.output_folder) /  "validation").iterdir():
+                if ".nii.gz" in file_path.name:
+                    os.remove(file_path.resolve())
 
         val_dice_score = metrics["foreground_mean"]["Dice"]
         performance = 1 - val_dice_score
