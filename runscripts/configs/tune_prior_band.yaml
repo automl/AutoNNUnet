@@ -8,22 +8,24 @@ defaults:
 neps_seed: 0
 
 # HPO configuration
-n_trials: 43
-min_budget: 10
-max_budget: 1000
-eta: 5
+n_trials: 402     # Total number of configs
+min_budget: 15    # Minimum number of epochs
+max_budget: 1000  # Maximum number of epochs
+eta: 4            # Reduction factor for successive halving
+budget: 15000     # Total budget in epochs
 
 hydra:
   sweeper:
-    budget: 10_000
+    n_trials: ${n_trials}
+    budget: ${budget}
     budget_variable: num_epochs
     sweeper_kwargs:
       job_array_size_limit: 1
       seeds: [0, 1, 2, 3, 4]
       optimizer_kwargs:
         fidelity_variable: ${hydra.sweeper.budget_variable}
-        min_budget: 5
-        max_budget: 50
+        min_budget: ${min_budget}
+        max_budget: ${max_budget}
         seed: ${neps_seed}
         optimizer:
           _target_: neps.optimizers.multi_fidelity_prior.priorband.PriorBand

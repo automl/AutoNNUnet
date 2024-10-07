@@ -9,9 +9,10 @@ defaults:
 smac_seed: 0
 
 # SMAC HPO configuration
-n_trials: 127     # Total number of configs
+n_trials: 402     # Total number of configs
 min_budget: 15    # Minimum number of epochs
 max_budget: 1000  # Maximum number of epochs
+budget: 15000     # Total budget in epochs
 eta: 4            # Reduction factor for successive halving
 min_trials: 4     # Minimum number of trials per budget to fit the surrogate model
 
@@ -23,6 +24,7 @@ initial_design_configs: 30
 hydra:
   sweeper:
     n_trials: ${n_trials}
+    budget: ${budget}
     budget_variable: hp_config.num_epochs
     search_space: ${search_space}
     sweeper_kwargs:

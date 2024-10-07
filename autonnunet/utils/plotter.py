@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
+from autonnunet.datasets import ALL_DATASETS
 from autonnunet.utils import format_dataset_name, load_json
 from autonnunet.utils.paths import (AUTONNUNET_OUTPUT, AUTONNUNET_PLOTS,
                                     AUTONNUNET_TABLES)
@@ -33,9 +34,11 @@ VALIDATION_METRICS_FILENAME = "summary.json"
 EMISSIONS_FILENAME = "emissions.csv"
 DATASET_JSON_FILENAME = "dataset.json"
 
+TRAINING_BUDGET = 1000
+
 
 @dataclass
-class TrainingResult:
+class BaselineResult:
     progress: pd.DataFrame
     metrics: pd.DataFrame
     emissions: pd.DataFrame
@@ -45,7 +48,7 @@ class TrainingResult:
 class HPOResult:
     history: pd.DataFrame
     incumbent: pd.DataFrame
-    progress: pd.DataFrame
+    incumbent_progress: pd.DataFrame
     emissions: pd.DataFrame
 
 
@@ -82,9 +85,43 @@ class Plotter:
         AUTONNUNET_PLOTS.mkdir(parents=True, exist_ok=True)
         AUTONNUNET_TABLES.mkdir(parents=True, exist_ok=True)
 
-    def _load_validation_metrics(self, path: Path) -> pd.DataFrame:
-        metrics_path = path / "validation" / VALIDATION_METRICS_FILENAME
-        dataset_info_path = path / DATASET_JSON_FILENAME
+    def load_data(self):
+        self._baseline_data = self._load_baseline_data(datasets=ALL_DATASETS)
+        self._hpo_data = self._load_hpo_data(datasets=ALL_DATASETS)
+
+        self._baseline_datasets = self._baseline_data.progress["Dataset"].unique().tolist()
+        self._hpo_datasets = self._hpo_data.incumbent_progress["Dataset"].unique().tolist()
+
+        self.logger.info(f"Loaded {len(self._baseline_datasets)} datasets for baseline.")
+        self.logger.info(f"Loaded {len(self._hpo_datasets)} datasets for HPO.")
+
+    def get_baseline_data(self, dataset: str):
+        progress = self._baseline_data.progress[self._baseline_data.progress["Dataset"] == dataset]
+        emissions = self._baseline_data.emissions[self._baseline_data.emissions["Dataset"] == dataset]
+        metrics = self._baseline_data.metrics[self._baseline_data.metrics["Dataset"] == dataset]
+
+        return BaselineResult(
+            progress=progress,
+            emissions=emissions,
+            metrics=metrics
+        )
+
+    def get_hpo_data(self, dataset: str):
+        incumbent_progress = self._hpo_data.incumbent_progress[self._hpo_data.incumbent_progress["Dataset"] == dataset]
+        emissions = self._hpo_data.emissions[self._hpo_data.emissions["Dataset"] == dataset]
+        history = self._hpo_data.history[self._hpo_data.history["Dataset"] == dataset]
+        incumbent = self._hpo_data.incumbent[self._hpo_data.incumbent["Dataset"] == dataset]
+
+        return HPOResult(
+            incumbent_progress=incumbent_progress,
+            emissions=emissions,
+            history=history,
+            incumbent=incumbent
+        )
+
+    def _load_validation_metrics(self, fold_dir: Path) -> pd.DataFrame:
+        metrics_path = fold_dir / "validation" / VALIDATION_METRICS_FILENAME
+        dataset_info_path = fold_dir / DATASET_JSON_FILENAME
 
         metrics = load_json(metrics_path)
         dataset_info = load_json(dataset_info_path)
@@ -107,7 +144,7 @@ class Plotter:
                 rows.append(row)
 
         return pd.DataFrame(rows)
-    
+
     def _load_progress(self, fold_dir: Path) -> pd.DataFrame:
         dataset_info = load_json(fold_dir / DATASET_JSON_FILENAME)
 
@@ -127,12 +164,11 @@ class Plotter:
             progress["dice_per_class_or_region"].tolist(),
             columns=labels
             )
-        progress = pd.concat(
+        return pd.concat(
             [progress, labels_df],
             axis=1
         ).drop(columns=["dice_per_class_or_region"])
 
-        return progress
 
     def _load_baseline_data(self, datasets: list[str]):
         all_progress  = []
@@ -140,11 +176,16 @@ class Plotter:
         all_metrics = []
 
         for dataset in datasets:
+            dataset_dir = self.baseline_dir / dataset
+            if not dataset_dir.exists():
+                self.logger.info(f"Skipping {dataset}.")
+                continue
+
             for fold in range(self.n_folds):
-                fold_dir = self.baseline_dir / dataset \
+                fold_dir = dataset_dir \
                       / self.configuration / f"fold_{fold}"
                 if not (fold_dir).exists():
-                    self.logger.info(f"Skipping {fold_dir}.")
+                    self.logger.info(f"Skipping {fold_dir} of dataset {dataset}.")
                     continue
 
                 progress = self._load_progress(fold_dir=fold_dir)
@@ -168,11 +209,35 @@ class Plotter:
         all_emissions = pd.concat(all_emissions)
         all_metrics = pd.concat(all_metrics)
 
-        return TrainingResult(
+        return BaselineResult(
             progress=all_progress,
             metrics=all_metrics,
             emissions=all_emissions
         )
+
+    def _load_incumbent(self, smac_run_dir: Path) -> pd.DataFrame:
+        incumbent = pd.read_csv(smac_run_dir / INCUMBENT_FILENAME)
+        history = pd.read_csv(smac_run_dir / HISTORY_FILENAME)
+
+        incumbent_expanded = []
+        for _, row in incumbent.iterrows():
+            for fold, performance_key in enumerate([f"performance_fold_{i}" for i in range(5)]):
+                performance = history[history["config_id"] == row["config_id"]][performance_key].values[0]
+
+                row_data = {
+                    "Configuration ID": row["config_id"],
+                    "Cost": performance,
+                    "Budget": row["budget"],
+                    "Fold": fold,
+                    "Budget Used": row["budget_used"]
+                }
+
+                incumbent_expanded.append(row_data)
+
+        incumbent = pd.DataFrame(incumbent_expanded)
+        incumbent["Full Model Trainings"] = incumbent["Budget Used"] / TRAINING_BUDGET
+
+        return incumbent
 
     def _load_hpo_data(self, datasets: list[str]):
         all_progress  = []
@@ -181,17 +246,27 @@ class Plotter:
         all_incumbent = []
 
         for dataset in datasets:
-            smac_run_dir = self.smac_mf_dir / dataset \
-                / self.configuration / str(self.smac_seed)
-            history = pd.read_csv(smac_run_dir / HISTORY_FILENAME)
-            incumbent = pd.read_csv(smac_run_dir / INCUMBENT_FILENAME)
-            history["Dataset"] = dataset
-            incumbent["Dataset"] = dataset
+            dataset_dir = self.smac_mf_dir / dataset
+            if not dataset_dir.exists():
+                self.logger.info(f"SMAC: Skipping {dataset}.")
+                continue
 
-            incumbent["Full Model Trainings"] = incumbent["budget_used"] / 1000
+            smac_run_dir = dataset_dir \
+                / self.configuration / str(self.smac_seed)
+            if not (smac_run_dir / HISTORY_FILENAME).exists():
+                self.logger.info(f"SMAC: Skipping {dataset}.")
+                continue
+
+            history = pd.read_csv(smac_run_dir / HISTORY_FILENAME)
+            history["Dataset"] = dataset
+
+            incumbent = self._load_incumbent(smac_run_dir)
+            incumbent["Dataset"] = dataset
 
             all_history.append(history)
             all_incumbent.append(incumbent)
+
+            incumbent_config_id = incumbent["Configuration ID"].values[-1]
 
             for config_id in history["config_id"].unique():
                 for fold in range(self.n_folds):
@@ -207,10 +282,11 @@ class Plotter:
                         df["Dataset"] = dataset
                         df["Approach"] = "Baseline"
                         df["Fold"] = fold
-                        df["Configuration"] = config_id
+                        df["Configuration ID"] = config_id
 
-                    all_progress.append(progress)
                     all_emissions.append(emissions)
+                    if config_id == incumbent_config_id:
+                        all_progress.append(progress)
 
         all_progress = pd.concat(all_progress)
         all_emissions = pd.concat(all_emissions)
@@ -220,14 +296,14 @@ class Plotter:
         return HPOResult(
             history=all_history,
             incumbent=all_incumbent,
-            progress=all_progress,
+            incumbent_progress=all_progress,
             emissions=all_emissions
         )
 
     def plot_baseline(
             self,
             datasets: list[str],
-            x_metric: str = "epoch",
+            x_metric: str = "Epoch",
             y_metrics: list[str] | None = None,
         ):
         if y_metrics is None:
@@ -250,52 +326,64 @@ class Plotter:
         plt.savefig(AUTONNUNET_PLOTS / f"{self.configuration}_hpo.png", dpi=400)
 
     def _plot_hpo_(
-            self, 
-            hpo_data: HPOResult, 
-            baseline_data: TrainingResult, 
+            self,
             dataset: str
         ) -> None:
-        incumbent_data = hpo_data.incumbent[hpo_data.incumbent["Dataset"] == dataset]
+        hpo_data = self.get_hpo_data(dataset)
+        baseline_data = self.get_baseline_data(dataset)
 
         plt.figure(1, figsize=self.figsize)
 
+        # Group by Fold
+        metrics = baseline_data.metrics.groupby(["Fold"])["Dice"].mean().reset_index()
+        metrics_expanded = pd.DataFrame(
+            np.repeat(metrics.values, 2, axis=0),
+            columns=metrics.columns
+        )
+        metrics_expanded["Full Model Trainings"] = np.tile([0, 16], len(metrics))
+        metrics_expanded["Cost"] = 1 - metrics_expanded["Dice"]
+
         g = sns.lineplot(
+            data=metrics_expanded,
             x="Full Model Trainings",
-            y="performance",
-            data=incumbent_data,
-            drawstyle="steps-post",
+            y="Cost",
+            label="Baseline",
+            linestyle="--",
+            errorbar=("ci", 95)
         )
 
-        baseline_data_dataset = baseline_data.metrics[baseline_data.metrics["Dataset"] == dataset]
-        baseline_performance = baseline_data_dataset["Dice"].mean()
-        baseline_cost = 1 - baseline_performance
+        sns.lineplot(
+            x="Full Model Trainings",
+            y="Cost",
+            data=hpo_data.incumbent,
+            drawstyle="steps-post",
+            label="SMAC + HB",
+            errorbar=("ci", 95)
+        )
 
-        # add horizontal line showing mean validation performance
-        g.axhline(baseline_cost, color="red", linestyle="--")
-        
-        g.set_title("Optimization Process")
+        g.set_title(f"Optimization Process for {format_dataset_name(dataset)}")
         g.set_xlabel("Full Model Trainings")
         g.set_ylabel("Cost")
 
         # log scale
-        g.set_xscale("log")
+        g.set_xlim(0, 16)
+        # g.set_xscale("log")
         # g.set_yscale("log")
 
         plt.minorticks_on()
         plt.grid(visible=True, which="both", linestyle="--")
         plt.grid(visible=True, which="minor", linestyle=":", linewidth=0.5)
 
+        plt.legend()
+
         plt.tight_layout()
         plt.savefig(AUTONNUNET_PLOTS / f"{dataset}_{self.configuration}_hpo.png", dpi=400)
 
         plt.clf()
 
-    def plot_hpo(self, datasets: list[str]) -> None:
-        baseline_data = self._load_baseline_data(datasets=datasets)
-        hpo_data = self._load_hpo_data(datasets=datasets)
-
-        for dataset in datasets:
-            self._plot_hpo_(hpo_data, baseline_data, dataset)
+    def plot_hpo(self) -> None:
+        for dataset in self._hpo_datasets:
+            self._plot_hpo_(dataset)
 
     def plot_metrics(
             self,

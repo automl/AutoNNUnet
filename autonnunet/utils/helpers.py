@@ -86,7 +86,7 @@ def format_dataset_name(dataset_name: str) -> str:
     name = dataset_name[11:]
     id = int(dataset_name[7:10])
 
-    return f"D{id}: {name}"
+    return f"D{id} ({name})"
 
 def load_json(file: Path) -> dict:
     with open(file) as f:
