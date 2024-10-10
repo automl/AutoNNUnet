@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import logging
 import os
+import shutil
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -9,7 +11,6 @@ import torch
 from batchgenerators.utilities.file_and_folder_operations import load_json
 from dynamic_network_architectures.building_blocks.helper import \
     get_matching_batchnorm
-from nnunetv2.run.run_training import maybe_load_checkpoint
 from nnunetv2.training.loss.compound_losses import (DC_and_BCE_loss,
                                                     DC_and_CE_loss)
 from nnunetv2.training.loss.deep_supervision import DeepSupervisionWrapper
@@ -78,12 +79,13 @@ class AutoNNUNetTrainer(nnUNetTrainer):
 
         nnunet_trainer.disable_checkpointing = cfg.trainer.disable_checkpointing
 
-        maybe_load_checkpoint(
-            nnunet_trainer=nnunet_trainer,
-            continue_training=cfg.pipeline.continue_training,
-            validation_only=cfg.pipeline.run_validation and not cfg.pipeline.run_training,
-            pretrained_weights_file=cfg.trainer.pretrained_weights_file,
-        )
+        if cfg.load:
+            load_path_best = Path(cfg.load + f"_fold_{cfg.fold}_best.pth").resolve()
+            load_path_final = Path(cfg.load + f"_fold_{cfg.fold}_final.pth").resolve()
+            checkpoint_best_path = Path().resolve() / "checkpoint_best.pth"
+
+            shutil.copyfile(load_path_best, checkpoint_best_path)
+            nnunet_trainer.load_checkpoint(str(load_path_final))
 
         return nnunet_trainer
 

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import csv
 import json
 import os
 import random
@@ -42,25 +41,18 @@ def get_device(device: str) -> torch.device:
     return torch.device("mps")
 
 
-def check_if_job_already_done() -> float | None:
-    try:
-        with open("./performance.csv") as pf:
-            csvreader = csv.reader(pf)
-            performance = next(csvreader)
-            return float(performance[0])
-
-    except FileNotFoundError:
-        return None
-
-
 def write_performance(performance: float) -> None:
     with open("./performance.csv", "w+") as f:
         f.write(str(performance))
 
 
-def read_metrics() -> dict:
-    with open("./validation/summary.json") as f:
-        return json.load(f)
+def read_performance() -> float | None:
+    if os.path.exists("./validation/summary.json"):
+        with open("./validation/summary.json") as f:
+            metrics = json.load(f)
+            return 1 - metrics["foreground_mean"]["Dice"]
+    else:
+        return None
 
 
 def set_environment_variables() -> None:

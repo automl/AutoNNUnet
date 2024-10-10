@@ -46,7 +46,7 @@ class AutoNNUNetPredictor(nnUNetPredictor):
             hp_config: DictConfig,
             model_training_output_dir: str,
             use_folds: tuple[int],
-            checkpoint_name: str = "checkpoint_final.pth"
+            checkpoint_name: str
         ):
             dataset_json = load_json(join(model_training_output_dir, "fold_0", "dataset.json"))
             plans = load_json(join(model_training_output_dir, "fold_0", "plans.json"))

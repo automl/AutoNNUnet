@@ -1,14 +1,15 @@
 defaults:
   - _self_
-  - cluster: luis_gpu
+  - base
+  - cluster: kisski_gpu
   - search_space: default
+  - dataset: Dataset001_BrainTumour
   - override hydra/sweeper: HyperNEPS
-  - dataset: Dataset002_Heart
 
 neps_seed: 0
 
 # HPO configuration
-n_trials: 402     # Total number of configs
+n_trials: 120     # Total number of configs
 min_budget: 15    # Minimum number of epochs
 max_budget: 1000  # Maximum number of epochs
 eta: 4            # Reduction factor for successive halving
@@ -18,10 +19,15 @@ hydra:
   sweeper:
     n_trials: ${n_trials}
     budget: ${budget}
-    budget_variable: num_epochs
+    budget_variable: hp_config.num_epochs
+    search_space: ${search_space}
     sweeper_kwargs:
-      job_array_size_limit: 1
-      seeds: [0, 1, 2, 3, 4]
+      min_budget: ${min_budget}
+      max_budget: ${max_budget}
+      job_array_size_limit: 1   # only one config at a time
+      seeds: [0, 1, 2, 3, 4]    # these are the folds in our case
+      seed_keyword: fold
+      deterministic: true
       optimizer_kwargs:
         fidelity_variable: ${hydra.sweeper.budget_variable}
         min_budget: ${min_budget}
@@ -33,16 +39,17 @@ hydra:
           budget: ${hydra.sweeper.budget}
           eta: ${eta}
           prior_confidence: medium
-          random_interleave_prob: 0.0
-          sample_default_first: true
-          sample_default_at_target: false
           prior_weight_type: geometric
           inc_sample_type: mutation
+          inc_style: dynamic
           inc_mutation_rate: 0.5
           inc_mutation_std: 0.25
-          inc_style: dynamic
-    dir: output/prior_band/${dataset.dataset_name}/${args.configuration_name}/${neps_seed}
+          model_based: False
+          sample_default_first: True
+          sample_default_at_target: False
+  run:  
+    dir: output/prior_band/${dataset.name}/${trainer.configuration}/${neps_seed}
   sweep:
-    dir: output/prior_band/${dataset.dataset_name}/${args.configuration_name}/${neps_seed}
+    dir: output/prior_band/${dataset.name}/${trainer.configuration}/${neps_seed}
   job:
     chdir: true

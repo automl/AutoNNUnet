@@ -127,3 +127,16 @@ data/
 
 # output
 output/predictions/
+
+# /output/smac_mf/*
+# /output/prior_band/*
+
+/output/smac_mf/**/dataset_fingerprint.json
+/output/smac_mf/**/dataset.json
+/output/smac_mf/**/debug.json
+/output/smac_mf/**/plans.json
+
+/output/prior_band/**/*.json
+/output/prior_band/**/emissions.csv
+
+/output/**/checkpoints

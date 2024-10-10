@@ -9,7 +9,7 @@ defaults:
 smac_seed: 0
 
 # SMAC HPO configuration
-n_trials: 127     # Total number of configs
+n_trials: 635     # Total number of configs * cv_folds = 127 * 5 = 635
 min_budget: 15    # Minimum number of epochs
 max_budget: 1000  # Maximum number of epochs
 eta: 4            # Reduction factor for successive halving

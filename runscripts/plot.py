@@ -15,6 +15,5 @@ if __name__  == "__main__":
 
     plotter = Plotter(configuration=args.configuration)
     plotter.load_data()
-    # plotter.plot_baseline(datasets=["Dataset001_BrainTumour"])
     plotter.plot_hpo()
-    # plotter.create_table(datasets=["Dataset001_BrainTumour", "Dataset002_Heart", "Dataset003_Liver"])
+    # plotter.plot_baselines()

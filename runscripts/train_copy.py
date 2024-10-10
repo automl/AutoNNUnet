@@ -5,16 +5,16 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import logging
-import shutil
-import sys
 import os
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import hydra
 import torch
 from autonnunet.utils import (
-    read_performance,
+    check_if_job_already_done,
+    read_metrics,
     seed_everything,
     write_performance,
 )
@@ -39,7 +39,7 @@ def run(cfg: DictConfig):
     logger.info("Starting training script")
     logger.info(f"torch.cuda.is_available(): {torch.cuda.is_available()}")
 
-    performance = read_performance()
+    performance = check_if_job_already_done()
     if performance is not None and cfg.pipeline.return_if_done:
         logger.info(f"Job already done. Returning performance: {performance}")
         return performance
@@ -62,16 +62,10 @@ def run(cfg: DictConfig):
         nnunet_trainer.run_training()
         logger.info("Training finished")
 
-        if cfg.save:
-            logger.info("Saving model to checkpoint dir.")
-            save_path_best = Path(cfg.save + f"_fold_{cfg.fold}_best.pth").resolve()
-            save_path_final = Path(cfg.save + f"_fold_{cfg.fold}_final.pth").resolve()
-            checkpoint_final_path = Path(".").resolve() / "checkpoint_final.pth"
-            checkpoint_best_path = Path(".").resolve() / "checkpoint_best.pth"
-
-            shutil.copy(checkpoint_final_path, save_path_final)
-            shutil.copy(checkpoint_best_path, save_path_best)
-            logger.info(f"Saved model to {save_path_best} and {save_path_final}")
+        save_path = Path(cfg.save + f"_fold_{cfg.fold}.pth").resolve() if cfg.save else None
+        if save_path is not None:
+            logger.info(f"Saving checkpoint to {save_path}")
+            nnunet_trainer.save_checkpoint(str(save_path))
 
     if cfg.pipeline.run_validation:
         logger.info("Starting validation")
@@ -83,6 +77,7 @@ def run(cfg: DictConfig):
         nnunet_trainer.perform_actual_validation(
             save_probabilities=cfg.trainer.export_validation_probabilities
         )
+        metrics = read_metrics()
         logger.info("Validation finished")
 
         if cfg.pipeline.remove_validation_files:
@@ -92,12 +87,12 @@ def run(cfg: DictConfig):
                 if ".nii.gz" in file_path.name:
                     os.remove(file_path.resolve())
 
-        performance = read_performance()
-        assert performance is not None
+        val_dice_score = metrics["foreground_mean"]["Dice"]
+        performance = 1 - val_dice_score
 
         write_performance(performance)
 
-        logger.info(f"Mean Validation Dice Score: {1 - performance}")
+        logger.info(f"Mean Validation Dice Score: {val_dice_score}")
         logger.info(f"Performance: {performance}")
 
     tracker.stop()
