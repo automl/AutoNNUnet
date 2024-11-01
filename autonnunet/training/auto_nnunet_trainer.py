@@ -87,6 +87,9 @@ class AutoNNUNetTrainer(nnUNetTrainer):
             shutil.copyfile(load_path_best, checkpoint_best_path)
             nnunet_trainer.load_checkpoint(str(load_path_final))
 
+        if cfg.pipeline.continue_training and Path("./checkpoint_best.pth").exists():
+            nnunet_trainer.load_checkpoint("checkpoint_best.pth")
+                
         return nnunet_trainer
 
     def print_to_log_file(self, *args, also_print_to_console=True, add_timestamp=True):

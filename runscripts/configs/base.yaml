@@ -10,7 +10,7 @@ pipeline:
   run_training: true
   run_validation: true
   validate_with_best: true
-  continue_training: false
+  continue_training: true
   remove_validation_files: true
 
 trainer:

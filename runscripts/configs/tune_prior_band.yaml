@@ -9,11 +9,11 @@ defaults:
 neps_seed: 0
 
 # HPO configuration
-n_trials: 120     # Total number of configs
+n_trials: 127     # Total number of configs
 min_budget: 15    # Minimum number of epochs
 max_budget: 1000  # Maximum number of epochs
 eta: 4            # Reduction factor for successive halving
-budget: 15000     # Total budget in epochs
+budget: 15625     # Total budget in epochs
 
 hydra:
   sweeper:
@@ -46,7 +46,7 @@ hydra:
           inc_mutation_std: 0.25
           model_based: False
           sample_default_first: True
-          sample_default_at_target: False
+          sample_default_at_target: True
   run:  
     dir: output/prior_band/${dataset.name}/${trainer.configuration}/${neps_seed}
   sweep:

@@ -52,26 +52,31 @@ def run(cfg: DictConfig):
         country_iso_code="DEU",
         log_level="WARNING"
     )
-    tracker.start()
-
     logger.info("Creating trainer")
     nnunet_trainer = AutoNNUNetTrainer.from_config(cfg)
 
     if cfg.pipeline.run_training:
-        logger.info("Starting training")
-        nnunet_trainer.run_training()
-        logger.info("Training finished")
+        if Path("./checkpoint_final.pth").exists() and cfg.pipeline.continue_training:
+            logger.info("Found checkpoint_final.pth. Skipping training.")
+        else:
+            tracker.start()
 
-        if cfg.save:
-            logger.info("Saving model to checkpoint dir.")
-            save_path_best = Path(cfg.save + f"_fold_{cfg.fold}_best.pth").resolve()
-            save_path_final = Path(cfg.save + f"_fold_{cfg.fold}_final.pth").resolve()
-            checkpoint_final_path = Path(".").resolve() / "checkpoint_final.pth"
-            checkpoint_best_path = Path(".").resolve() / "checkpoint_best.pth"
+            logger.info("Starting training")
+            nnunet_trainer.run_training()
+            logger.info("Training finished")
 
-            shutil.copy(checkpoint_final_path, save_path_final)
-            shutil.copy(checkpoint_best_path, save_path_best)
-            logger.info(f"Saved model to {save_path_best} and {save_path_final}")
+            tracker.stop()
+
+            if cfg.save:
+                logger.info("Saving model to checkpoint dir.")
+                save_path_best = Path(cfg.save + f"_fold_{cfg.fold}_best.pth").resolve()
+                save_path_final = Path(cfg.save + f"_fold_{cfg.fold}_final.pth").resolve()
+                checkpoint_final_path = Path(".").resolve() / "checkpoint_final.pth"
+                checkpoint_best_path = Path(".").resolve() / "checkpoint_best.pth"
+
+                shutil.copy(checkpoint_final_path, save_path_final)
+                shutil.copy(checkpoint_best_path, save_path_best)
+                logger.info(f"Saved model to {save_path_best} and {save_path_final}")
 
     if cfg.pipeline.run_validation:
         logger.info("Starting validation")
@@ -100,7 +105,6 @@ def run(cfg: DictConfig):
         logger.info(f"Mean Validation Dice Score: {1 - performance}")
         logger.info(f"Performance: {performance}")
 
-    tracker.stop()
     return performance
 
 

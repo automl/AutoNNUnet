@@ -11,5 +11,5 @@ hydra:
   sweep:
     dir: output/prepare/${dataset.name}/
     subdir: ""   
-  job:
-    chdir: true
+  # job:
+  #   chdir: true

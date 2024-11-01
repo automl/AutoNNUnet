@@ -42,13 +42,13 @@ python runscripts/train.py -m "dataset=glob(*)" "fold=range(5)"
 ## Compute Hyperband budgets
 
 ```bash
-python autonnunet/utils/hyperband.py --b_min=15 --b_max=1000 --eta=4
+python runscripts/determine_hyperband_budgets.py --b_min=15 --b_max=1000 --eta=4
 ```
 
 ## HPO
 
 ```bash
-python runscripts/train.py --config-name=tune_smac_mf -m "dataset=glob(*)" "fold=range(5)"
+python runscripts/train.py --config-name=tune_smac_mf -m "dataset=glob(*)"
 ```
 
 ## Credits

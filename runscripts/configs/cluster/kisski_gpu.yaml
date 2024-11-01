@@ -8,9 +8,6 @@ hydra:
     gres: gpu:1
     gpus_per_task: 1
     cpus_per_task: 48
-    # exclude: gpu004.kisski
-    # additional_parameters: 
-    #   reservation: test
     mem_gb: 120
     timeout_min: 4320 # 3 days
     setup:

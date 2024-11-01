@@ -10,6 +10,7 @@ import sys
 from typing import TYPE_CHECKING
 
 import hydra
+from autonnunet.datasets import Dataset
 
 if TYPE_CHECKING:
     from autonnunet.datasets import Dataset
