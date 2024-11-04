@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import os
+import pathlib
+
 import argparse
 import logging
 
@@ -15,11 +18,11 @@ if __name__  == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     plotter = Plotter(
-        datasets=ALL_DATASETS,
+        datasets=["Dataset004_Hippocampus"],
         configuration=args.configuration
     )
-    plotter.load_data()
-    plotter.plot_hpo(x_log_scale=False, y_log_scale=False)
-    plotter.plot_hyperband()
+    plotter.load_data() 
+    # plotter.plot_hpo(x_log_scale=False, y_log_scale=False)
+    # plotter.plot_hyperband()
     # plotter.compute_emissions() 
-    # plotter.plot_baselines()
+    plotter.plot_baselines()

@@ -13,33 +13,8 @@ def seed_everything(seed: int) -> None:
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
     torch.cuda.manual_seed(seed)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-    torch.backends.cudnn.enabled = False
     np.random.seed(seed)    # noqa: NPY002
     random.seed(seed)
-
-
-def get_device(device: str) -> torch.device:
-    # taken from nnunetv2.run.run_training
-    assert device in [
-        "cpu",
-        "cuda",
-        "mps",
-    ], f"-device must be either cpu, mps or cuda. Got: {device}."
-    if device == "cpu":
-        # let's allow torch to use hella threads
-        import multiprocessing
-
-        torch.set_num_threads(multiprocessing.cpu_count())
-        return torch.device("cpu")
-    if device == "cuda":
-        # multithreading in torch doesn't help nnU-Net if run on GPU
-        torch.set_num_threads(1)
-        torch.set_num_interop_threads(1)
-        return torch.device("cuda")
-    return torch.device("mps")
-
 
 def write_performance(performance: float) -> None:
     with open("./performance.csv", "w+") as f:

@@ -13,11 +13,6 @@ from typing import TYPE_CHECKING
 
 import hydra
 import torch
-from autonnunet.utils import (
-    read_performance,
-    seed_everything,
-    write_performance,
-)
 from codecarbon import OfflineEmissionsTracker
 
 if TYPE_CHECKING:
@@ -26,12 +21,23 @@ if TYPE_CHECKING:
 
 @hydra.main(version_base=None, config_path="configs", config_name="train")
 def run(cfg: DictConfig):
-    # We have to do lazy imports here to make everything pickable for SLURM
+    # --------------------------------------------------------------------------------------------
+    # GENERAL SETUP
+    # --------------------------------------------------------------------------------------------
+    # We have to do lazy imports here to make everything pickable for SLURM.
+    # Also, we need to ensure that environment variables are set
+    # before importing AutoNNUNet
     from autonnunet.training import AutoNNUNetTrainer
+    from autonnunet.utils import (
+        read_performance,
+        seed_everything,
+        write_performance,
+    )
     from torch.backends import cudnn
+
     
     if torch.cuda.is_available():
-        cudnn.deterministic = True
+        cudnn.deterministic = False
         cudnn.benchmark = True
     
     logger = logging.getLogger()
@@ -39,20 +45,30 @@ def run(cfg: DictConfig):
     logger.info("Starting training script")
     logger.info(f"torch.cuda.is_available(): {torch.cuda.is_available()}")
 
+    logger.info("Setting seed")
+    seed_everything(cfg.seed)
+
+    # --------------------------------------------------------------------------------------------
+    # READ PEFROMANCE TO CHECK IF JOB IS DONE
+    # --------------------------------------------------------------------------------------------
     performance = read_performance()
     if performance is not None and cfg.pipeline.return_if_done:
         logger.info(f"Job already done. Returning performance: {performance}")
         return performance
 
-    logger.info("Setting seed")
-    seed_everything(cfg.seed)
-
+    # --------------------------------------------------------------------------------------------
+    # CODECARBON SETUP
+    # --------------------------------------------------------------------------------------------
     logger.info("Setting up emissions tracker")
     tracker = OfflineEmissionsTracker(
         country_iso_code="DEU",
         log_level="WARNING"
     )
     logger.info("Creating trainer")
+
+    # --------------------------------------------------------------------------------------------
+    # TRAINING
+    # --------------------------------------------------------------------------------------------
     nnunet_trainer = AutoNNUNetTrainer.from_config(cfg)
 
     if cfg.pipeline.run_training:
@@ -78,6 +94,9 @@ def run(cfg: DictConfig):
                 shutil.copy(checkpoint_best_path, save_path_best)
                 logger.info(f"Saved model to {save_path_best} and {save_path_final}")
 
+    # --------------------------------------------------------------------------------------------
+    # VALIDATION
+    # --------------------------------------------------------------------------------------------
     if cfg.pipeline.run_validation:
         logger.info("Starting validation")
         if cfg.pipeline.validate_with_best:

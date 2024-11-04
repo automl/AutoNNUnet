@@ -27,6 +27,7 @@ PROGRESS_REPLACEMENT_MAP = {
 
 HISTORY_REPLACEMENT_MAP = {
     "config_id": "Configuration ID",
+    "run_id": "Run ID",
     "budget": "Budget",
 }
 
@@ -39,7 +40,8 @@ VALIDATION_METRICS_FILENAME = "summary.json"
 EMISSIONS_FILENAME = "emissions.csv"
 DATASET_JSON_FILENAME = "dataset.json"
 
-TRAINING_BUDGET = 1000      # Maximum number of epochs
+# print full dataframes
+pd.set_option("display.max_rows", None)
 
 @dataclass
 class BaselineResult:
@@ -61,9 +63,10 @@ class Plotter:
             self,
             configuration: str,
             datasets: list[str],
-            min_budget: float = 15.0,
+            min_budget: float = 4.0,
             max_budget: float = 1000.0,
-            eta: int = 4,
+            n_full_trainings: int = 12,
+            eta: int = 3,
             n_folds: int = 5,
             style: STYLES_TYPE = "whitegrid",
             palette: str = "colorblind",
@@ -75,6 +78,9 @@ class Plotter:
         # We need these to find the respective directories
         self.configuration = configuration
 
+        self.min_budget = min_budget
+        self.max_budget = max_budget
+
         self.n_folds = n_folds
         self.hpo_seed = hpo_seed
 
@@ -85,15 +91,16 @@ class Plotter:
             self.real_budgets_in_stage,
             _,
             _,
-            self.total_real_budget
+            _
         ) = compute_hyperband_budgets(
             b_min=min_budget,
             b_max=max_budget,
             eta=eta,
-            print_output=False
+            print_output=False,
+            is_prior_band=True  # DEBUG
         )
 
-        self.n_full_trainings = self.total_real_budget / TRAINING_BUDGET
+        self.n_full_trainings = n_full_trainings
 
         self.real_budgets_per_config = get_real_budget_per_config(
             n_configs_in_stage=self.n_configs_in_stage,
@@ -120,20 +127,20 @@ class Plotter:
 
     def load_data(self):
         self._baseline_data = self._load_baseline_data(datasets=self.datasets)
-        self._smac_data = self._load_hpo_data(datasets=self.datasets, approach="smac")
-        self._prior_band_data = self._load_hpo_data(datasets=self.datasets, approach="prior_band")
+        # self._smac_data = self._load_hpo_data(datasets=self.datasets, approach="smac")
+        # self._prior_band_data = self._load_hpo_data(datasets=self.datasets, approach="prior_band")
 
         self._baseline_datasets = self._baseline_data.progress["Dataset"].unique().tolist()
-        self._smac_datasets = self._smac_data.incumbent_progress["Dataset"].unique().tolist()
-        self._prior_band_datasets = self._prior_band_data.incumbent_progress["Dataset"].unique().tolist()
+        # self._smac_datasets = self._smac_data.incumbent_progress["Dataset"].unique().tolist()
+        # self._prior_band_datasets = self._prior_band_data.incumbent_progress["Dataset"].unique().tolist()
 
         self.logger.info(
             f"Loaded {len(self._baseline_datasets)} datasets for baseline.")
-        self.logger.info(
-            f"Loaded {len(self._smac_datasets)} datasets for SMAC.")
-        self.logger.info(
-            f"Loaded {len(self._prior_band_datasets)} datasets for PriorBand.")
-
+        # self.logger.info(
+        #     f"Loaded {len(self._smac_datasets)} datasets for SMAC.")
+        # self.logger.info(
+        #     f"Loaded {len(self._prior_band_datasets)} datasets for PriorBand.")
+        
     def get_baseline_data(self, dataset: str):
         progress = self._baseline_data.progress[
             self._baseline_data.progress["Dataset"] == dataset]
@@ -149,14 +156,14 @@ class Plotter:
         )
 
     def get_hpo_data(self, dataset: str):
-        smac_incumbent_progress = self._smac_data.incumbent_progress[
-            self._smac_data.incumbent_progress["Dataset"] == dataset]
-        smac_emissions = self._smac_data.emissions[
-            self._smac_data.emissions["Dataset"] == dataset]
-        smac_history = self._smac_data.history[
-            self._smac_data.history["Dataset"] == dataset]
-        smac_incumbent = self._smac_data.incumbent[
-            self._smac_data.incumbent["Dataset"] == dataset]
+        # smac_incumbent_progress = self._smac_data.incumbent_progress[
+        #     self._smac_data.incumbent_progress["Dataset"] == dataset]
+        # smac_emissions = self._smac_data.emissions[
+        #     self._smac_data.emissions["Dataset"] == dataset]
+        # smac_history = self._smac_data.history[
+        #     self._smac_data.history["Dataset"] == dataset]
+        # smac_incumbent = self._smac_data.incumbent[
+        #     self._smac_data.incumbent["Dataset"] == dataset]
 
         prior_band_incumbent_progress = self._prior_band_data.incumbent_progress[
             self._prior_band_data.incumbent_progress["Dataset"] == dataset]
@@ -166,19 +173,26 @@ class Plotter:
             self._prior_band_data.history["Dataset"] == dataset]
         prior_band_incumbent = self._prior_band_data.incumbent[
             self._prior_band_data.incumbent["Dataset"] == dataset]
-
-        incumbent_progress = pd.concat(
-            [smac_incumbent_progress, prior_band_incumbent_progress])
-        emissions = pd.concat([smac_emissions, prior_band_emissions])
-        history = pd.concat([smac_history, prior_band_history])
-        incumbent = pd.concat([smac_incumbent, prior_band_incumbent])
-
+        
         return HPOResult(
-            incumbent_progress=incumbent_progress,
-            emissions=emissions,
-            history=history,
-            incumbent=incumbent
+            incumbent_progress=prior_band_incumbent_progress,
+            emissions=prior_band_emissions,
+            history=prior_band_history,
+            incumbent=prior_band_incumbent
         )
+
+        # incumbent_progress = pd.concat(
+        #     [smac_incumbent_progress, prior_band_incumbent_progress])
+        # emissions = pd.concat([smac_emissions, prior_band_emissions])
+        # history = pd.concat([smac_history, prior_band_history])
+        # incumbent = pd.concat([smac_incumbent, prior_band_incumbent])
+
+        # return HPOResult(
+        #     incumbent_progress=incumbent_progress,
+        #     emissions=emissions,
+        #     history=history,
+        #     incumbent=incumbent
+        # )
 
     def _load_validation_metrics(self, fold_dir: Path) -> pd.DataFrame:
         metrics_path = fold_dir / "validation" / VALIDATION_METRICS_FILENAME
@@ -189,7 +203,6 @@ class Plotter:
         labels = list(dataset_info["labels"].keys())
 
         rows = []
-
         for case in metrics["metric_per_case"]:
             prediction_file = Path(case["prediction_file"]).name
             reference_file = Path(case["reference_file"]).name
@@ -276,20 +289,22 @@ class Plotter:
             emissions=all_emissions
         )
 
-    def _load_incumbent(self, smac_run_dir: Path) -> pd.DataFrame:
-        incumbent = pd.read_csv(smac_run_dir / INCUMBENT_FILENAME)
-        history = pd.read_csv(smac_run_dir / HISTORY_FILENAME)
+    def _load_incumbent(self, hpo_run_dir: Path) -> pd.DataFrame:
+        incumbent = pd.read_csv(hpo_run_dir / INCUMBENT_FILENAME)
+        history = pd.read_csv(hpo_run_dir / HISTORY_FILENAME)
 
         # Since we run succesive halving, we have to insert the real
         # budget of a run by subtracting the budget of the previous run
         # in the runhistory
         history.loc[:, "real_budget"] = 0.
 
-        for config_id, real_budget in self.real_budgets_per_config.items():
-            history.loc[history["config_id"] == config_id, "real_budget"] = real_budget
+        for run_id, real_budget in self.real_budgets_per_config.items():
+            history.loc[history["run_id"] == run_id, "real_budget"] = real_budget
 
         # The real used budget is the sum of all additional budgets
         incumbent["real_budget_used"] = history["real_budget"].cumsum()
+
+        assert len(incumbent) == len(history)
 
         incumbent_expanded = []
         for _, row in incumbent.iterrows():
@@ -297,11 +312,11 @@ class Plotter:
                 [f"performance_fold_{i}" for i in range(5)]
             ):
                 performance = history[
-                    history["config_id"] == row["config_id"]
+                    history["run_id"] == row["run_id"]
                 ][performance_key].to_numpy()[0]
 
                 row_data = {
-                    "Configuration ID": row["config_id"],
+                    "Run ID": row["run_id"],
                     "Cost": performance,
                     "Budget": row["budget"],
                     "Fold": fold,
@@ -315,7 +330,7 @@ class Plotter:
 
         # Used budget is the cumulative sum of all additional budgets
         # Since one training consists of N_FOLDS, we divide by N_FOLDS
-        incumbent["Full Model Trainings"] = incumbent["Real Budget Used"] / TRAINING_BUDGET
+        incumbent["Full Model Trainings"] = incumbent["Real Budget Used"] / self.max_budget
 
         return incumbent
     
@@ -341,48 +356,50 @@ class Plotter:
                 self.logger.info(f"{approach}: Skipping {dataset}.")
                 continue
 
-            smac_run_dir = dataset_dir \
+            hpo_run_dir = dataset_dir \
                 / self.configuration / str(self.hpo_seed)
-            if not (smac_run_dir / HISTORY_FILENAME).exists():
+            if not (hpo_run_dir / HISTORY_FILENAME).exists():
                 self.logger.info(f"{approach}: Skipping {dataset}.")
                 continue
 
-            history = self._load_history(smac_run_dir / HISTORY_FILENAME)
+            history = self._load_history(hpo_run_dir / HISTORY_FILENAME)
             history["Dataset"] = dataset
             history["Approach"] = approach
 
-            incumbent = self._load_incumbent(smac_run_dir)
+            incumbent = self._load_incumbent(hpo_run_dir)
             incumbent["Dataset"] = dataset
             incumbent["Approach"] = approach
 
             all_history.append(history)
             all_incumbent.append(incumbent)
 
-            incumbent_config_id = incumbent["Configuration ID"].to_numpy()[-1]
+            incumbent_run_id = incumbent["Run ID"].to_numpy()[-1]
 
-            for config_id in history["Configuration ID"].unique():
+            for run_id in history["Run ID"].unique():
                 for fold in range(self.n_folds):
-                    run_id = config_id * self.n_folds + fold
-                    run_dir = smac_run_dir / str(run_id)
+                    slurm_run_id = run_id * self.n_folds + fold
+                    run_dir = hpo_run_dir / str(slurm_run_id)
+
                     if not (run_dir).exists():
+                        print(f"Unable to read {run_dir}.")
                         continue
-
-                    progress = self._load_progress(run_dir)
-                    progress["Dataset"] = dataset
-                    progress["Approach"] = approach
-                    progress["Fold"] = fold
-                    progress["Configuration ID"] = config_id
-
-                    if config_id == incumbent_config_id:
-                        all_progress.append(progress)
 
                     if (run_dir / EMISSIONS_FILENAME).is_file():
                         emissions = pd.read_csv(run_dir / EMISSIONS_FILENAME)
                         emissions["Dataset"] = dataset
                         emissions["Approach"] = approach
                         emissions["Fold"] = fold
-                        emissions["Configuration ID"] = config_id
+                        emissions["Run ID"] = run_id
                         all_emissions.append(emissions)
+
+                    if run_id == incumbent_run_id:
+                        progress = self._load_progress(run_dir)
+                        progress["Dataset"] = dataset
+                        progress["Approach"] = approach
+                        progress["Fold"] = fold
+                        progress["Run ID"] = run_id
+                        
+                        all_progress.append(progress)
 
         all_progress = pd.concat(all_progress)
         all_emissions = pd.concat(all_emissions)
@@ -483,9 +500,7 @@ class Plotter:
 
         if x_log_scale:
             g.set_xscale("log")
-            g.set_xlim(0.1, self.n_full_trainings)
-        else:
-            g.set_xlim(0, self.n_full_trainings)
+        g.set_xlim(1, self.n_full_trainings)
 
         if y_log_scale:
             g.set_ylim(1e-2, 1)
@@ -516,10 +531,10 @@ class Plotter:
         plt.clf()
 
     def plot_hpo(self, **kwargs) -> None:
-        for dataset in self._smac_datasets:
+        for dataset in self._prior_band_datasets:
             try:
                 self._plot_hpo_(dataset, **kwargs)
-            except ValueError:
+            except ValueError as e:
                 self.logger.info(f"Skipping {dataset}.")
                 continue
 
@@ -534,7 +549,7 @@ class Plotter:
             history.loc[history["Budget"] == budget, "Budget"] = budget_key + 1
 
         g = sns.lineplot(
-            x="Configuration ID",
+            x="Run ID",
             y="Budget",
             data=history,
             drawstyle="steps-post",
@@ -563,7 +578,7 @@ class Plotter:
         plt.clf()
 
     def plot_hyperband(self) -> None:
-        for dataset in self._smac_datasets:
+        for dataset in self._prior_band_datasets:
             self._plot_hyperband(dataset)
 
     def plot_metrics(
@@ -621,7 +636,6 @@ class Plotter:
         hpo = self._load_baseline_data(datasets=datasets)
         hpo.metrics["Approach"] = "SMAC MF"
 
-        print(baseline.metrics)
         sys.exit()
 
         # We remove all background classes, since we compute the mean foreground Dice

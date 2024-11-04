@@ -24,7 +24,6 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 
 from autonnunet.training.auto_nnunet_logger import AutoNNUNetLogger
 from autonnunet.training.dummy_lr_scheduler import DummyLRScheduler
-from autonnunet.utils import get_device
 from autonnunet.utils.paths import NNUNET_PREPROCESSED
 
 if TYPE_CHECKING:
@@ -73,7 +72,7 @@ class AutoNNUNetTrainer(nnUNetTrainer):
             fold=cfg.fold,
             dataset_json=dataset_json,
             unpack_dataset=not cfg.trainer.use_compressed_data,
-            device=get_device(cfg.device),
+            device=torch.device(cfg.device),
         )
         nnunet_trainer.set_hp_config(cfg.hp_config)
 
@@ -87,7 +86,7 @@ class AutoNNUNetTrainer(nnUNetTrainer):
             shutil.copyfile(load_path_best, checkpoint_best_path)
             nnunet_trainer.load_checkpoint(str(load_path_final))
 
-        if cfg.pipeline.continue_training and Path("./checkpoint_best.pth").exists():
+        if cfg.pipeline.continue_training and cfg.pipeline.continue_training is True and Path("./checkpoint_best.pth").exists():
             nnunet_trainer.load_checkpoint("checkpoint_best.pth")
                 
         return nnunet_trainer

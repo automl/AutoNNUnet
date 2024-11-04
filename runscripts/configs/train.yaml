@@ -1,8 +1,17 @@
+# @package _global_
 defaults:
-  - _self_
   - base
+  - _self_
   - cluster: kisski_gpu
   - dataset: Dataset001_BrainTumour
+
+pipeline:
+  return_if_done: false
+  run_training: true
+  run_validation: true
+  validate_with_best: true
+  continue_training: false
+  remove_validation_files: true
 
 hydra:
   output_subdir: "."
@@ -14,5 +23,5 @@ hydra:
   sweep:
     dir: output/baseline/${dataset.name}/${trainer.configuration}
     subdir: fold_${fold}     
-  # job:
-  #   chdir: true
+  job:
+    chdir: true
