@@ -23,19 +23,30 @@ trainer:
   disable_checkpointing: false
 
 hp_config:
+  # Fidelity
+  num_epochs: 1000
+  total_epochs: 1000
+
+  # Base Hyperparameters
   optimizer: SGD
   momentum: 0.99
   initial_lr: 1e-2
   weight_decay: 3e-5
   lr_scheduler: PolyLRScheduler
   oversample_foreground_percent: 0.33
-  num_epochs: 1000
-  total_epochs: 1000
-  enable_deep_supervision: true
-  normalization: InstanceNorm 
-  n_conv_per_stage_encoder: 2 
-  n_conv_per_stage_decoder: 2
   loss_function: DiceAndCrossEntropyLoss
+  aug_factor: 1.
+
+  # Fine-grained data augmentation
+  aug_scale_prob: 0.2
+  aug_rotate_prob: 0.2
+  aug_gaussian_noise_prob: 0.1
+  aug_gaussian_blur_prob: 0.2
+  aug_brightness_prob: 0.15
+  aug_contrast_prob: 0.15
+  aug_lowres_prob: 0.25
+  aug_gamma_1_prob: 0.1
+  aug_gamma_2_prob: 0.3
 
 hydra:
   job:

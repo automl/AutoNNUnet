@@ -10,7 +10,7 @@ hyperparameters:
   hp_config.momentum:
     type: uniform_float
     upper: 0.999
-    lower: 0.85
+    lower: 0.5
     default: 0.99
     log: true
   hp_config.initial_lr:
@@ -38,24 +38,6 @@ hyperparameters:
     lower: 0.0
     default: 0.33
     log: false
-  hp_config.normalization:
-    type: categorical
-    choices:
-      - InstanceNorm
-      - BatchNorm
-    default: InstanceNorm
-  hp_config.n_conv_per_stage_encoder:
-    type: uniform_int
-    upper: 3
-    lower: 2
-    log: false
-    default: 2
-  hp_config.n_conv_per_stage_decoder:
-    type: uniform_int
-    upper: 3
-    lower: 2
-    log: false
-    default: 2
   hp_config.loss_function:
     type: categorical
     choices:
@@ -64,6 +46,12 @@ hyperparameters:
       - CrossEntropyLoss
       - TopKLoss
     default: DiceAndCrossEntropyLoss
+  hp_config.aug_factor:
+    type: uniform_float
+    upper: 3.0
+    lower: 0.0
+    default: 1.0
+    log: false
 conditions:
   - child: hp_config.momentum
     parent: hp_config.optimizer

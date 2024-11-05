@@ -7,11 +7,6 @@ defaults:
 
 pipeline:
   return_if_done: false
-  run_training: true
-  run_validation: true
-  validate_with_best: true
-  continue_training: false
-  remove_validation_files: true
 
 hydra:
   output_subdir: "."

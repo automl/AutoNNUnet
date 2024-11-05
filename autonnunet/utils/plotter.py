@@ -12,8 +12,8 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from autonnunet.utils import compute_hyperband_budgets, get_real_budget_per_config
-from autonnunet.utils import format_dataset_name, load_json
+from autonnunet.utils import (compute_hyperband_budgets, format_dataset_name,
+                              get_real_budget_per_config, load_json)
 from autonnunet.utils.paths import (AUTONNUNET_OUTPUT, AUTONNUNET_PLOTS,
                                     AUTONNUNET_TABLES)
 
@@ -63,10 +63,10 @@ class Plotter:
             self,
             configuration: str,
             datasets: list[str],
-            min_budget: float = 4.0,
+            min_budget: float = 10.0,
             max_budget: float = 1000.0,
-            n_full_trainings: int = 12,
             eta: int = 3,
+            n_full_trainings: int = 5,
             n_folds: int = 5,
             style: STYLES_TYPE = "whitegrid",
             palette: str = "colorblind",
@@ -97,7 +97,7 @@ class Plotter:
             b_max=max_budget,
             eta=eta,
             print_output=False,
-            is_prior_band=True  # DEBUG
+            is_prior_band=True  
         )
 
         self.n_full_trainings = n_full_trainings
@@ -115,6 +115,7 @@ class Plotter:
         # Seaborn settings
         sns.set_style(style=style)
         sns.set_palette(palette=palette)
+        self.palette = palette
 
         # Matplotlib settings
         self.figsize = figsize
@@ -128,19 +129,19 @@ class Plotter:
     def load_data(self):
         self._baseline_data = self._load_baseline_data(datasets=self.datasets)
         # self._smac_data = self._load_hpo_data(datasets=self.datasets, approach="smac")
-        # self._prior_band_data = self._load_hpo_data(datasets=self.datasets, approach="prior_band")
+        self._prior_band_data = self._load_hpo_data(datasets=self.datasets, approach="prior_band")
 
         self._baseline_datasets = self._baseline_data.progress["Dataset"].unique().tolist()
         # self._smac_datasets = self._smac_data.incumbent_progress["Dataset"].unique().tolist()
-        # self._prior_band_datasets = self._prior_band_data.incumbent_progress["Dataset"].unique().tolist()
+        self._prior_band_datasets = self._prior_band_data.incumbent_progress["Dataset"].unique().tolist()
 
         self.logger.info(
             f"Loaded {len(self._baseline_datasets)} datasets for baseline.")
         # self.logger.info(
         #     f"Loaded {len(self._smac_datasets)} datasets for SMAC.")
-        # self.logger.info(
-        #     f"Loaded {len(self._prior_band_datasets)} datasets for PriorBand.")
-        
+        self.logger.info(
+            f"Loaded {len(self._prior_band_datasets)} datasets for PriorBand.")
+
     def get_baseline_data(self, dataset: str):
         progress = self._baseline_data.progress[
             self._baseline_data.progress["Dataset"] == dataset]
@@ -173,7 +174,7 @@ class Plotter:
             self._prior_band_data.history["Dataset"] == dataset]
         prior_band_incumbent = self._prior_band_data.incumbent[
             self._prior_band_data.incumbent["Dataset"] == dataset]
-        
+
         return HPOResult(
             incumbent_progress=prior_band_incumbent_progress,
             emissions=prior_band_emissions,
@@ -238,6 +239,11 @@ class Plotter:
             progress["dice_per_class_or_region"].tolist(),
             columns=labels
             )
+
+        # Use epoch_start_timestamps and epoch_end_timestamps
+        progress["Runtime"] = progress["epoch_end_timestamps"] - progress["epoch_start_timestamps"]
+        progress = progress.drop(columns=["epoch_start_timestamps", "epoch_end_timestamps"])
+
         return pd.concat(
             [progress, labels_df],
             axis=1
@@ -333,11 +339,10 @@ class Plotter:
         incumbent["Full Model Trainings"] = incumbent["Real Budget Used"] / self.max_budget
 
         return incumbent
-    
+
     def _load_history(self, history_path: Path) -> pd.DataFrame:
         history = pd.read_csv(history_path)
-        history = history.rename(columns=HISTORY_REPLACEMENT_MAP)
-        return history
+        return history.rename(columns=HISTORY_REPLACEMENT_MAP)
 
     def _load_hpo_data(self, datasets: list[str], approach: str):
         assert approach in ["smac", "prior_band"]
@@ -398,7 +403,7 @@ class Plotter:
                         progress["Approach"] = approach
                         progress["Fold"] = fold
                         progress["Run ID"] = run_id
-                        
+
                         all_progress.append(progress)
 
         all_progress = pd.concat(all_progress)
@@ -500,7 +505,9 @@ class Plotter:
 
         if x_log_scale:
             g.set_xscale("log")
-        g.set_xlim(1, self.n_full_trainings)
+            g.set_xlim(0.1, self.n_full_trainings)
+        else:
+            g.set_xlim(0, self.n_full_trainings)
 
         if y_log_scale:
             g.set_ylim(1e-2, 1)
@@ -508,7 +515,7 @@ class Plotter:
         else:
             pass
             # g.set_ylim(0.9 * baseline_mean, None)
-       
+
         plt.minorticks_on()
         plt.grid(visible=True, which="both", linestyle="--")
         plt.grid(visible=True, which="minor", linestyle=":", linewidth=0.5)
@@ -534,13 +541,13 @@ class Plotter:
         for dataset in self._prior_band_datasets:
             try:
                 self._plot_hpo_(dataset, **kwargs)
-            except ValueError as e:
+            except ValueError:
                 self.logger.info(f"Skipping {dataset}.")
                 continue
 
     def _plot_hyperband(self, dataset: str) -> None:
         hpo_data = self.get_hpo_data(dataset)
-        
+
         plt.figure(1, figsize=self.figsize)
 
         history = hpo_data.history.copy()
@@ -560,14 +567,11 @@ class Plotter:
         all_configs = [v for sublist in self.n_configs_in_stage.values() for v in sublist]
         n_configs = sum(all_configs)
 
-        x_ticks = [
-            0,
-            list(self.n_configs_in_stage.values())[0][0]
-        ] + np.cumsum([sum(sublist) for sublist in list(self.n_configs_in_stage.values())[:-1]]).tolist()
+        x_ticks = [0, next(iter(self.n_configs_in_stage.values()))[0], *np.cumsum([sum(sublist) for sublist in list(self.n_configs_in_stage.values())[:-1]]).tolist()]
 
         g.set_xlim(1, n_configs + 1)
         g.set_xticks(x_ticks)
-        
+
         g.set_ylim(0.9, len(self.budgets_in_stage[0]) + 0.1)
         g.set_yticks(range(1, len(self.budgets_in_stage[0]) + 1))
         g.set_yticklabels([str(b) for b in self.budgets_in_stage[0]])
@@ -680,5 +684,30 @@ class Plotter:
         )
         table.to_latex(AUTONNUNET_TABLES / f"{self.configuration}_table.tex")
 
+    def plot_baseline_runtimes(self):
+        baseline_runtimes = self._baseline_data.progress[["Dataset", "Fold", "Runtime"]]
+        dataset_runtimes = baseline_runtimes.groupby(["Dataset", "Fold"]).sum().reset_index()
+        dataset_runtimes["Runtime"] /= 3600
+
+        dataset_runtimes["Dataset"] = dataset_runtimes["Dataset"].apply(lambda s: format_dataset_name(s).replace(" ", "\n"))
+
+        # Create bar plot of dataset runtimes and mark average
+        # Use different colors for each bar
+        plt.figure(1, figsize=(self.figsize[0] * 1.5, self.figsize[1] * 1.3))
+        g = sns.barplot(
+            x="Dataset",
+            y="Runtime",
+            data=dataset_runtimes,
+        )
+
+        avg_runtime = dataset_runtimes["Runtime"].mean()
+        plt.axhline(y=avg_runtime, color=sns.color_palette(self.palette)[1], linestyle="--")
+
+        plt.title(f"Runtime per Dataset (Mean = {avg_runtime:.2f} h)")
+        g.set_xlabel("Dataset")
+        g.set_ylabel("Runtime [h]")
+
+        plt.tight_layout()
+        plt.savefig(AUTONNUNET_PLOTS / f"{self.configuration}_runtimes.png", dpi=500)
 
 

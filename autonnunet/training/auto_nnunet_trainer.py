@@ -8,9 +8,31 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 import torch
+from batchgenerators.transforms.abstract_transforms import (AbstractTransform,
+                                                            Compose)
+from batchgenerators.transforms.color_transforms import (
+    BrightnessMultiplicativeTransform, ContrastAugmentationTransform,
+    GammaTransform)
+from batchgenerators.transforms.noise_transforms import (
+    GaussianBlurTransform, GaussianNoiseTransform)
+from batchgenerators.transforms.resample_transforms import \
+    SimulateLowResolutionTransform
+from batchgenerators.transforms.spatial_transforms import (MirrorTransform,
+                                                           SpatialTransform)
+from batchgenerators.transforms.utility_transforms import (
+    NumpyToTensor, RemoveLabelTransform, RenameTransform)
 from batchgenerators.utilities.file_and_folder_operations import load_json
-from dynamic_network_architectures.building_blocks.helper import \
-    get_matching_batchnorm
+from nnunetv2.training.data_augmentation.custom_transforms.cascade_transforms import (
+    ApplyRandomBinaryOperatorTransform, MoveSegAsOneHotToData,
+    RemoveRandomConnectedComponentFromOneHotEncodingTransform)
+from nnunetv2.training.data_augmentation.custom_transforms.deep_supervision_donwsampling import \
+    DownsampleSegForDSTransform2
+from nnunetv2.training.data_augmentation.custom_transforms.masking import \
+    MaskTransform
+from nnunetv2.training.data_augmentation.custom_transforms.region_based_training import \
+    ConvertSegmentationToRegionsTransform
+from nnunetv2.training.data_augmentation.custom_transforms.transforms_for_dummy_2d import (
+    Convert2DTo3DTransform, Convert3DTo2DTransform)
 from nnunetv2.training.loss.compound_losses import (DC_and_BCE_loss,
                                                     DC_and_CE_loss)
 from nnunetv2.training.loss.deep_supervision import DeepSupervisionWrapper
@@ -45,16 +67,7 @@ class AutoNNUNetTrainer(nnUNetTrainer):
         self.output_folder_base = "."
         self.output_folder = "."
 
-        if self.is_cascaded:
-            assert self.configuration_manager.previous_stage_name is not None
-            self.folder_with_segs_from_previous_stage = os.path.join(
-                ".",
-                self.configuration_manager.previous_stage_name,
-                "predicted_segmentations",
-                self.configuration_name,
-            )
-        else:
-            self.folder_with_segs_from_previous_stage = None
+        assert not self.is_cascaded, "Cascaded training is not supported."
 
         self.log_file = os.path.join(self.output_folder, "training_log.txt")
         self.logger = AutoNNUNetLogger()
@@ -81,15 +94,171 @@ class AutoNNUNetTrainer(nnUNetTrainer):
         if cfg.load:
             load_path_best = Path(cfg.load + f"_fold_{cfg.fold}_best.pth").resolve()
             load_path_final = Path(cfg.load + f"_fold_{cfg.fold}_final.pth").resolve()
-            checkpoint_best_path = Path().resolve() / "checkpoint_best.pth"
 
-            shutil.copyfile(load_path_best, checkpoint_best_path)
-            nnunet_trainer.load_checkpoint(str(load_path_final))
+            if load_path_final.exists():
+                # We copy the best checkpoint to the current directory since the
+                # best epoch ever might be in the past and not overriden
+                checkpoint_best_path = Path().resolve() / "checkpoint_best.pth"
+                shutil.copyfile(load_path_best, checkpoint_best_path)
 
-        if cfg.pipeline.continue_training and cfg.pipeline.continue_training is True and Path("./checkpoint_best.pth").exists():
-            nnunet_trainer.load_checkpoint("checkpoint_best.pth")
-                
+                nnunet_trainer.load_checkpoint(str(load_path_final))
+
+        # Even if we continue another training run in HyperBand, we want to load the
+        # latest checkpoint in the current directory as this is based on the previous run
+        if cfg.pipeline.continue_training and Path("./checkpoint_latest.pth").exists():
+            nnunet_trainer.load_checkpoint("checkpoint_latest.pth")
+
         return nnunet_trainer
+
+    def get_training_transforms(
+            self,
+            patch_size: np.ndarray | tuple[int],
+            rotation_for_DA: dict,
+            deep_supervision_scales: list | tuple | None,
+            mirror_axes: tuple[int, ...],
+            do_dummy_2d_data_aug: bool,
+            order_resampling_data: int = 3,
+            order_resampling_seg: int = 1,
+            border_val_seg: int = -1,
+            use_mask_for_norm: list[bool] | None= None,
+            is_cascaded: bool = False,
+            foreground_labels: tuple[int, ...] | list[int] | None = None,
+            regions: list[list[int] | tuple[int, ...] | int] | None = None,
+            ignore_label: int | None = None,
+    ) -> AbstractTransform:
+        tr_transforms = []
+        if do_dummy_2d_data_aug:
+            ignore_axes = (0,)
+            tr_transforms.append(Convert3DTo2DTransform())
+            patch_size_spatial = patch_size[1:]
+        else:
+            patch_size_spatial = patch_size
+            ignore_axes = None
+
+        tr_transforms.append(
+            SpatialTransform(
+                patch_size_spatial,
+                patch_center_dist_from_border=None,
+                do_elastic_deform=False,
+                alpha=(0, 0),
+                sigma=(0, 0),
+                do_rotation=True,
+                angle_x=rotation_for_DA["x"],
+                angle_y=rotation_for_DA["y"],
+                angle_z=rotation_for_DA["z"],
+                p_rot_per_axis=1,
+                do_scale=True,
+                scale=(0.7, 1.4),
+                border_mode_data="constant",
+                border_cval_data=0,
+                order_data=order_resampling_data,
+                border_mode_seg="constant",
+                border_cval_seg=border_val_seg,
+                order_seg=order_resampling_seg,
+                random_crop=False,  
+                p_el_per_sample=0,
+                p_scale_per_sample=self.hp_config.aug_scale_prob * self.hp_config.aug_factor,
+                p_rot_per_sample=self.hp_config.aug_rotate_prob * self.hp_config.aug_factor,
+                independent_scale_for_each_axis=False  
+            )
+        )
+
+        if do_dummy_2d_data_aug:
+            tr_transforms.append(Convert2DTo3DTransform())
+
+        tr_transforms.append(
+            GaussianNoiseTransform(
+                p_per_sample=self.hp_config.aug_gaussian_noise_prob * self.hp_config.aug_factor
+            )
+        )
+        tr_transforms.append(
+            GaussianBlurTransform(
+                (0.5, 1.),
+                different_sigma_per_channel=True,
+                p_per_sample=self.hp_config.aug_gaussian_blur_prob * self.hp_config.aug_factor,
+                p_per_channel=0.5
+            )
+        )
+        tr_transforms.append(
+            BrightnessMultiplicativeTransform(
+                multiplier_range=(0.75, 1.25),
+                p_per_sample=self.hp_config.aug_brightness_prob * self.hp_config.aug_factor
+            )
+        )
+        tr_transforms.append(
+            ContrastAugmentationTransform(
+                p_per_sample=self.hp_config.aug_contrast_prob * self.hp_config.aug_factor
+            )
+        )
+        tr_transforms.append(
+            SimulateLowResolutionTransform(
+                zoom_range=(0.5, 1),
+                per_channel=True,
+                p_per_channel=0.5,
+                order_downsample=0,
+                order_upsample=3,
+                p_per_sample=self.hp_config.aug_lowres_prob * self.hp_config.aug_factor,
+                ignore_axes=ignore_axes
+            )
+        )
+        tr_transforms.append(
+            GammaTransform(
+                (0.7, 1.5),
+                True,
+                True,
+                retain_stats=True,
+                p_per_sample=self.hp_config.aug_gamma_1_prob * self.hp_config.aug_factor
+            )
+        )
+        tr_transforms.append(
+            GammaTransform(
+                (0.7, 1.5), 
+                False,
+                True,
+                retain_stats=True,
+                p_per_sample=self.hp_config.aug_gamma_2_prob * self.hp_config.aug_factor
+            )
+        )
+
+        if mirror_axes is not None and len(mirror_axes) > 0:
+            tr_transforms.append(MirrorTransform(mirror_axes))
+
+        if use_mask_for_norm is not None and any(use_mask_for_norm):
+            tr_transforms.append(MaskTransform([i for i in range(len(use_mask_for_norm)) if use_mask_for_norm[i]],
+                                               mask_idx_in_seg=0, set_outside_to=0))
+
+        tr_transforms.append(RemoveLabelTransform(-1, 0))
+
+        if is_cascaded:
+            assert foreground_labels is not None, "We need foreground_labels for cascade augmentations"
+            tr_transforms.append(MoveSegAsOneHotToData(1, foreground_labels, "seg", "data"))
+            tr_transforms.append(ApplyRandomBinaryOperatorTransform(
+                channel_idx=list(range(-len(foreground_labels), 0)),
+                p_per_sample=0.4,
+                key="data",
+                strel_size=(1, 8),
+                p_per_label=1))
+            tr_transforms.append(
+                RemoveRandomConnectedComponentFromOneHotEncodingTransform(
+                    channel_idx=list(range(-len(foreground_labels), 0)),
+                    key="data",
+                    p_per_sample=0.2,
+                    fill_with_other_class_p=0,
+                    dont_do_if_covers_more_than_x_percent=0.15))
+
+        tr_transforms.append(RenameTransform("seg", "target", True))
+
+        if regions is not None:
+            # the ignore label must also be converted
+            tr_transforms.append(ConvertSegmentationToRegionsTransform([*list(regions), ignore_label]
+                                                                       if ignore_label is not None else regions,
+                                                                       "target", "target"))
+
+        if deep_supervision_scales is not None:
+            tr_transforms.append(DownsampleSegForDSTransform2(deep_supervision_scales, 0, input_key="target",
+                                                              output_key="target"))
+        tr_transforms.append(NumpyToTensor(["data", "target"], "float"))
+        return Compose(tr_transforms)
 
     def print_to_log_file(self, *args, also_print_to_console=True, add_timestamp=True):
         new_args = []
@@ -115,7 +284,6 @@ class AutoNNUNetTrainer(nnUNetTrainer):
         )
         self.num_epochs = round(self.hp_config.num_epochs)
         self.total_epochs = self.hp_config.total_epochs
-        self.enable_deep_supervision = self.hp_config.enable_deep_supervision
 
         self.print_to_log_file(
             "Updated hyperparameter config:",
@@ -125,45 +293,6 @@ class AutoNNUNetTrainer(nnUNetTrainer):
         for key, value in self.hp_config.items():
             self.print_to_log_file(
                 f"{key}: {value}",
-                also_print_to_console=True,
-                add_timestamp=False,
-            )
-
-        # Update hyperparameter configuration stored in configuration manager
-        self.configuration_manager.configuration["architecture"]["arch_kwargs"]["n_conv_per_stage"] = [self.hp_config.n_conv_per_stage_encoder] * len(self.configuration_manager.configuration["architecture"]["arch_kwargs"]["n_conv_per_stage"])
-        self.configuration_manager.configuration["architecture"]["arch_kwargs"]["n_conv_per_stage_decoder"] = [self.hp_config.n_conv_per_stage_decoder] * len(self.configuration_manager.configuration["architecture"]["arch_kwargs"]["n_conv_per_stage_decoder"])
-
-        self.print_to_log_file(
-            "Updated normalization in configuration manager:",
-            also_print_to_console=True,
-            add_timestamp=False,
-        )
-        self.print_to_log_file(
-            f'self.configuration_manager.configuration["architecture"]["arch_kwargs"]["n_conv_per_stage"] = {self.configuration_manager.configuration["architecture"]["arch_kwargs"]["n_conv_per_stage"]}',
-            also_print_to_console=True,
-            add_timestamp=False,
-        )
-        self.print_to_log_file(
-            f'self.configuration_manager.configuration["architecture"]["arch_kwargs"]["n_conv_per_stage_decoder"] = {self.configuration_manager.configuration["architecture"]["arch_kwargs"]["n_conv_per_stage_decoder"]}',
-            also_print_to_console=True,
-            add_timestamp=False,
-        )
-
-        # the following part is taken from https://github.com/MIC-DKFZ/nnUNet/blob/master/nnunetv2/training/nnUNetTrainer/variants/network_architecture/nnUNetTrainerBN.py
-        if self.hp_config.normalization == "BatchNorm":
-            from pydoc import locate
-            conv_op = locate(self.configuration_manager.configuration["architecture"]["arch_kwargs"]["conv_op"])
-            bn_class = get_matching_batchnorm(conv_op)
-            self.configuration_manager.configuration["architecture"]["arch_kwargs"]["norm_op"] = bn_class.__module__ + "." + bn_class.__name__
-            self.configuration_manager.configuration["architecture"]["arch_kwargs"]["norm_op_kwargs"] = {"eps": 1e-5, "affine": True}
-
-            self.print_to_log_file(
-                f'self.configuration_manager.configuration["architecture"]["arch_kwargs"]["norm_op"] = {self.configuration_manager.configuration["architecture"]["arch_kwargs"]["norm_op"]}',
-                also_print_to_console=True,
-                add_timestamp=False,
-            )
-            self.print_to_log_file(
-                f'self.configuration_manager.configuration["architecture"]["arch_kwargs"]["norm_op_kwargs"] = {self.configuration_manager.configuration["architecture"]["arch_kwargs"]["norm_op_kwargs"]}',
                 also_print_to_console=True,
                 add_timestamp=False,
             )

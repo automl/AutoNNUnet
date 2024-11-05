@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import numpy as np
 from smac.intensifier.successive_halving import SuccessiveHalving
 
 
 def compute_hyperband_budgets(
-        b_min: float, 
+        b_min: float,
         b_max: float,
         eta: int,
         n_stages: int | None = None,
@@ -62,8 +61,8 @@ def compute_hyperband_budgets(
         budgets_list = "[" + ", ".join([str(round(b, 3)).rjust(8) for b in budgets_in_stage[i]]) + "]"
         real_budgets_list = "[" + ", ".join([str(round(b, 3)).rjust(8) for b in real_budgets_in_stage[i]]) + "]"
 
-        stage_budget = sum([n * b for n, b in zip(n_configs_in_stage[i], budgets_in_stage[i])])
-        stage_real_budget = sum([n * b for n, b in zip(n_configs_in_stage[i], real_budgets_in_stage[i])])
+        stage_budget = sum([n * b for n, b in zip(n_configs_in_stage[i], budgets_in_stage[i], strict=False)])
+        stage_real_budget = sum([n * b for n, b in zip(n_configs_in_stage[i], real_budgets_in_stage[i], strict=False)])
 
         total_trials += sum(n_configs_in_stage[i])
 
@@ -100,7 +99,7 @@ def get_real_budget_per_config(
 
     config_id = 0
     for stage, n_configs in n_configs_in_stage.items():
-        for n_config, real_budget in zip(n_configs, real_budgets_in_stage[stage]):
+        for n_config, real_budget in zip(n_configs, real_budgets_in_stage[stage], strict=False):
             for _ in range(n_config):
                 real_budget_per_config[config_id] = real_budget
                 config_id += 1

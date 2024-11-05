@@ -66,18 +66,6 @@ class AutoNNUNetPredictor(nnUNetPredictor):
 
             configuration_manager = plans_manager.get_configuration(configuration_name)
 
-            # Update hyperparameter configuration stored in configuration manager
-            configuration_manager.configuration["architecture"]["arch_kwargs"]["n_conv_per_stage"] = [hp_config.n_conv_per_stage_encoder] * len(configuration_manager.configuration["architecture"]["arch_kwargs"]["n_conv_per_stage"])
-            configuration_manager.configuration["architecture"]["arch_kwargs"]["n_conv_per_stage_decoder"] = [hp_config.n_conv_per_stage_decoder] * len(configuration_manager.configuration["architecture"]["arch_kwargs"]["n_conv_per_stage_decoder"])
-
-            # the following part is taken from https://github.com/MIC-DKFZ/nnUNet/blob/master/nnunetv2/training/nnUNetTrainer/variants/network_architecture/nnUNetTrainerBN.py
-            if hp_config.normalization == "BatchNorm":
-                from pydoc import locate
-                conv_op = locate(configuration_manager.configuration["architecture"]["arch_kwargs"]["conv_op"])
-                bn_class = get_matching_batchnorm(conv_op)
-                configuration_manager.configuration["architecture"]["arch_kwargs"]["norm_op"] = bn_class.__module__ + "." + bn_class.__name__
-                configuration_manager.configuration["architecture"]["arch_kwargs"]["norm_op_kwargs"] = {"eps": 1e-5, "affine": True}
-
             num_input_channels = determine_num_input_channels(plans_manager, configuration_manager, dataset_json)
 
             network = AutoNNUNetTrainer.build_network_architecture(

@@ -18,11 +18,12 @@ if __name__  == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     plotter = Plotter(
-        datasets=["Dataset004_Hippocampus"],
+        datasets=ALL_DATASETS,
         configuration=args.configuration
     )
     plotter.load_data() 
+    # plotter.plot_baselines()
     # plotter.plot_hpo(x_log_scale=False, y_log_scale=False)
     # plotter.plot_hyperband()
     # plotter.compute_emissions() 
-    plotter.plot_baselines()
+    plotter.plot_baseline_runtimes()

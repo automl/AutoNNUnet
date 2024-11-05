@@ -2,24 +2,30 @@ defaults:
   - _self_
   - base
   - cluster: kisski_gpu
-  - search_space: default
+  - search_space: hpo
   - dataset: Dataset001_BrainTumour
   - override hydra/sweeper: HyperNEPS
 
 neps_seed: 0
 
 # HPO configuration
-min_budget: 4     # Minimum number of epochs
+min_budget: 10    # Minimum number of epochs
 max_budget: 1000  # Maximum number of epochs
 eta: 3            # Reduction factor for successive halving
-budget: 11_000    # Total budget in epochs
+budget: 22_000    # Total budget in epochs
 
 hydra:
   sweeper:
+    n_trials: 207
     budget: ${budget}
     budget_variable: hp_config.num_epochs
     search_space: ${search_space}
+    loading_variable: load
+    saving_variable: save
     sweeper_kwargs:
+      checkpoint_tf: true
+      load_tf: true
+      checkpoint_path_typing: ""
       min_budget: ${min_budget}
       max_budget: ${max_budget}
       job_array_size_limit: 1   # only one config at a time

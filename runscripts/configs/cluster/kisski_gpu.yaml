@@ -2,6 +2,8 @@
 defaults:
   - override /hydra/launcher: submitit_slurm
 
+device: cuda
+
 hydra:
   launcher:
     partition: kisski-inference
@@ -9,7 +11,7 @@ hydra:
     gpus_per_task: 1
     cpus_per_task: 48
     mem_gb: 120
-    timeout_min: 4320 # 3 days
+    timeout_min: 1440 # 3 days
     setup:
       - module load Miniconda3
       - module load CUDA

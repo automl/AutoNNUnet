@@ -2,7 +2,7 @@ defaults:
   - _self_
   - base
   - cluster: kisski_gpu
-  - search_space: default
+  - search_space: hpo
   - dataset: Dataset001_BrainTumour
   - override hydra/sweeper: HyperSMAC
 
@@ -67,8 +67,8 @@ hydra:
           retrain_after: 1
           min_trials: ${min_trials}
   run:  
-    dir: output/smac_mf/${dataset.name}/${trainer.configuration}/${smac_seed}
+    dir: output/smac/${dataset.name}/${trainer.configuration}/${smac_seed}
   sweep:
-    dir: output/smac_mf/${dataset.name}/${trainer.configuration}/${smac_seed}
+    dir: output/smac/${dataset.name}/${trainer.configuration}/${smac_seed}
   job:
     chdir: true
