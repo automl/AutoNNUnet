@@ -1,23 +1,23 @@
 {
     "foreground_mean": {
-        "Dice": 0.9348581566866186,
-        "FN": 3221.0,
-        "FP": 1682.5,
-        "IoU": 0.8782822415614115,
-        "TN": 12041372.5,
-        "TP": 36924.0,
-        "n_pred": 38606.5,
+        "Dice": 0.9374029686636038,
+        "FN": 3054.75,
+        "FP": 1675.5,
+        "IoU": 0.8827080251229082,
+        "TN": 12041379.5,
+        "TP": 37090.25,
+        "n_pred": 38765.75,
         "n_ref": 40145.0
     },
     "mean": {
         "1": {
-            "Dice": 0.9348581566866186,
-            "FN": 3221.0,
-            "FP": 1682.5,
-            "IoU": 0.8782822415614115,
-            "TN": 12041372.5,
-            "TP": 36924.0,
-            "n_pred": 38606.5,
+            "Dice": 0.9374029686636038,
+            "FN": 3054.75,
+            "FP": 1675.5,
+            "IoU": 0.8827080251229082,
+            "TN": 12041379.5,
+            "TP": 37090.25,
+            "n_pred": 38765.75,
             "n_ref": 40145.0
         }
     },
@@ -25,66 +25,66 @@
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9534334307435648,
-                    "FN": 2426,
-                    "FP": 1733,
-                    "IoU": 0.9110107839780897,
-                    "TN": 13265264,
-                    "TP": 42577,
-                    "n_pred": 44310,
+                    "Dice": 0.9564469658052844,
+                    "FN": 2180,
+                    "FP": 1720,
+                    "IoU": 0.916529332448687,
+                    "TN": 13265277,
+                    "TP": 42823,
+                    "n_pred": 44543,
                     "n_ref": 45003
                 }
             },
             "prediction_file": "./validation/la_003.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset002_Heart/gt_segmentations/la_003.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset002_Heart/gt_segmentations/la_003.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9376697254790924,
-                    "FN": 3905,
-                    "FP": 938,
-                    "IoU": 0.8826536793390032,
-                    "TN": 12451529,
-                    "TP": 36428,
-                    "n_pred": 37366,
+                    "Dice": 0.9381885416399168,
+                    "FN": 3799,
+                    "FP": 1015,
+                    "IoU": 0.8835735706684725,
+                    "TN": 12451452,
+                    "TP": 36534,
+                    "n_pred": 37549,
                     "n_ref": 40333
                 }
             },
             "prediction_file": "./validation/la_018.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset002_Heart/gt_segmentations/la_018.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset002_Heart/gt_segmentations/la_018.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9031205864550407,
-                    "FN": 5183,
-                    "FP": 579,
-                    "IoU": 0.8233544866488857,
-                    "TN": 11231381,
-                    "TP": 26857,
-                    "n_pred": 27436,
+                    "Dice": 0.908522936086332,
+                    "FN": 4847,
+                    "FP": 629,
+                    "IoU": 0.8323793198445009,
+                    "TN": 11231331,
+                    "TP": 27193,
+                    "n_pred": 27822,
                     "n_ref": 32040
                 }
             },
             "prediction_file": "./validation/la_020.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset002_Heart/gt_segmentations/la_020.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset002_Heart/gt_segmentations/la_020.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.945208884068777,
-                    "FN": 1370,
-                    "FP": 3480,
-                    "IoU": 0.8961100162796676,
-                    "TN": 11217316,
-                    "TP": 41834,
-                    "n_pred": 45314,
+                    "Dice": 0.946453431122882,
+                    "FN": 1393,
+                    "FP": 3338,
+                    "IoU": 0.898349877529973,
+                    "TN": 11217458,
+                    "TP": 41811,
+                    "n_pred": 45149,
                     "n_ref": 43204
                 }
             },
             "prediction_file": "./validation/la_023.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset002_Heart/gt_segmentations/la_023.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset002_Heart/gt_segmentations/la_023.nii.gz"
         }
     ]
 }

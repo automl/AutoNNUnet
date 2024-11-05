@@ -1,33 +1,33 @@
 {
     "foreground_mean": {
-        "Dice": 0.8906256012750806,
-        "FN": 181.69230769230768,
-        "FP": 165.9519230769231,
-        "IoU": 0.8042368829996234,
-        "TN": 59291.33653846154,
-        "TP": 1431.326923076923,
-        "n_pred": 1597.2788461538462,
+        "Dice": 0.8901427885719895,
+        "FN": 176.33653846153845,
+        "FP": 174.08653846153845,
+        "IoU": 0.803454281195328,
+        "TN": 59283.20192307692,
+        "TP": 1436.6826923076924,
+        "n_pred": 1610.769230769231,
         "n_ref": 1613.019230769231
     },
     "mean": {
         "1": {
-            "Dice": 0.8994502689218292,
-            "FN": 168.46153846153845,
-            "FP": 159.01923076923077,
-            "IoU": 0.8186877896305074,
-            "TN": 59248.38461538462,
-            "TP": 1494.4423076923076,
-            "n_pred": 1653.4615384615386,
+            "Dice": 0.8992363776357918,
+            "FN": 155.26923076923077,
+            "FP": 175.17307692307693,
+            "IoU": 0.8183372756757716,
+            "TN": 59232.230769230766,
+            "TP": 1507.6346153846155,
+            "n_pred": 1682.8076923076924,
             "n_ref": 1662.9038461538462
         },
         "2": {
-            "Dice": 0.8818009336283321,
-            "FN": 194.92307692307693,
-            "FP": 172.8846153846154,
-            "IoU": 0.7897859763687395,
-            "TN": 59334.28846153846,
-            "TP": 1368.2115384615386,
-            "n_pred": 1541.0961538461538,
+            "Dice": 0.8810491995081873,
+            "FN": 197.40384615384616,
+            "FP": 173.0,
+            "IoU": 0.7885712867148844,
+            "TN": 59334.17307692308,
+            "TP": 1365.7307692307693,
+            "n_pred": 1538.7307692307693,
             "n_ref": 1563.1346153846155
         }
     },
@@ -35,1354 +35,1354 @@
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9133730373578777,
-                    "FN": 145,
-                    "FP": 175,
-                    "IoU": 0.8405580468360737,
-                    "TN": 69129,
-                    "TP": 1687,
-                    "n_pred": 1862,
+                    "Dice": 0.9078699973139941,
+                    "FN": 142,
+                    "FP": 201,
+                    "IoU": 0.8312838170191835,
+                    "TN": 69103,
+                    "TP": 1690,
+                    "n_pred": 1891,
                     "n_ref": 1832
                 },
                 "2": {
-                    "Dice": 0.8822246455834242,
-                    "FN": 248,
-                    "FP": 184,
-                    "IoU": 0.7892682926829269,
-                    "TN": 69086,
-                    "TP": 1618,
-                    "n_pred": 1802,
+                    "Dice": 0.8710916072408118,
+                    "FN": 278,
+                    "FP": 192,
+                    "IoU": 0.771622934888241,
+                    "TN": 69078,
+                    "TP": 1588,
+                    "n_pred": 1780,
                     "n_ref": 1866
                 }
             },
             "prediction_file": "./validation/hippocampus_004.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_004.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_004.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9257425742574258,
-                    "FN": 159,
-                    "FP": 111,
-                    "IoU": 0.8617511520737328,
-                    "TN": 61967,
-                    "TP": 1683,
-                    "n_pred": 1794,
+                    "Dice": 0.9344574381289095,
+                    "FN": 124,
+                    "FP": 117,
+                    "IoU": 0.8769780500255232,
+                    "TN": 61961,
+                    "TP": 1718,
+                    "n_pred": 1835,
                     "n_ref": 1842
                 },
                 "2": {
-                    "Dice": 0.9064976228209192,
-                    "FN": 100,
-                    "FP": 195,
-                    "IoU": 0.8289855072463768,
-                    "TN": 62195,
-                    "TP": 1430,
-                    "n_pred": 1625,
+                    "Dice": 0.904442313838287,
+                    "FN": 115,
+                    "FP": 184,
+                    "IoU": 0.8255542590431738,
+                    "TN": 62206,
+                    "TP": 1415,
+                    "n_pred": 1599,
                     "n_ref": 1530
                 }
             },
             "prediction_file": "./validation/hippocampus_007.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_007.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_007.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8737992712818814,
-                    "FN": 192,
-                    "FP": 189,
-                    "IoU": 0.7758823529411765,
-                    "TN": 58276,
-                    "TP": 1319,
-                    "n_pred": 1508,
+                    "Dice": 0.8738379814077025,
+                    "FN": 195,
+                    "FP": 185,
+                    "IoU": 0.7759433962264151,
+                    "TN": 58280,
+                    "TP": 1316,
+                    "n_pred": 1501,
                     "n_ref": 1511
                 },
                 "2": {
-                    "Dice": 0.8624397478680015,
-                    "FN": 145,
-                    "FP": 226,
-                    "IoU": 0.758148631029987,
-                    "TN": 58442,
-                    "TP": 1163,
-                    "n_pred": 1389,
+                    "Dice": 0.8492424242424242,
+                    "FN": 187,
+                    "FP": 211,
+                    "IoU": 0.7379855167873601,
+                    "TN": 58457,
+                    "TP": 1121,
+                    "n_pred": 1332,
                     "n_ref": 1308
                 }
             },
             "prediction_file": "./validation/hippocampus_015.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_015.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_015.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.877851711026616,
-                    "FN": 164,
-                    "FP": 350,
-                    "IoU": 0.782295637441762,
-                    "TN": 62847,
-                    "TP": 1847,
-                    "n_pred": 2197,
+                    "Dice": 0.8785090823307384,
+                    "FN": 149,
+                    "FP": 366,
+                    "IoU": 0.7833403449726546,
+                    "TN": 62831,
+                    "TP": 1862,
+                    "n_pred": 2228,
                     "n_ref": 2011
                 },
                 "2": {
-                    "Dice": 0.8371731814651825,
-                    "FN": 402,
-                    "FP": 227,
-                    "IoU": 0.719946571682992,
-                    "TN": 62962,
-                    "TP": 1617,
-                    "n_pred": 1844,
+                    "Dice": 0.8459937565036421,
+                    "FN": 393,
+                    "FP": 199,
+                    "IoU": 0.7330928764652841,
+                    "TN": 62990,
+                    "TP": 1626,
+                    "n_pred": 1825,
                     "n_ref": 2019
                 }
             },
             "prediction_file": "./validation/hippocampus_024.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_024.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_024.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8390607101947308,
-                    "FN": 312,
-                    "FP": 250,
-                    "IoU": 0.7227429699062654,
-                    "TN": 60397,
-                    "TP": 1465,
-                    "n_pred": 1715,
+                    "Dice": 0.8453843955415833,
+                    "FN": 298,
+                    "FP": 243,
+                    "IoU": 0.7321782178217822,
+                    "TN": 60404,
+                    "TP": 1479,
+                    "n_pred": 1722,
                     "n_ref": 1777
                 },
                 "2": {
-                    "Dice": 0.8498701298701299,
-                    "FN": 350,
+                    "Dice": 0.8501687873279667,
+                    "FN": 349,
                     "FP": 228,
-                    "IoU": 0.7389340560072267,
+                    "IoU": 0.7393857271906052,
                     "TN": 60210,
-                    "TP": 1636,
-                    "n_pred": 1864,
+                    "TP": 1637,
+                    "n_pred": 1865,
                     "n_ref": 1986
                 }
             },
             "prediction_file": "./validation/hippocampus_041.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_041.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_041.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8390865639936272,
-                    "FN": 291,
-                    "FP": 315,
-                    "IoU": 0.7227813357731016,
-                    "TN": 63230,
-                    "TP": 1580,
-                    "n_pred": 1895,
+                    "Dice": 0.8425238600212089,
+                    "FN": 282,
+                    "FP": 312,
+                    "IoU": 0.7278973889143381,
+                    "TN": 63233,
+                    "TP": 1589,
+                    "n_pred": 1901,
                     "n_ref": 1871
                 },
                 "2": {
-                    "Dice": 0.7758887171561051,
-                    "FN": 470,
-                    "FP": 400,
-                    "IoU": 0.6338383838383839,
-                    "TN": 63040,
-                    "TP": 1506,
-                    "n_pred": 1906,
+                    "Dice": 0.7878156730018224,
+                    "FN": 463,
+                    "FP": 352,
+                    "IoU": 0.6499140893470791,
+                    "TN": 63088,
+                    "TP": 1513,
+                    "n_pred": 1865,
                     "n_ref": 1976
                 }
             },
             "prediction_file": "./validation/hippocampus_042.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_042.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_042.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8774069319640565,
-                    "FN": 244,
+                    "Dice": 0.8852772466539197,
+                    "FN": 222,
                     "FP": 138,
-                    "IoU": 0.7815894797026872,
+                    "IoU": 0.7941680960548885,
                     "TN": 65283,
-                    "TP": 1367,
-                    "n_pred": 1505,
+                    "TP": 1389,
+                    "n_pred": 1527,
                     "n_ref": 1611
                 },
                 "2": {
-                    "Dice": 0.8514129443938013,
-                    "FN": 280,
-                    "FP": 209,
-                    "IoU": 0.7412698412698413,
-                    "TN": 65142,
-                    "TP": 1401,
-                    "n_pred": 1610,
+                    "Dice": 0.8554253080853622,
+                    "FN": 258,
+                    "FP": 223,
+                    "IoU": 0.7473739495798319,
+                    "TN": 65128,
+                    "TP": 1423,
+                    "n_pred": 1646,
                     "n_ref": 1681
                 }
             },
             "prediction_file": "./validation/hippocampus_046.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_046.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_046.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9191743347426014,
-                    "FN": 117,
-                    "FP": 208,
-                    "IoU": 0.8504371836171192,
-                    "TN": 78761,
-                    "TP": 1848,
-                    "n_pred": 2056,
+                    "Dice": 0.8898876404494382,
+                    "FN": 183,
+                    "FP": 258,
+                    "IoU": 0.8016194331983806,
+                    "TN": 78711,
+                    "TP": 1782,
+                    "n_pred": 2040,
                     "n_ref": 1965
                 },
                 "2": {
-                    "Dice": 0.9167397020157756,
-                    "FN": 199,
-                    "FP": 86,
-                    "IoU": 0.8462783171521036,
-                    "TN": 79080,
-                    "TP": 1569,
-                    "n_pred": 1655,
+                    "Dice": 0.9113775957882422,
+                    "FN": 210,
+                    "FP": 93,
+                    "IoU": 0.8371843095110156,
+                    "TN": 79073,
+                    "TP": 1558,
+                    "n_pred": 1651,
                     "n_ref": 1768
                 }
             },
             "prediction_file": "./validation/hippocampus_056.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_056.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_056.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9364889155182744,
-                    "FN": 170,
-                    "FP": 42,
-                    "IoU": 0.8805633802816901,
-                    "TN": 60145,
-                    "TP": 1563,
-                    "n_pred": 1605,
+                    "Dice": 0.9525493663424698,
+                    "FN": 117,
+                    "FP": 44,
+                    "IoU": 0.9093978615644345,
+                    "TN": 60143,
+                    "TP": 1616,
+                    "n_pred": 1660,
                     "n_ref": 1733
                 },
                 "2": {
-                    "Dice": 0.9063881076737645,
-                    "FN": 139,
-                    "FP": 94,
-                    "IoU": 0.8288023512123439,
-                    "TN": 60559,
-                    "TP": 1128,
-                    "n_pred": 1222,
+                    "Dice": 0.9274292742927429,
+                    "FN": 136,
+                    "FP": 41,
+                    "IoU": 0.8646788990825688,
+                    "TN": 60612,
+                    "TP": 1131,
+                    "n_pred": 1172,
                     "n_ref": 1267
                 }
             },
             "prediction_file": "./validation/hippocampus_068.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_068.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_068.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.86875,
+                    "Dice": 0.8675450762829403,
                     "FN": 187,
-                    "FP": 191,
-                    "IoU": 0.7679558011049724,
-                    "TN": 71409,
+                    "FP": 195,
+                    "IoU": 0.7660747091243111,
+                    "TN": 71405,
                     "TP": 1251,
-                    "n_pred": 1442,
+                    "n_pred": 1446,
                     "n_ref": 1438
                 },
                 "2": {
-                    "Dice": 0.8716510903426792,
-                    "FN": 163,
-                    "FP": 249,
-                    "IoU": 0.7725013804527885,
-                    "TN": 71227,
-                    "TP": 1399,
-                    "n_pred": 1648,
+                    "Dice": 0.8779269434904777,
+                    "FN": 156,
+                    "FP": 235,
+                    "IoU": 0.7824151363383417,
+                    "TN": 71241,
+                    "TP": 1406,
+                    "n_pred": 1641,
                     "n_ref": 1562
                 }
             },
             "prediction_file": "./validation/hippocampus_074.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_074.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_074.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9071153172099544,
-                    "FN": 96,
-                    "FP": 169,
-                    "IoU": 0.8300192431045542,
-                    "TN": 63857,
-                    "TP": 1294,
-                    "n_pred": 1463,
+                    "Dice": 0.903448275862069,
+                    "FN": 80,
+                    "FP": 200,
+                    "IoU": 0.8238993710691824,
+                    "TN": 63826,
+                    "TP": 1310,
+                    "n_pred": 1510,
                     "n_ref": 1390
                 },
                 "2": {
-                    "Dice": 0.9107619329973318,
-                    "FN": 224,
+                    "Dice": 0.9071980963712076,
+                    "FN": 235,
                     "FP": 77,
-                    "IoU": 0.8361458900381056,
+                    "IoU": 0.8301578660860098,
                     "TN": 63579,
-                    "TP": 1536,
-                    "n_pred": 1613,
+                    "TP": 1525,
+                    "n_pred": 1602,
                     "n_ref": 1760
                 }
             },
             "prediction_file": "./validation/hippocampus_084.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_084.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_084.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8840406455469217,
-                    "FN": 246,
-                    "FP": 142,
-                    "IoU": 0.7921799678628816,
-                    "TN": 64025,
-                    "TP": 1479,
-                    "n_pred": 1621,
+                    "Dice": 0.8828288882229548,
+                    "FN": 252,
+                    "FP": 139,
+                    "IoU": 0.7902360515021459,
+                    "TN": 64028,
+                    "TP": 1473,
+                    "n_pred": 1612,
                     "n_ref": 1725
                 },
                 "2": {
-                    "Dice": 0.9058157488419969,
-                    "FN": 201,
-                    "FP": 165,
-                    "IoU": 0.8278457196613358,
-                    "TN": 63766,
-                    "TP": 1760,
-                    "n_pred": 1925,
+                    "Dice": 0.8979803210771621,
+                    "FN": 227,
+                    "FP": 167,
+                    "IoU": 0.8148496240601504,
+                    "TN": 63764,
+                    "TP": 1734,
+                    "n_pred": 1901,
                     "n_ref": 1961
                 }
             },
             "prediction_file": "./validation/hippocampus_089.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_089.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_089.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8983628922237381,
-                    "FN": 198,
-                    "FP": 100,
-                    "IoU": 0.8154798761609907,
-                    "TN": 58769,
-                    "TP": 1317,
-                    "n_pred": 1417,
+                    "Dice": 0.8912376406409819,
+                    "FN": 208,
+                    "FP": 111,
+                    "IoU": 0.8038130381303813,
+                    "TN": 58758,
+                    "TP": 1307,
+                    "n_pred": 1418,
                     "n_ref": 1515
                 },
                 "2": {
-                    "Dice": 0.8952029520295203,
-                    "FN": 162,
-                    "FP": 122,
-                    "IoU": 0.8102872411489646,
-                    "TN": 58887,
-                    "TP": 1213,
-                    "n_pred": 1335,
+                    "Dice": 0.8987527512839325,
+                    "FN": 150,
+                    "FP": 126,
+                    "IoU": 0.8161225849433711,
+                    "TN": 58883,
+                    "TP": 1225,
+                    "n_pred": 1351,
                     "n_ref": 1375
                 }
             },
             "prediction_file": "./validation/hippocampus_098.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_098.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_098.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9047063399455465,
-                    "FN": 89,
-                    "FP": 156,
-                    "IoU": 0.8259943181818182,
-                    "TN": 44924,
-                    "TP": 1163,
-                    "n_pred": 1319,
+                    "Dice": 0.9031764255644853,
+                    "FN": 72,
+                    "FP": 181,
+                    "IoU": 0.823447313328681,
+                    "TN": 44899,
+                    "TP": 1180,
+                    "n_pred": 1361,
                     "n_ref": 1252
                 },
                 "2": {
-                    "Dice": 0.8416320885200553,
-                    "FN": 66,
-                    "FP": 392,
-                    "IoU": 0.7265671641791045,
-                    "TN": 44657,
-                    "TP": 1217,
-                    "n_pred": 1609,
+                    "Dice": 0.8398601398601399,
+                    "FN": 82,
+                    "FP": 376,
+                    "IoU": 0.7239300783604581,
+                    "TN": 44673,
+                    "TP": 1201,
+                    "n_pred": 1577,
                     "n_ref": 1283
                 }
             },
             "prediction_file": "./validation/hippocampus_099.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_099.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_099.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9414248021108179,
-                    "FN": 115,
-                    "FP": 107,
-                    "IoU": 0.8893320039880359,
-                    "TN": 65152,
-                    "TP": 1784,
-                    "n_pred": 1891,
+                    "Dice": 0.9458540413287994,
+                    "FN": 91,
+                    "FP": 116,
+                    "IoU": 0.8972704714640198,
+                    "TN": 65143,
+                    "TP": 1808,
+                    "n_pred": 1924,
                     "n_ref": 1899
                 },
                 "2": {
-                    "Dice": 0.9366427171783148,
-                    "FN": 76,
-                    "FP": 118,
-                    "IoU": 0.8808353808353808,
-                    "TN": 65530,
-                    "TP": 1434,
-                    "n_pred": 1552,
+                    "Dice": 0.9307443365695793,
+                    "FN": 72,
+                    "FP": 142,
+                    "IoU": 0.8704600484261501,
+                    "TN": 65506,
+                    "TP": 1438,
+                    "n_pred": 1580,
                     "n_ref": 1510
                 }
             },
             "prediction_file": "./validation/hippocampus_133.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_133.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_133.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9006823351023503,
-                    "FN": 175,
-                    "FP": 87,
-                    "IoU": 0.8193103448275862,
-                    "TN": 58134,
-                    "TP": 1188,
-                    "n_pred": 1275,
+                    "Dice": 0.8978978978978979,
+                    "FN": 167,
+                    "FP": 105,
+                    "IoU": 0.8147138964577657,
+                    "TN": 58116,
+                    "TP": 1196,
+                    "n_pred": 1301,
                     "n_ref": 1363
                 },
                 "2": {
-                    "Dice": 0.8932478310071671,
-                    "FN": 82,
-                    "FP": 201,
-                    "IoU": 0.8070892978868439,
-                    "TN": 58117,
-                    "TP": 1184,
-                    "n_pred": 1385,
+                    "Dice": 0.8898020171834142,
+                    "FN": 75,
+                    "FP": 220,
+                    "IoU": 0.8014804845222072,
+                    "TN": 58098,
+                    "TP": 1191,
+                    "n_pred": 1411,
                     "n_ref": 1266
                 }
             },
             "prediction_file": "./validation/hippocampus_135.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_135.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_135.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9213579716373013,
-                    "FN": 121,
-                    "FP": 62,
-                    "IoU": 0.8541832669322709,
-                    "TN": 57785,
-                    "TP": 1072,
-                    "n_pred": 1134,
+                    "Dice": 0.927993182786536,
+                    "FN": 104,
+                    "FP": 65,
+                    "IoU": 0.8656597774244833,
+                    "TN": 57782,
+                    "TP": 1089,
+                    "n_pred": 1154,
                     "n_ref": 1193
                 },
                 "2": {
-                    "Dice": 0.9271137026239067,
-                    "FN": 91,
-                    "FP": 84,
-                    "IoU": 0.8641304347826086,
-                    "TN": 57752,
-                    "TP": 1113,
-                    "n_pred": 1197,
+                    "Dice": 0.9257142857142857,
+                    "FN": 70,
+                    "FP": 112,
+                    "IoU": 0.8617021276595744,
+                    "TN": 57724,
+                    "TP": 1134,
+                    "n_pred": 1246,
                     "n_ref": 1204
                 }
             },
             "prediction_file": "./validation/hippocampus_143.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_143.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_143.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9439412484700123,
-                    "FN": 146,
-                    "FP": 83,
-                    "IoU": 0.8938340287436254,
-                    "TN": 60807,
-                    "TP": 1928,
-                    "n_pred": 2011,
+                    "Dice": 0.9387557492132655,
+                    "FN": 135,
+                    "FP": 118,
+                    "IoU": 0.8845802919708029,
+                    "TN": 60772,
+                    "TP": 1939,
+                    "n_pred": 2057,
                     "n_ref": 2074
                 },
                 "2": {
-                    "Dice": 0.8941798941798942,
-                    "FN": 110,
-                    "FP": 210,
-                    "IoU": 0.8086124401913876,
-                    "TN": 61292,
-                    "TP": 1352,
-                    "n_pred": 1562,
+                    "Dice": 0.8918741808650066,
+                    "FN": 101,
+                    "FP": 229,
+                    "IoU": 0.804849201655825,
+                    "TN": 61273,
+                    "TP": 1361,
+                    "n_pred": 1590,
                     "n_ref": 1462
                 }
             },
             "prediction_file": "./validation/hippocampus_145.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_145.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_145.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9178885630498533,
-                    "FN": 40,
-                    "FP": 240,
-                    "IoU": 0.8482384823848238,
-                    "TN": 59797,
-                    "TP": 1565,
-                    "n_pred": 1805,
+                    "Dice": 0.9107871720116618,
+                    "FN": 43,
+                    "FP": 263,
+                    "IoU": 0.8361884368308351,
+                    "TN": 59774,
+                    "TP": 1562,
+                    "n_pred": 1825,
                     "n_ref": 1605
                 },
                 "2": {
-                    "Dice": 0.8850150854844117,
-                    "FN": 163,
-                    "FP": 180,
-                    "IoU": 0.79374624173181,
-                    "TN": 59979,
-                    "TP": 1320,
-                    "n_pred": 1500,
+                    "Dice": 0.8800263678312459,
+                    "FN": 148,
+                    "FP": 216,
+                    "IoU": 0.7857563272513243,
+                    "TN": 59943,
+                    "TP": 1335,
+                    "n_pred": 1551,
                     "n_ref": 1483
                 }
             },
             "prediction_file": "./validation/hippocampus_150.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_150.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_150.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8965021562050791,
-                    "FN": 231,
-                    "FP": 201,
-                    "IoU": 0.8124185844550587,
-                    "TN": 65089,
-                    "TP": 1871,
-                    "n_pred": 2072,
+                    "Dice": 0.8966507177033493,
+                    "FN": 228,
+                    "FP": 204,
+                    "IoU": 0.8126626192541196,
+                    "TN": 65086,
+                    "TP": 1874,
+                    "n_pred": 2078,
                     "n_ref": 2102
                 },
                 "2": {
-                    "Dice": 0.8800509067769647,
-                    "FN": 115,
-                    "FP": 262,
-                    "IoU": 0.7857954545454545,
-                    "TN": 65632,
-                    "TP": 1383,
-                    "n_pred": 1645,
+                    "Dice": 0.8771929824561403,
+                    "FN": 98,
+                    "FP": 294,
+                    "IoU": 0.78125,
+                    "TN": 65600,
+                    "TP": 1400,
+                    "n_pred": 1694,
                     "n_ref": 1498
                 }
             },
             "prediction_file": "./validation/hippocampus_156.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_156.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_156.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9090424113096826,
-                    "FN": 170,
-                    "FP": 171,
-                    "IoU": 0.8332518337408313,
-                    "TN": 69091,
-                    "TP": 1704,
-                    "n_pred": 1875,
+                    "Dice": 0.9116304055868923,
+                    "FN": 177,
+                    "FP": 152,
+                    "IoU": 0.8376110562685094,
+                    "TN": 69110,
+                    "TP": 1697,
+                    "n_pred": 1849,
                     "n_ref": 1874
                 },
                 "2": {
-                    "Dice": 0.8785871964679912,
-                    "FN": 145,
-                    "FP": 240,
-                    "IoU": 0.7834645669291339,
-                    "TN": 69358,
-                    "TP": 1393,
-                    "n_pred": 1633,
+                    "Dice": 0.8842433697347893,
+                    "FN": 121,
+                    "FP": 250,
+                    "IoU": 0.7925055928411633,
+                    "TN": 69348,
+                    "TP": 1417,
+                    "n_pred": 1667,
                     "n_ref": 1538
                 }
             },
             "prediction_file": "./validation/hippocampus_158.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_158.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_158.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9125893347993403,
-                    "FN": 115,
-                    "FP": 203,
-                    "IoU": 0.839231547017189,
-                    "TN": 62282,
-                    "TP": 1660,
-                    "n_pred": 1863,
+                    "Dice": 0.9107338444687842,
+                    "FN": 112,
+                    "FP": 214,
+                    "IoU": 0.836098541980895,
+                    "TN": 62271,
+                    "TP": 1663,
+                    "n_pred": 1877,
                     "n_ref": 1775
                 },
                 "2": {
-                    "Dice": 0.9032432432432432,
-                    "FN": 271,
-                    "FP": 87,
-                    "IoU": 0.8235584031542632,
-                    "TN": 62231,
-                    "TP": 1671,
-                    "n_pred": 1758,
+                    "Dice": 0.9097278361627593,
+                    "FN": 254,
+                    "FP": 81,
+                    "IoU": 0.8344043499752842,
+                    "TN": 62237,
+                    "TP": 1688,
+                    "n_pred": 1769,
                     "n_ref": 1942
                 }
             },
             "prediction_file": "./validation/hippocampus_161.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_161.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_161.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9223484848484849,
-                    "FN": 83,
-                    "FP": 163,
-                    "IoU": 0.8558875219683656,
-                    "TN": 46607,
-                    "TP": 1461,
-                    "n_pred": 1624,
+                    "Dice": 0.9026275115919629,
+                    "FN": 84,
+                    "FP": 231,
+                    "IoU": 0.8225352112676056,
+                    "TN": 46539,
+                    "TP": 1460,
+                    "n_pred": 1691,
                     "n_ref": 1544
                 },
                 "2": {
-                    "Dice": 0.9070811744386874,
-                    "FN": 166,
-                    "FP": 103,
-                    "IoU": 0.8299620733249052,
-                    "TN": 46732,
-                    "TP": 1313,
-                    "n_pred": 1416,
+                    "Dice": 0.8839662447257384,
+                    "FN": 222,
+                    "FP": 108,
+                    "IoU": 0.7920604914933838,
+                    "TN": 46727,
+                    "TP": 1257,
+                    "n_pred": 1365,
                     "n_ref": 1479
                 }
             },
             "prediction_file": "./validation/hippocampus_165.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_165.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_165.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9133635334088335,
-                    "FN": 181,
-                    "FP": 125,
-                    "IoU": 0.8405419489317353,
-                    "TN": 67271,
-                    "TP": 1613,
-                    "n_pred": 1738,
+                    "Dice": 0.8993985784581738,
+                    "FN": 149,
+                    "FP": 219,
+                    "IoU": 0.8171882762046696,
+                    "TN": 67177,
+                    "TP": 1645,
+                    "n_pred": 1864,
                     "n_ref": 1794
                 },
                 "2": {
-                    "Dice": 0.8787878787878788,
-                    "FN": 384,
-                    "FP": 104,
-                    "IoU": 0.7837837837837838,
-                    "TN": 66933,
-                    "TP": 1769,
-                    "n_pred": 1873,
+                    "Dice": 0.8707414829659319,
+                    "FN": 415,
+                    "FP": 101,
+                    "IoU": 0.7710736468500443,
+                    "TN": 66936,
+                    "TP": 1738,
+                    "n_pred": 1839,
                     "n_ref": 2153
                 }
             },
             "prediction_file": "./validation/hippocampus_174.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_174.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_174.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9250071285999429,
-                    "FN": 169,
-                    "FP": 94,
-                    "IoU": 0.8604774535809019,
-                    "TN": 61115,
-                    "TP": 1622,
-                    "n_pred": 1716,
+                    "Dice": 0.9420289855072463,
+                    "FN": 101,
+                    "FP": 107,
+                    "IoU": 0.8904109589041096,
+                    "TN": 61102,
+                    "TP": 1690,
+                    "n_pred": 1797,
                     "n_ref": 1791
                 },
                 "2": {
-                    "Dice": 0.8750508750508751,
-                    "FN": 54,
-                    "FP": 253,
-                    "IoU": 0.7778581765557163,
-                    "TN": 61618,
-                    "TP": 1075,
-                    "n_pred": 1328,
+                    "Dice": 0.9008264462809917,
+                    "FN": 39,
+                    "FP": 201,
+                    "IoU": 0.8195488721804511,
+                    "TN": 61670,
+                    "TP": 1090,
+                    "n_pred": 1291,
                     "n_ref": 1129
                 }
             },
             "prediction_file": "./validation/hippocampus_176.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_176.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_176.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9418854928971158,
-                    "FN": 64,
-                    "FP": 71,
-                    "IoU": 0.8901545972335232,
-                    "TN": 48795,
-                    "TP": 1094,
-                    "n_pred": 1165,
+                    "Dice": 0.9220452640402347,
+                    "FN": 58,
+                    "FP": 128,
+                    "IoU": 0.8553654743390358,
+                    "TN": 48738,
+                    "TP": 1100,
+                    "n_pred": 1228,
                     "n_ref": 1158
                 },
                 "2": {
-                    "Dice": 0.9025902955125866,
-                    "FN": 175,
-                    "FP": 92,
-                    "IoU": 0.8224734042553191,
-                    "TN": 48520,
-                    "TP": 1237,
-                    "n_pred": 1329,
+                    "Dice": 0.8679806619561176,
+                    "FN": 245,
+                    "FP": 110,
+                    "IoU": 0.7667542706964521,
+                    "TN": 48502,
+                    "TP": 1167,
+                    "n_pred": 1277,
                     "n_ref": 1412
                 }
             },
             "prediction_file": "./validation/hippocampus_199.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_199.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_199.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9302197802197802,
-                    "FN": 157,
-                    "FP": 97,
-                    "IoU": 0.869542886492039,
-                    "TN": 68253,
-                    "TP": 1693,
-                    "n_pred": 1790,
+                    "Dice": 0.9350579358663433,
+                    "FN": 115,
+                    "FP": 126,
+                    "IoU": 0.8780364372469636,
+                    "TN": 68224,
+                    "TP": 1735,
+                    "n_pred": 1861,
                     "n_ref": 1850
                 },
                 "2": {
-                    "Dice": 0.8769100169779287,
-                    "FN": 47,
-                    "FP": 243,
-                    "IoU": 0.780801209372638,
-                    "TN": 68877,
-                    "TP": 1033,
-                    "n_pred": 1276,
+                    "Dice": 0.884502309953801,
+                    "FN": 27,
+                    "FP": 248,
+                    "IoU": 0.7929216867469879,
+                    "TN": 68872,
+                    "TP": 1053,
+                    "n_pred": 1301,
                     "n_ref": 1080
                 }
             },
             "prediction_file": "./validation/hippocampus_220.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_220.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_220.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8699801192842942,
-                    "FN": 99,
-                    "FP": 228,
-                    "IoU": 0.7698803659394793,
-                    "TN": 50803,
-                    "TP": 1094,
-                    "n_pred": 1322,
+                    "Dice": 0.8841512469831054,
+                    "FN": 94,
+                    "FP": 194,
+                    "IoU": 0.7923576063446287,
+                    "TN": 50837,
+                    "TP": 1099,
+                    "n_pred": 1293,
                     "n_ref": 1193
                 },
                 "2": {
-                    "Dice": 0.8332615252046531,
-                    "FN": 288,
-                    "FP": 99,
-                    "IoU": 0.7141802067946824,
-                    "TN": 50870,
-                    "TP": 967,
-                    "n_pred": 1066,
+                    "Dice": 0.8353684210526315,
+                    "FN": 263,
+                    "FP": 128,
+                    "IoU": 0.7172812725958062,
+                    "TN": 50841,
+                    "TP": 992,
+                    "n_pred": 1120,
                     "n_ref": 1255
                 }
             },
             "prediction_file": "./validation/hippocampus_221.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_221.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_221.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9170848267622461,
-                    "FN": 114,
-                    "FP": 233,
-                    "IoU": 0.8468667255075022,
-                    "TN": 63446,
-                    "TP": 1919,
-                    "n_pred": 2152,
+                    "Dice": 0.9180249280920422,
+                    "FN": 118,
+                    "FP": 224,
+                    "IoU": 0.8484714222419141,
+                    "TN": 63455,
+                    "TP": 1915,
+                    "n_pred": 2139,
                     "n_ref": 2033
                 },
                 "2": {
-                    "Dice": 0.9040774420651218,
-                    "FN": 246,
-                    "FP": 81,
-                    "IoU": 0.8249464668094219,
-                    "TN": 63844,
-                    "TP": 1541,
-                    "n_pred": 1622,
+                    "Dice": 0.8984995586937334,
+                    "FN": 260,
+                    "FP": 85,
+                    "IoU": 0.8157051282051282,
+                    "TN": 63840,
+                    "TP": 1527,
+                    "n_pred": 1612,
                     "n_ref": 1787
                 }
             },
             "prediction_file": "./validation/hippocampus_224.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_224.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_224.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9439927732610659,
-                    "FN": 74,
-                    "FP": 50,
-                    "IoU": 0.8939264328485885,
-                    "TN": 44305,
-                    "TP": 1045,
-                    "n_pred": 1095,
+                    "Dice": 0.935672514619883,
+                    "FN": 79,
+                    "FP": 64,
+                    "IoU": 0.8791208791208791,
+                    "TN": 44291,
+                    "TP": 1040,
+                    "n_pred": 1104,
                     "n_ref": 1119
                 },
                 "2": {
-                    "Dice": 0.9048152295632699,
-                    "FN": 144,
-                    "FP": 111,
-                    "IoU": 0.8261758691206544,
-                    "TN": 44007,
-                    "TP": 1212,
-                    "n_pred": 1323,
+                    "Dice": 0.9006024096385542,
+                    "FN": 160,
+                    "FP": 104,
+                    "IoU": 0.8191780821917808,
+                    "TN": 44014,
+                    "TP": 1196,
+                    "n_pred": 1300,
                     "n_ref": 1356
                 }
             },
             "prediction_file": "./validation/hippocampus_225.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_225.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_225.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9171932158297307,
-                    "FN": 135,
-                    "FP": 114,
-                    "IoU": 0.847051597051597,
-                    "TN": 66484,
-                    "TP": 1379,
-                    "n_pred": 1493,
+                    "Dice": 0.9168316831683169,
+                    "FN": 125,
+                    "FP": 127,
+                    "IoU": 0.8464351005484461,
+                    "TN": 66471,
+                    "TP": 1389,
+                    "n_pred": 1516,
                     "n_ref": 1514
                 },
                 "2": {
-                    "Dice": 0.9036013095671153,
-                    "FN": 107,
-                    "FP": 158,
-                    "IoU": 0.8241539482415395,
-                    "TN": 66605,
-                    "TP": 1242,
-                    "n_pred": 1400,
+                    "Dice": 0.9034582132564841,
+                    "FN": 95,
+                    "FP": 173,
+                    "IoU": 0.823915900131406,
+                    "TN": 66590,
+                    "TP": 1254,
+                    "n_pred": 1427,
                     "n_ref": 1349
                 }
             },
             "prediction_file": "./validation/hippocampus_232.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_232.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_232.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9059952038369304,
-                    "FN": 332,
-                    "FP": 60,
-                    "IoU": 0.8281455501972819,
-                    "TN": 56183,
-                    "TP": 1889,
-                    "n_pred": 1949,
+                    "Dice": 0.9153754469606674,
+                    "FN": 301,
+                    "FP": 54,
+                    "IoU": 0.843956043956044,
+                    "TN": 56189,
+                    "TP": 1920,
+                    "n_pred": 1974,
                     "n_ref": 2221
                 },
                 "2": {
-                    "Dice": 0.8642407277816655,
-                    "FN": 119,
-                    "FP": 269,
-                    "IoU": 0.7609365372766482,
-                    "TN": 56841,
-                    "TP": 1235,
-                    "n_pred": 1504,
+                    "Dice": 0.878133704735376,
+                    "FN": 93,
+                    "FP": 257,
+                    "IoU": 0.7827436374922409,
+                    "TN": 56853,
+                    "TP": 1261,
+                    "n_pred": 1518,
                     "n_ref": 1354
                 }
             },
             "prediction_file": "./validation/hippocampus_251.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_251.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_251.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9357528200098088,
-                    "FN": 152,
-                    "FP": 110,
-                    "IoU": 0.8792626728110599,
-                    "TN": 50740,
-                    "TP": 1908,
-                    "n_pred": 2018,
+                    "Dice": 0.9335288367546432,
+                    "FN": 150,
+                    "FP": 122,
+                    "IoU": 0.8753437213565536,
+                    "TN": 50728,
+                    "TP": 1910,
+                    "n_pred": 2032,
                     "n_ref": 2060
                 },
                 "2": {
-                    "Dice": 0.91362018764154,
-                    "FN": 103,
-                    "FP": 164,
-                    "IoU": 0.8409767718880286,
-                    "TN": 51231,
-                    "TP": 1412,
-                    "n_pred": 1576,
+                    "Dice": 0.9205834683954619,
+                    "FN": 95,
+                    "FP": 150,
+                    "IoU": 0.8528528528528528,
+                    "TN": 51245,
+                    "TP": 1420,
+                    "n_pred": 1570,
                     "n_ref": 1515
                 }
             },
             "prediction_file": "./validation/hippocampus_252.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_252.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_252.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8258706467661692,
-                    "FN": 109,
-                    "FP": 346,
-                    "IoU": 0.7033898305084746,
-                    "TN": 55688,
-                    "TP": 1079,
-                    "n_pred": 1425,
+                    "Dice": 0.8212523719165086,
+                    "FN": 106,
+                    "FP": 365,
+                    "IoU": 0.6967160334835801,
+                    "TN": 55669,
+                    "TP": 1082,
+                    "n_pred": 1447,
                     "n_ref": 1188
                 },
                 "2": {
-                    "Dice": 0.832658148956061,
-                    "FN": 339,
-                    "FP": 198,
-                    "IoU": 0.7132941804591564,
-                    "TN": 55349,
-                    "TP": 1336,
-                    "n_pred": 1534,
+                    "Dice": 0.8204807992507025,
+                    "FN": 361,
+                    "FP": 214,
+                    "IoU": 0.6956061408152462,
+                    "TN": 55333,
+                    "TP": 1314,
+                    "n_pred": 1528,
                     "n_ref": 1675
                 }
             },
             "prediction_file": "./validation/hippocampus_257.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_257.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_257.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9063968196602818,
-                    "FN": 84,
-                    "FP": 175,
-                    "IoU": 0.8288169200264376,
-                    "TN": 45611,
-                    "TP": 1254,
-                    "n_pred": 1429,
+                    "Dice": 0.8820224719101124,
+                    "FN": 82,
+                    "FP": 254,
+                    "IoU": 0.7889447236180904,
+                    "TN": 45532,
+                    "TP": 1256,
+                    "n_pred": 1510,
                     "n_ref": 1338
                 },
                 "2": {
-                    "Dice": 0.8928453676228157,
-                    "FN": 228,
-                    "FP": 97,
-                    "IoU": 0.806432400238237,
-                    "TN": 45445,
-                    "TP": 1354,
-                    "n_pred": 1451,
+                    "Dice": 0.864139550486414,
+                    "FN": 294,
+                    "FP": 111,
+                    "IoU": 0.7607796810395747,
+                    "TN": 45431,
+                    "TP": 1288,
+                    "n_pred": 1399,
                     "n_ref": 1582
                 }
             },
             "prediction_file": "./validation/hippocampus_259.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_259.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_259.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9211788896504455,
-                    "FN": 111,
-                    "FP": 119,
-                    "IoU": 0.8538754764930114,
-                    "TN": 55342,
-                    "TP": 1344,
-                    "n_pred": 1463,
+                    "Dice": 0.9151494331844727,
+                    "FN": 123,
+                    "FP": 124,
+                    "IoU": 0.8435718809373021,
+                    "TN": 55337,
+                    "TP": 1332,
+                    "n_pred": 1456,
                     "n_ref": 1455
                 },
                 "2": {
-                    "Dice": 0.9015151515151515,
-                    "FN": 226,
-                    "FP": 86,
-                    "IoU": 0.8206896551724138,
-                    "TN": 55176,
-                    "TP": 1428,
-                    "n_pred": 1514,
+                    "Dice": 0.8900255754475703,
+                    "FN": 262,
+                    "FP": 82,
+                    "IoU": 0.8018433179723502,
+                    "TN": 55180,
+                    "TP": 1392,
+                    "n_pred": 1474,
                     "n_ref": 1654
                 }
             },
             "prediction_file": "./validation/hippocampus_265.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_265.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_265.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8996108949416343,
+                    "Dice": 0.9005453129057388,
                     "FN": 322,
-                    "FP": 65,
-                    "IoU": 0.8175388967468176,
-                    "TN": 55629,
+                    "FP": 61,
+                    "IoU": 0.8190836088804913,
+                    "TN": 55633,
                     "TP": 1734,
-                    "n_pred": 1799,
+                    "n_pred": 1795,
                     "n_ref": 2056
                 },
                 "2": {
-                    "Dice": 0.8872470285897848,
-                    "FN": 206,
-                    "FP": 145,
-                    "IoU": 0.7973441108545035,
-                    "TN": 56018,
-                    "TP": 1381,
-                    "n_pred": 1526,
+                    "Dice": 0.88768,
+                    "FN": 200,
+                    "FP": 151,
+                    "IoU": 0.7980437284234753,
+                    "TN": 56012,
+                    "TP": 1387,
+                    "n_pred": 1538,
                     "n_ref": 1587
                 }
             },
             "prediction_file": "./validation/hippocampus_276.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_276.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_276.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8252351097178683,
-                    "FN": 208,
-                    "FP": 238,
-                    "IoU": 0.7024683122081388,
-                    "TN": 52901,
-                    "TP": 1053,
-                    "n_pred": 1291,
+                    "Dice": 0.8278999241849886,
+                    "FN": 169,
+                    "FP": 285,
+                    "IoU": 0.7063389391979301,
+                    "TN": 52854,
+                    "TP": 1092,
+                    "n_pred": 1377,
                     "n_ref": 1261
                 },
                 "2": {
-                    "Dice": 0.849978383052313,
-                    "FN": 138,
-                    "FP": 209,
-                    "IoU": 0.7390977443609023,
-                    "TN": 53070,
-                    "TP": 983,
-                    "n_pred": 1192,
+                    "Dice": 0.8660944206008584,
+                    "FN": 112,
+                    "FP": 200,
+                    "IoU": 0.7638152914458743,
+                    "TN": 53079,
+                    "TP": 1009,
+                    "n_pred": 1209,
                     "n_ref": 1121
                 }
             },
             "prediction_file": "./validation/hippocampus_279.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_279.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_279.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8762520193861066,
-                    "FN": 195,
-                    "FP": 188,
-                    "IoU": 0.7797584818861415,
-                    "TN": 50281,
-                    "TP": 1356,
-                    "n_pred": 1544,
+                    "Dice": 0.8758378550909671,
+                    "FN": 179,
+                    "FP": 210,
+                    "IoU": 0.7791027825099376,
+                    "TN": 50259,
+                    "TP": 1372,
+                    "n_pred": 1582,
                     "n_ref": 1551
                 },
                 "2": {
-                    "Dice": 0.865046102263202,
-                    "FN": 203,
-                    "FP": 119,
-                    "IoU": 0.7621861152141802,
-                    "TN": 50666,
-                    "TP": 1032,
-                    "n_pred": 1151,
+                    "Dice": 0.8618830360846121,
+                    "FN": 196,
+                    "FP": 137,
+                    "IoU": 0.7572886297376094,
+                    "TN": 50648,
+                    "TP": 1039,
+                    "n_pred": 1176,
                     "n_ref": 1235
                 }
             },
             "prediction_file": "./validation/hippocampus_297.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_297.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_297.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9129916567342073,
-                    "FN": 294,
-                    "FP": 71,
-                    "IoU": 0.8399122807017544,
-                    "TN": 60510,
-                    "TP": 1915,
-                    "n_pred": 1986,
+                    "Dice": 0.9178403755868545,
+                    "FN": 254,
+                    "FP": 96,
+                    "IoU": 0.8481561822125814,
+                    "TN": 60485,
+                    "TP": 1955,
+                    "n_pred": 2051,
                     "n_ref": 2209
                 },
                 "2": {
-                    "Dice": 0.878645343367827,
-                    "FN": 246,
-                    "FP": 141,
-                    "IoU": 0.7835570469798657,
-                    "TN": 61002,
-                    "TP": 1401,
-                    "n_pred": 1542,
+                    "Dice": 0.8812189054726368,
+                    "FN": 230,
+                    "FP": 152,
+                    "IoU": 0.7876598110061145,
+                    "TN": 60991,
+                    "TP": 1417,
+                    "n_pred": 1569,
                     "n_ref": 1647
                 }
             },
             "prediction_file": "./validation/hippocampus_302.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_302.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_302.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9096905124302385,
-                    "FN": 223,
-                    "FP": 133,
-                    "IoU": 0.8343415542112611,
-                    "TN": 63515,
-                    "TP": 1793,
-                    "n_pred": 1926,
+                    "Dice": 0.9083585095669687,
+                    "FN": 212,
+                    "FP": 152,
+                    "IoU": 0.8321033210332104,
+                    "TN": 63496,
+                    "TP": 1804,
+                    "n_pred": 1956,
                     "n_ref": 2016
                 },
                 "2": {
-                    "Dice": 0.8639846743295019,
-                    "FN": 167,
-                    "FP": 259,
-                    "IoU": 0.760539629005059,
-                    "TN": 63885,
-                    "TP": 1353,
-                    "n_pred": 1612,
+                    "Dice": 0.8603387663790348,
+                    "FN": 174,
+                    "FP": 263,
+                    "IoU": 0.754907459338194,
+                    "TN": 63881,
+                    "TP": 1346,
+                    "n_pred": 1609,
                     "n_ref": 1520
                 }
             },
             "prediction_file": "./validation/hippocampus_304.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_304.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_304.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8807397959183674,
-                    "FN": 184,
-                    "FP": 190,
-                    "IoU": 0.7868945868945869,
-                    "TN": 65326,
-                    "TP": 1381,
-                    "n_pred": 1571,
+                    "Dice": 0.8823903369357915,
+                    "FN": 177,
+                    "FP": 193,
+                    "IoU": 0.7895335608646189,
+                    "TN": 65323,
+                    "TP": 1388,
+                    "n_pred": 1581,
                     "n_ref": 1565
                 },
                 "2": {
-                    "Dice": 0.9046287666977322,
-                    "FN": 180,
-                    "FP": 127,
-                    "IoU": 0.8258650028360749,
-                    "TN": 65318,
-                    "TP": 1456,
+                    "Dice": 0.9170549860205033,
+                    "FN": 160,
+                    "FP": 107,
+                    "IoU": 0.846815834767642,
+                    "TN": 65338,
+                    "TP": 1476,
                     "n_pred": 1583,
                     "n_ref": 1636
                 }
             },
             "prediction_file": "./validation/hippocampus_311.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_311.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_311.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8512995313165743,
-                    "FN": 55,
-                    "FP": 294,
-                    "IoU": 0.7410979228486647,
-                    "TN": 51386,
-                    "TP": 999,
-                    "n_pred": 1293,
+                    "Dice": 0.8425460636515912,
+                    "FN": 48,
+                    "FP": 328,
+                    "IoU": 0.7279305354558611,
+                    "TN": 51352,
+                    "TP": 1006,
+                    "n_pred": 1334,
                     "n_ref": 1054
                 },
                 "2": {
-                    "Dice": 0.8575863407062476,
-                    "FN": 292,
-                    "FP": 75,
-                    "IoU": 0.7506793478260869,
-                    "TN": 51262,
-                    "TP": 1105,
-                    "n_pred": 1180,
+                    "Dice": 0.8640552995391705,
+                    "FN": 272,
+                    "FP": 82,
+                    "IoU": 0.7606490872210954,
+                    "TN": 51255,
+                    "TP": 1125,
+                    "n_pred": 1207,
                     "n_ref": 1397
                 }
             },
             "prediction_file": "./validation/hippocampus_320.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_320.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_320.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8782496782496783,
-                    "FN": 192,
-                    "FP": 281,
-                    "IoU": 0.7829279486002754,
-                    "TN": 69221,
-                    "TP": 1706,
-                    "n_pred": 1987,
+                    "Dice": 0.873689465801298,
+                    "FN": 148,
+                    "FP": 358,
+                    "IoU": 0.775709219858156,
+                    "TN": 69144,
+                    "TP": 1750,
+                    "n_pred": 2108,
                     "n_ref": 1898
                 },
                 "2": {
-                    "Dice": 0.8890063424947146,
-                    "FN": 254,
-                    "FP": 166,
-                    "IoU": 0.8001902949571836,
-                    "TN": 69298,
-                    "TP": 1682,
-                    "n_pred": 1848,
+                    "Dice": 0.8793983346763363,
+                    "FN": 299,
+                    "FP": 150,
+                    "IoU": 0.7847555129434324,
+                    "TN": 69314,
+                    "TP": 1637,
+                    "n_pred": 1787,
                     "n_ref": 1936
                 }
             },
             "prediction_file": "./validation/hippocampus_325.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_325.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_325.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8710832587287377,
-                    "FN": 94,
-                    "FP": 194,
-                    "IoU": 0.7716098334655036,
-                    "TN": 53459,
-                    "TP": 973,
-                    "n_pred": 1167,
+                    "Dice": 0.8697611536728256,
+                    "FN": 102,
+                    "FP": 187,
+                    "IoU": 0.7695374800637959,
+                    "TN": 53466,
+                    "TP": 965,
+                    "n_pred": 1152,
                     "n_ref": 1067
                 },
                 "2": {
-                    "Dice": 0.851877133105802,
-                    "FN": 303,
-                    "FP": 131,
-                    "IoU": 0.7419738406658739,
-                    "TN": 53038,
-                    "TP": 1248,
-                    "n_pred": 1379,
+                    "Dice": 0.8373205741626795,
+                    "FN": 326,
+                    "FP": 150,
+                    "IoU": 0.720164609053498,
+                    "TN": 53019,
+                    "TP": 1225,
+                    "n_pred": 1375,
                     "n_ref": 1551
                 }
             },
             "prediction_file": "./validation/hippocampus_343.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_343.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_343.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9196652719665271,
-                    "FN": 284,
-                    "FP": 100,
-                    "IoU": 0.8512780790085205,
-                    "TN": 56544,
-                    "TP": 2198,
-                    "n_pred": 2298,
+                    "Dice": 0.9186462055917595,
+                    "FN": 297,
+                    "FP": 90,
+                    "IoU": 0.8495334370139969,
+                    "TN": 56554,
+                    "TP": 2185,
+                    "n_pred": 2275,
                     "n_ref": 2482
                 },
                 "2": {
-                    "Dice": 0.8834315651604453,
-                    "FN": 148,
-                    "FP": 208,
-                    "IoU": 0.7912023460410558,
-                    "TN": 57421,
-                    "TP": 1349,
-                    "n_pred": 1557,
+                    "Dice": 0.8766404199475065,
+                    "FN": 161,
+                    "FP": 215,
+                    "IoU": 0.780373831775701,
+                    "TN": 57414,
+                    "TP": 1336,
+                    "n_pred": 1551,
                     "n_ref": 1497
                 }
             },
             "prediction_file": "./validation/hippocampus_366.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_366.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_366.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.885215221459763,
-                    "FN": 178,
-                    "FP": 190,
-                    "IoU": 0.7940682708449917,
-                    "TN": 61213,
-                    "TP": 1419,
-                    "n_pred": 1609,
+                    "Dice": 0.8835041938490215,
+                    "FN": 175,
+                    "FP": 200,
+                    "IoU": 0.7913188647746243,
+                    "TN": 61203,
+                    "TP": 1422,
+                    "n_pred": 1622,
                     "n_ref": 1597
                 },
                 "2": {
-                    "Dice": 0.8549916341327384,
-                    "FN": 268,
-                    "FP": 252,
-                    "IoU": 0.746712128592304,
-                    "TN": 60947,
-                    "TP": 1533,
-                    "n_pred": 1785,
+                    "Dice": 0.8508164959867146,
+                    "FN": 264,
+                    "FP": 275,
+                    "IoU": 0.7403660886319846,
+                    "TN": 60924,
+                    "TP": 1537,
+                    "n_pred": 1812,
                     "n_ref": 1801
                 }
             },
             "prediction_file": "./validation/hippocampus_370.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_370.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_370.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9274787535410765,
+                    "Dice": 0.9261669024045261,
                     "FN": 114,
-                    "FP": 142,
-                    "IoU": 0.8647649234020074,
-                    "TN": 59307,
+                    "FP": 147,
+                    "IoU": 0.8624868282402529,
+                    "TN": 59302,
                     "TP": 1637,
-                    "n_pred": 1779,
+                    "n_pred": 1784,
                     "n_ref": 1751
                 },
                 "2": {
-                    "Dice": 0.9096699478865083,
-                    "FN": 161,
-                    "FP": 151,
-                    "IoU": 0.834306956983537,
-                    "TN": 59317,
-                    "TP": 1571,
-                    "n_pred": 1722,
+                    "Dice": 0.9036697247706422,
+                    "FN": 156,
+                    "FP": 180,
+                    "IoU": 0.8242677824267782,
+                    "TN": 59288,
+                    "TP": 1576,
+                    "n_pred": 1756,
                     "n_ref": 1732
                 }
             },
             "prediction_file": "./validation/hippocampus_372.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_372.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_372.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.9396929824561403,
-                    "FN": 168,
-                    "FP": 52,
-                    "IoU": 0.8862461220268872,
-                    "TN": 56376,
-                    "TP": 1714,
-                    "n_pred": 1766,
+                    "Dice": 0.9450068399452805,
+                    "FN": 155,
+                    "FP": 46,
+                    "IoU": 0.895746887966805,
+                    "TN": 56382,
+                    "TP": 1727,
+                    "n_pred": 1773,
                     "n_ref": 1882
                 },
                 "2": {
-                    "Dice": 0.9262920079073708,
-                    "FN": 167,
-                    "FP": 94,
-                    "IoU": 0.8627038400841662,
-                    "TN": 56409,
-                    "TP": 1640,
-                    "n_pred": 1734,
+                    "Dice": 0.9229894856493321,
+                    "FN": 183,
+                    "FP": 88,
+                    "IoU": 0.8569920844327177,
+                    "TN": 56415,
+                    "TP": 1624,
+                    "n_pred": 1712,
                     "n_ref": 1807
                 }
             },
             "prediction_file": "./validation/hippocampus_373.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_373.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_373.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8656838656838657,
-                    "FN": 123,
-                    "FP": 205,
-                    "IoU": 0.7631768953068592,
-                    "TN": 60495,
-                    "TP": 1057,
-                    "n_pred": 1262,
+                    "Dice": 0.8622366288492707,
+                    "FN": 116,
+                    "FP": 224,
+                    "IoU": 0.7578347578347578,
+                    "TN": 60476,
+                    "TP": 1064,
+                    "n_pred": 1288,
                     "n_ref": 1180
                 },
                 "2": {
-                    "Dice": 0.8883216336949585,
-                    "FN": 185,
-                    "FP": 165,
-                    "IoU": 0.799081515499426,
-                    "TN": 60138,
-                    "TP": 1392,
-                    "n_pred": 1557,
+                    "Dice": 0.8882521489971347,
+                    "FN": 182,
+                    "FP": 169,
+                    "IoU": 0.7989690721649485,
+                    "TN": 60134,
+                    "TP": 1395,
+                    "n_pred": 1564,
                     "n_ref": 1577
                 }
             },
             "prediction_file": "./validation/hippocampus_378.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_378.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_378.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8983050847457628,
-                    "FN": 240,
-                    "FP": 108,
-                    "IoU": 0.8153846153846154,
-                    "TN": 50750,
-                    "TP": 1537,
-                    "n_pred": 1645,
+                    "Dice": 0.9326513213981245,
+                    "FN": 136,
+                    "FP": 101,
+                    "IoU": 0.8738019169329073,
+                    "TN": 50757,
+                    "TP": 1641,
+                    "n_pred": 1742,
                     "n_ref": 1777
                 },
                 "2": {
-                    "Dice": 0.8862090290661719,
-                    "FN": 210,
-                    "FP": 158,
-                    "IoU": 0.7956690727373681,
-                    "TN": 50834,
-                    "TP": 1433,
-                    "n_pred": 1591,
+                    "Dice": 0.9173450219160927,
+                    "FN": 178,
+                    "FP": 86,
+                    "IoU": 0.8473105841526894,
+                    "TN": 50906,
+                    "TP": 1465,
+                    "n_pred": 1551,
                     "n_ref": 1643
                 }
             },
             "prediction_file": "./validation/hippocampus_383.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_383.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_383.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8455625436757512,
-                    "FN": 299,
-                    "FP": 143,
-                    "IoU": 0.7324455205811138,
-                    "TN": 52204,
-                    "TP": 1210,
-                    "n_pred": 1353,
+                    "Dice": 0.8712070128118679,
+                    "FN": 217,
+                    "FP": 165,
+                    "IoU": 0.7718040621266428,
+                    "TN": 52182,
+                    "TP": 1292,
+                    "n_pred": 1457,
                     "n_ref": 1509
                 },
                 "2": {
-                    "Dice": 0.8538980969920197,
-                    "FN": 180,
-                    "FP": 296,
-                    "IoU": 0.7450455275843599,
-                    "TN": 51989,
-                    "TP": 1391,
-                    "n_pred": 1687,
+                    "Dice": 0.8664615384615385,
+                    "FN": 163,
+                    "FP": 271,
+                    "IoU": 0.7643865363735071,
+                    "TN": 52014,
+                    "TP": 1408,
+                    "n_pred": 1679,
                     "n_ref": 1571
                 }
             },
             "prediction_file": "./validation/hippocampus_387.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_387.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset004_Hippocampus/gt_segmentations/hippocampus_387.nii.gz"
         }
     ]
 }

@@ -125,5 +125,5 @@ data/
 **.egg-info/
 .ruff_cache
 
-output/
+output/prior_band
 output_bkp/

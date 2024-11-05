@@ -1,13 +1,15 @@
 seed: 42
 fold: 2
 device: cuda
+load: null
+save: null
 pipeline:
   return_if_done: false
-  retry_limit: 5
   run_training: true
   run_validation: true
   validate_with_best: true
   continue_training: false
+  remove_validation_files: true
 trainer:
   configuration: 3d_fullres
   fold: ${fold}
@@ -29,7 +31,7 @@ hp_config:
   normalization: InstanceNorm
   n_conv_per_stage_encoder: 2
   n_conv_per_stage_decoder: 2
-  loss: DiceAndCrossEntropyLoss
+  loss_function: DiceAndCrossEntropyLoss
 dataset:
   _target_: automis.datasets.msd_dataset.MSDDataset
   name: Dataset001_BrainTumour

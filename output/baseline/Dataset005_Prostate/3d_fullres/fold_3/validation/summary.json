@@ -1,33 +1,33 @@
 {
     "foreground_mean": {
-        "Dice": 0.7856706598689247,
-        "FN": 3365.333333333333,
-        "FP": 3753.166666666667,
-        "IoU": 0.6619775037709184,
-        "TN": 1757328.8333333333,
-        "TP": 20726.0,
-        "n_pred": 24479.166666666668,
+        "Dice": 0.777085739159755,
+        "FN": 3466.5833333333335,
+        "FP": 3819.6666666666665,
+        "IoU": 0.6514853578128617,
+        "TN": 1757262.3333333335,
+        "TP": 20624.75,
+        "n_pred": 24444.416666666668,
         "n_ref": 24091.333333333332
     },
     "mean": {
         "1": {
-            "Dice": 0.6977660187436211,
-            "FN": 3922.6666666666665,
-            "FP": 2520.3333333333335,
-            "IoU": 0.5451374961643893,
-            "TN": 1770151.8333333333,
-            "TP": 8578.5,
-            "n_pred": 11098.833333333334,
+            "Dice": 0.6852498099392709,
+            "FN": 4060.8333333333335,
+            "FP": 2454.0,
+            "IoU": 0.5309924446201394,
+            "TN": 1770218.1666666667,
+            "TP": 8440.333333333334,
+            "n_pred": 10894.333333333334,
             "n_ref": 12501.166666666666
         },
         "2": {
-            "Dice": 0.8735753009942284,
-            "FN": 2808.0,
-            "FP": 4986.0,
-            "IoU": 0.7788175113774475,
-            "TN": 1744505.8333333333,
-            "TP": 32873.5,
-            "n_pred": 37859.5,
+            "Dice": 0.8689216683802391,
+            "FN": 2872.3333333333335,
+            "FP": 5185.333333333333,
+            "IoU": 0.771978271005584,
+            "TN": 1744306.5,
+            "TP": 32809.166666666664,
+            "n_pred": 37994.5,
             "n_ref": 35681.5
         }
     },
@@ -35,158 +35,158 @@
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.5953304040665116,
-                    "FN": 1920,
-                    "FP": 2777,
-                    "IoU": 0.4238223748773307,
-                    "TN": 2039848,
-                    "TP": 3455,
-                    "n_pred": 6232,
+                    "Dice": 0.5453753701445742,
+                    "FN": 2244,
+                    "FP": 2976,
+                    "IoU": 0.3749251586636331,
+                    "TN": 2039649,
+                    "TP": 3131,
+                    "n_pred": 6107,
                     "n_ref": 5375
                 },
                 "2": {
-                    "Dice": 0.9258417346893589,
-                    "FN": 7867,
-                    "FP": 2181,
-                    "IoU": 0.8619230187849556,
-                    "TN": 1975229,
-                    "TP": 62723,
-                    "n_pred": 64904,
+                    "Dice": 0.9215665904841055,
+                    "FN": 8493,
+                    "FP": 2077,
+                    "IoU": 0.8545419516424236,
+                    "TN": 1975333,
+                    "TP": 62097,
+                    "n_pred": 64174,
                     "n_ref": 70590
                 }
             },
             "prediction_file": "./validation/prostate_24.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset005_Prostate/gt_segmentations/prostate_24.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset005_Prostate/gt_segmentations/prostate_24.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8221850945760487,
-                    "FN": 3734,
-                    "FP": 2226,
-                    "IoU": 0.6980596788084503,
-                    "TN": 1516261,
-                    "TP": 13779,
-                    "n_pred": 16005,
+                    "Dice": 0.821596381146943,
+                    "FN": 3437,
+                    "FP": 2676,
+                    "IoU": 0.697211352716826,
+                    "TN": 1515811,
+                    "TP": 14076,
+                    "n_pred": 16752,
                     "n_ref": 17513
                 },
                 "2": {
-                    "Dice": 0.9072766261615439,
-                    "FN": 3474,
-                    "FP": 6255,
-                    "IoU": 0.830289392432885,
-                    "TN": 1478673,
-                    "TP": 47598,
-                    "n_pred": 53853,
+                    "Dice": 0.9117250480534757,
+                    "FN": 3402,
+                    "FP": 5829,
+                    "IoU": 0.8377708651869036,
+                    "TN": 1479099,
+                    "TP": 47670,
+                    "n_pred": 53499,
                     "n_ref": 51072
                 }
             },
             "prediction_file": "./validation/prostate_29.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset005_Prostate/gt_segmentations/prostate_29.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset005_Prostate/gt_segmentations/prostate_29.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.7138461538461538,
-                    "FN": 457,
-                    "FP": 1403,
-                    "IoU": 0.5550239234449761,
-                    "TN": 978860,
-                    "TP": 2320,
-                    "n_pred": 3723,
+                    "Dice": 0.6922716627634661,
+                    "FN": 560,
+                    "FP": 1411,
+                    "IoU": 0.5293696275071633,
+                    "TN": 978852,
+                    "TP": 2217,
+                    "n_pred": 3628,
                     "n_ref": 2777
                 },
                 "2": {
-                    "Dice": 0.9121812014286483,
-                    "FN": 2218,
-                    "FP": 2675,
-                    "IoU": 0.8385414948028378,
-                    "TN": 952735,
-                    "TP": 25412,
-                    "n_pred": 28087,
+                    "Dice": 0.9080404257222073,
+                    "FN": 2248,
+                    "FP": 2893,
+                    "IoU": 0.8315696360121876,
+                    "TN": 952517,
+                    "TP": 25382,
+                    "n_pred": 28275,
                     "n_ref": 27630
                 }
             },
             "prediction_file": "./validation/prostate_37.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset005_Prostate/gt_segmentations/prostate_37.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset005_Prostate/gt_segmentations/prostate_37.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.8038215678582143,
-                    "FN": 6605,
-                    "FP": 1896,
-                    "IoU": 0.671991357024347,
-                    "TN": 2022083,
-                    "TP": 17416,
-                    "n_pred": 19312,
+                    "Dice": 0.7917665960369759,
+                    "FN": 7019,
+                    "FP": 1924,
+                    "IoU": 0.6553093081518597,
+                    "TN": 2022055,
+                    "TP": 17002,
+                    "n_pred": 18926,
                     "n_ref": 24021
                 },
                 "2": {
-                    "Dice": 0.8122203363678445,
-                    "FN": 418,
-                    "FP": 5667,
-                    "IoU": 0.6838139776565342,
-                    "TN": 2028755,
-                    "TP": 13160,
-                    "n_pred": 18827,
+                    "Dice": 0.8003370854150365,
+                    "FN": 282,
+                    "FP": 6352,
+                    "IoU": 0.6671349724034119,
+                    "TN": 2028070,
+                    "TP": 13296,
+                    "n_pred": 19648,
                     "n_ref": 13578
                 }
             },
             "prediction_file": "./validation/prostate_43.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset005_Prostate/gt_segmentations/prostate_43.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset005_Prostate/gt_segmentations/prostate_43.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.7113267735993171,
-                    "FN": 2728,
-                    "FP": 3697,
-                    "IoU": 0.5519838226065128,
-                    "TN": 2033659,
-                    "TP": 7916,
-                    "n_pred": 11613,
+                    "Dice": 0.7057912948461118,
+                    "FN": 2893,
+                    "FP": 3569,
+                    "IoU": 0.5453458101737846,
+                    "TN": 2033787,
+                    "TP": 7751,
+                    "n_pred": 11320,
                     "n_ref": 10644
                 },
                 "2": {
-                    "Dice": 0.8015744793349587,
-                    "FN": 646,
-                    "FP": 6109,
-                    "IoU": 0.6688563164861022,
-                    "TN": 2027601,
-                    "TP": 13644,
-                    "n_pred": 19753,
+                    "Dice": 0.7932228613949228,
+                    "FN": 432,
+                    "FP": 6793,
+                    "IoU": 0.6573068348906702,
+                    "TN": 2026917,
+                    "TP": 13858,
+                    "n_pred": 20651,
                     "n_ref": 14290
                 }
             },
             "prediction_file": "./validation/prostate_46.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset005_Prostate/gt_segmentations/prostate_46.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset005_Prostate/gt_segmentations/prostate_46.nii.gz"
         },
         {
             "metrics": {
                 "1": {
-                    "Dice": 0.5400861185154808,
-                    "FN": 8092,
-                    "FP": 3123,
-                    "IoU": 0.3699438202247191,
-                    "TN": 2030200,
-                    "TP": 6585,
-                    "n_pred": 9708,
+                    "Dice": 0.5546975546975547,
+                    "FN": 8212,
+                    "FP": 2168,
+                    "IoU": 0.383793410507569,
+                    "TN": 2031155,
+                    "TP": 6465,
+                    "n_pred": 8633,
                     "n_ref": 14677
                 },
                 "2": {
-                    "Dice": 0.882357427983016,
-                    "FN": 2225,
-                    "FP": 7029,
-                    "IoU": 0.7894808681013695,
-                    "TN": 2004042,
-                    "TP": 34704,
-                    "n_pred": 41733,
+                    "Dice": 0.8786379992116874,
+                    "FN": 2377,
+                    "FP": 7168,
+                    "IoU": 0.7835453658979069,
+                    "TN": 2003903,
+                    "TP": 34552,
+                    "n_pred": 41720,
                     "n_ref": 36929
                 }
             },
             "prediction_file": "./validation/prostate_47.nii.gz",
-            "reference_file": "/mnt/home/jbecktep/git_projects/automl_mis/data/nnUNet_preprocessed/Dataset005_Prostate/gt_segmentations/prostate_47.nii.gz"
+            "reference_file": "/mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed/Dataset005_Prostate/gt_segmentations/prostate_47.nii.gz"
         }
     ]
 }

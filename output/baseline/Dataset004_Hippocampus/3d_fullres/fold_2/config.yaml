@@ -1,12 +1,15 @@
 seed: 42
 fold: 2
 device: cuda
+load: null
+save: null
 pipeline:
   return_if_done: false
   run_training: true
   run_validation: true
   validate_with_best: true
   continue_training: false
+  remove_validation_files: true
 trainer:
   configuration: 3d_fullres
   fold: ${fold}
