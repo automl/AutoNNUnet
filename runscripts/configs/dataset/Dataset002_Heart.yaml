@@ -1,2 +1,3 @@
 _target_: automis.datasets.msd_dataset.MSDDataset
 name: Dataset002_Heart
+runtime_min: 446

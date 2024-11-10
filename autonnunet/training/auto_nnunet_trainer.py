@@ -47,6 +47,7 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 from autonnunet.training.auto_nnunet_logger import AutoNNUNetLogger
 from autonnunet.training.dummy_lr_scheduler import DummyLRScheduler
 from autonnunet.utils.paths import NNUNET_PREPROCESSED
+from autonnunet.experiment_planning.plan_experiment import plan_experiment
 
 if TYPE_CHECKING:
     from omegaconf import DictConfig
@@ -75,9 +76,12 @@ class AutoNNUNetTrainer(nnUNetTrainer):
     @staticmethod
     def from_config(cfg: DictConfig) -> AutoNNUNetTrainer:
         preprocessed_dataset_folder_base = NNUNET_PREPROCESSED / cfg.dataset.name
-        plans_file = preprocessed_dataset_folder_base / f"{cfg.trainer.plans_identifier}.json"
-        plans = load_json(plans_file)
         dataset_json = load_json(preprocessed_dataset_folder_base / "dataset.json")
+        plans = plan_experiment(
+            dataset_name=cfg.dataset.name,
+            plans_name=cfg.trainer.plans_identifier,
+            hp_config=cfg.hp_config,
+        )
 
         nnunet_trainer = AutoNNUNetTrainer(
             plans=plans,
@@ -92,8 +96,8 @@ class AutoNNUNetTrainer(nnUNetTrainer):
         nnunet_trainer.disable_checkpointing = cfg.trainer.disable_checkpointing
 
         if cfg.load:
-            load_path_best = Path(cfg.load + f"_fold_{cfg.fold}_best.pth").resolve()
-            load_path_final = Path(cfg.load + f"_fold_{cfg.fold}_final.pth").resolve()
+            load_path_best = Path(cfg.load + "_best.pth").resolve()
+            load_path_final = Path(cfg.load + "_final.pth").resolve()
 
             if load_path_final.exists():
                 # We copy the best checkpoint to the current directory since the

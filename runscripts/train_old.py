@@ -63,12 +63,12 @@ def run(cfg: DictConfig):
         country_iso_code="DEU",
         log_level="WARNING"
     )
+    logger.info("Creating trainer")
 
     # --------------------------------------------------------------------------------------------
     # TRAINING
     # --------------------------------------------------------------------------------------------
-    logger.info("Creating trainer")
-    nnunet_trainer = AutoNNUNetTrainer.from_config(cfg=cfg)
+    nnunet_trainer = AutoNNUNetTrainer.from_config(cfg)
 
     if cfg.pipeline.run_training:
         if Path("./checkpoint_final.pth").exists() and cfg.pipeline.continue_training:
@@ -84,8 +84,8 @@ def run(cfg: DictConfig):
 
             if cfg.save:
                 logger.info("Saving model to checkpoint dir.")
-                save_path_best = Path(cfg.save + "_best.pth").resolve()
-                save_path_final = Path(cfg.save + "_final.pth").resolve()
+                save_path_best = Path(cfg.save + f"_fold_{cfg.fold}_best.pth").resolve()
+                save_path_final = Path(cfg.save + f"_fold_{cfg.fold}_final.pth").resolve()
                 checkpoint_final_path = Path(".").resolve() / "checkpoint_final.pth"
                 checkpoint_best_path = Path(".").resolve() / "checkpoint_best.pth"
 

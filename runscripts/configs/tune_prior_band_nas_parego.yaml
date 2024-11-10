@@ -2,7 +2,7 @@ defaults:
   - _self_
   - base
   - cluster: kisski_gpu
-  - search_space: hpo
+  - search_space: hpo_nas
   - dataset: Dataset001_BrainTumour
   - override hydra/sweeper: HyperNEPS
 
@@ -14,15 +14,20 @@ max_budget: 1000  # Maximum number of epochs
 eta: 3            # Reduction factor for successive halving
 budget: 22_000    # Total budget in epochs
 
+objectives: [loss, epoch_runtime]
+objective_bounds: [[0.0, 1.0], [null, null]]
+maximize: [False, False]
+
 hydra:
   sweeper:
-    n_trials: 207
     budget: ${budget}
     budget_variable: hp_config.num_epochs
     search_space: ${search_space}
     loading_variable: load
     saving_variable: save
     sweeper_kwargs:
+      objectives: ${objectives}
+      maximize: ${maximize}
       checkpoint_tf: true
       load_tf: true
       checkpoint_path_typing: ""
@@ -31,8 +36,6 @@ hydra:
       job_array_size_limit: 1   # only one config at a time
       seeds: [0, 1, 2, 3, 4]    # these are the folds in our case
       seed_keyword: fold
-      slurm: true
-      slurm_timeout: ${dataset.runtime_min}
       deterministic: true
       optimizer_kwargs:
         fidelity_variable: ${hydra.sweeper.budget_variable}
@@ -52,10 +55,14 @@ hydra:
           inc_mutation_std: 0.25
           model_based: False
           sample_default_first: True
-          sample_default_at_target: True
+          sample_default_at_target: False
+          mo_optimizer:
+            _target_: neps.optimizers.multi_objective.parego.ParEGO
+            objectives: ${objectives}
+            objective_bounds: ${objective_bounds}
   run:  
-    dir: output/prior_band/${dataset.name}/${trainer.configuration}/${neps_seed}
+    dir: output/prior_band_nas_parego/${dataset.name}/${trainer.configuration}/${neps_seed}
   sweep:
-    dir: output/prior_band/${dataset.name}/${trainer.configuration}/${neps_seed}
+    dir: output/prior_band_nas_parego/${dataset.name}/${trainer.configuration}/${neps_seed}
   job:
     chdir: true

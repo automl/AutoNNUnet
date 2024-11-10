@@ -1,2 +1,3 @@
 _target_: automis.datasets.msd_dataset.MSDDataset
 name: Dataset003_Liver
+runtime_min: 359

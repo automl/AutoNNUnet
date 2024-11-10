@@ -1,7 +1,65 @@
 from __future__ import annotations
-
+import math
+from collections import defaultdict
 from smac.intensifier.successive_halving import SuccessiveHalving
+import numpy as np
 
+def compute_successive_halving(
+        min_budget: float,
+        max_budget: float,
+        eta: float,
+        early_stopping_rate: int = 0,
+    ):
+    stopping_rate_limit = np.floor(
+            np.log(max_budget / min_budget) / np.log(eta)
+        ).astype(int)
+    
+    new_min_budget = min_budget * (eta**early_stopping_rate)
+    nrungs = (
+        np.floor(np.log(max_budget / new_min_budget) / np.log(eta)).astype(
+            int
+        )
+        + 1
+    )
+    
+    # Rung Map
+    _max_budget = max_budget
+    rung_map = dict()
+    for i in reversed(range(nrungs)):
+        rung_map[i + early_stopping_rate] = _max_budget
+        _max_budget /= eta
+
+    # Config Map
+    s_max = stopping_rate_limit + 1
+    _s = stopping_rate_limit - early_stopping_rate
+    _n_config = np.floor(s_max / (_s + 1)) * eta**_s
+    config_map = dict()
+    for i in range(nrungs):
+        config_map[i + early_stopping_rate] = int(_n_config)
+        _n_config //= eta
+
+    n_configs = []
+    budgets = []
+
+    for i in sorted(rung_map.keys()):
+        n_configs.append(config_map[i])
+        budgets.append(rung_map[i])
+
+    return n_configs, budgets
+
+def compute_hyperband_brackets(
+        b_min: float,
+        b_max: float,
+        eta: int
+    ) -> tuple[int, dict[int, list], dict[int, list]]:
+    s_max = math.floor(math.log(b_max / b_min) / math.log(eta))
+    n_configs_in_stage = defaultdict(list)
+    budgets_in_stage = defaultdict(list)
+
+    for s in range(s_max + 1):
+        n_configs_in_stage[s], budgets_in_stage[s] = compute_successive_halving(b_min, b_max, eta, early_stopping_rate=s)
+
+    return s_max, n_configs_in_stage, budgets_in_stage
 
 def compute_hyperband_budgets(
         b_min: float,
@@ -11,21 +69,9 @@ def compute_hyperband_budgets(
         print_output: bool = True,
         is_prior_band: bool = False
     ) -> tuple[dict[int, list], dict[int, list], dict[int, list], int, float, float]:
-    s_max = SuccessiveHalving._get_max_iterations(eta, b_max, b_min)
+    s_max, n_configs_in_stage, budgets_in_stage = compute_hyperband_brackets(b_min, b_max, eta)
 
-    n_configs_in_stage = {}
-    budgets_in_stage = {}
 
-    for i in range(s_max + 1):
-        max_iter = s_max - i
-
-        budgets_in_stage[i], n_configs_in_stage[i] = SuccessiveHalving._compute_configs_and_budgets_for_stages(
-            eta, b_max, max_iter, s_max
-        )
-
-        for j in range(len(n_configs_in_stage[i])):
-            if n_configs_in_stage[i][j] == 0:
-                n_configs_in_stage[i][j] = 1
 
     total_real_budget = 0
     total_budget = 0
@@ -48,9 +94,6 @@ def compute_hyperband_budgets(
         n_stages = s_max + 1
 
     if is_prior_band:
-        total_real_budget += b_max
-        total_budget += b_max
-
         # We start by evaluationg the default configuration
         n_configs_in_stage[0] = [1] + n_configs_in_stage[0]
         budgets_in_stage[0] = [b_max] + budgets_in_stage[0]
@@ -66,10 +109,13 @@ def compute_hyperband_budgets(
 
         total_trials += sum(n_configs_in_stage[i])
 
+        # In hyperband, only the first budget in each stages contains new configurations.
+        # In PriorBand, we have to check whether this is the default configuration (i=0)
         if is_prior_band and i == 0:
             total_configs += n_configs_in_stage[i][1]
         else:
             total_configs += n_configs_in_stage[i][0]
+
         total_budget += stage_budget
         total_real_budget += stage_real_budget
 
@@ -91,17 +137,17 @@ def compute_hyperband_budgets(
     return n_configs_in_stage, budgets_in_stage, real_budgets_in_stage, total_trials, total_budget, total_real_budget
 
 
-def get_real_budget_per_config(
+def get_budget_per_config(
         n_configs_in_stage: dict[int, list],
-        real_budgets_in_stage: dict[int, list],
+        budgets_in_stage: dict[int, list],
     ) -> dict[int, float]:
-    real_budget_per_config = {}
+    budget_per_config = {}
 
     config_id = 0
     for stage, n_configs in n_configs_in_stage.items():
-        for n_config, real_budget in zip(n_configs, real_budgets_in_stage[stage], strict=False):
+        for n_config, real_budget in zip(n_configs, budgets_in_stage[stage], strict=False):
             for _ in range(n_config):
-                real_budget_per_config[config_id] = real_budget
+                budget_per_config[config_id] = real_budget
                 config_id += 1
 
-    return real_budget_per_config
+    return budget_per_config

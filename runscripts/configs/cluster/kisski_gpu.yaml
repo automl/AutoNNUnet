@@ -6,14 +6,17 @@ device: cuda
 
 hydra:
   launcher:
+    name: ${dataset.name}
     partition: kisski-inference
     gres: gpu:1
     gpus_per_task: 1
     cpus_per_task: 48
     mem_gb: 120
-    timeout_min: 1440 # 3 days
+    timeout_min: 2880 # 2 days
+    # additional_parameters:
+    #   reservation: test
     setup:
-      - module load Miniconda3
+      - module load Miniforge3
       - module load CUDA
       - conda activate /mnt/home/jbecktep/.conda/envs/automis
       - export nnUNet_n_proc_DA=30

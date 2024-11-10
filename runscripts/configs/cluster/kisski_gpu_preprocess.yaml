@@ -11,7 +11,7 @@ hydra:
     cpus_per_task: 48
     mem_gb: 200
     setup:
-      - module load Miniconda3
+      - module load Miniforge3
       - module load CUDA
       - conda activate /mnt/home/jbecktep/.conda/envs/automis
       - export nnUNet_n_proc_DA=40

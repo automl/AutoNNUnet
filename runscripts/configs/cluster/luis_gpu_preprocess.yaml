@@ -10,7 +10,7 @@ hydra:
     cpus_per_task: 32
     mem_gb: 128
     setup:
-      - module load Miniconda3
+      - module load Miniforge3
       - module load CUDA
       - conda activate /bigwork/nhwpbecj/.conda/envs/unet
       - export CUDA_VISIBLE_DEVICES=0

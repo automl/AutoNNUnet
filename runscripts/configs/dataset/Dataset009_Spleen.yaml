@@ -1,2 +1,3 @@
 _target_: automis.datasets.msd_dataset.MSDDataset
 name: Dataset009_Spleen
+runtime_min: 347

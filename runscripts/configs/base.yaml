@@ -48,6 +48,19 @@ hp_config:
   aug_gamma_1_prob: 0.1
   aug_gamma_2_prob: 0.3
 
+  # NAS
+  encoder_type: ConvolutionalEncoder
+  encoder_blocks_stage1: 2
+  encoder_blocks_stage2: 2
+  encoder_blocks_stage3: 2
+  encoder_blocks_remaining_stages: 2
+  decoder_blocks_stage1: 2
+  decoder_blocks_stage2: 2
+  decoder_blocks_stage3: 2
+  decoder_blocks_remaining_stages: 2
+  base_num_features: 32
+  max_features: 320
+
 hydra:
   job:
     env_set:

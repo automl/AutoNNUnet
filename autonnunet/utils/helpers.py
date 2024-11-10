@@ -6,6 +6,7 @@ import random
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import torch
 
 
@@ -16,16 +17,20 @@ def seed_everything(seed: int) -> None:
     np.random.seed(seed)    # noqa: NPY002
     random.seed(seed)
 
-def write_performance(performance: float) -> None:
-    with open("./performance.csv", "w+") as f:
-        f.write(str(performance))
-
-
-def read_performance() -> float | None:
-    if os.path.exists("./validation/summary.json"):
+def read_objectives() -> dict | None:
+    if os.path.exists("./validation/summary.json") and os.path.exists("./progress.csv"):
         with open("./validation/summary.json") as f:
             metrics = json.load(f)
-            return 1 - metrics["foreground_mean"]["Dice"]
+            loss = 1 - metrics["foreground_mean"]["Dice"]
+
+        progress = pd.read_csv("./progress.csv")
+        progress["runtime"] = progress["epoch_end_timestamps"] - progress["epoch_start_timestamps"]
+        runtime = float(progress["runtime"][1:].mean())
+
+        return {
+            "loss": loss,
+            "epoch_runtime": runtime
+        }
     else:
         return None
 
@@ -43,7 +48,6 @@ def set_environment_variables() -> None:
     os.environ["nnUNet_results"] = str( # noqa: SIM112
         Path("./data/nnUNet_results").resolve().as_posix()
     )
-
 
 def dataset_name_to_msd_task(dataset_name: str) -> str:
     return f"Task{dataset_name[8:]}"

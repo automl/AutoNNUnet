@@ -126,4 +126,6 @@ data/
 .ruff_cache
 
 output/prior_band
+output/prior_band_nas
+output/prior_band_nas_parego
 output_bkp/

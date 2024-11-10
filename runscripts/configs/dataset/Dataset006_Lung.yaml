@@ -1,2 +1,3 @@
 _target_: automis.datasets.msd_dataset.MSDDataset
 name: Dataset006_Lung
+runtime_min: 425

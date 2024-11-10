@@ -1,2 +1,3 @@
 _target_: automis.datasets.msd_dataset.MSDDataset
 name: Dataset008_HepaticVessel
+runtime_min: 445

@@ -8,7 +8,7 @@ from autonnunet.utils.paths import (NNUNET_DATASETS, NNUNET_PREPROCESSED,
 
 
 class Dataset(ABC):
-    def __init__(self, name: str):
+    def __init__(self, name: str, **kwargs):
         self.name = name
         self.dataset_id = int(name.split("_")[0].replace("Dataset", ""))
 

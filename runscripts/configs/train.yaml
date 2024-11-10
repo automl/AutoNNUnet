@@ -14,9 +14,9 @@ hydra:
     stdout: true  
     stderr: true  
   run:
-    dir: output/baseline/${dataset.name}/${trainer.configuration}
+    dir: output/baseline_nas/${dataset.name}/${trainer.configuration}
   sweep:
-    dir: output/baseline/${dataset.name}/${trainer.configuration}
+    dir: output/baseline_nas/${dataset.name}/${trainer.configuration}
     subdir: fold_${fold}     
   job:
     chdir: true

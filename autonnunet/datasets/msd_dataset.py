@@ -26,10 +26,10 @@ MSD_DATASETS = list(MSD_URLS.keys())
 
 
 class MSDDataset(Dataset):
-    def __init__(self, name: str):
+    def __init__(self, name: str, **kwargs) -> None:
         if name not in MSD_URLS:
             raise ValueError(f"Dataset {name} not found in MSD datasets.")
-        super().__init__(name)
+        super().__init__(name, **kwargs)
 
     def get_url(self) -> str:
         return MSD_URLS[self.name]
