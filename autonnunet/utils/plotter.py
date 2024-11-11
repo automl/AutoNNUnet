@@ -677,6 +677,8 @@ class Plotter:
 
         history = nas_data.history
 
+        print(history)
+
         g = sns.scatterplot(
             x=[1 - baseline_dice],
             y=[baseline_time],
@@ -721,8 +723,6 @@ class Plotter:
 
     def plot_nas(self, **kwargs) -> None:
         for dataset in self._nas_datasets:
-            self._plot_nas_(dataset, **kwargs)
-
             try:
                 self._plot_nas_(dataset, **kwargs)
             except ValueError as e:
@@ -777,7 +777,7 @@ class Plotter:
             metric: Literal["Dice", "IoU"] = "Dice"
             ) -> None:
         baseline = self._load_baseline_data(datasets=datasets)
-        hpo = self._load_baseline_data(datasets=datasets)
+        hpo = self._load_hpo_data(datasets=datasets)
         hpo.metrics["Approach"] = "SMAC MF"
 
         # We can drop all other metrics

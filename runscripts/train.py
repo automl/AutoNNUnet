@@ -42,7 +42,6 @@ def run(cfg: DictConfig):
 
     logger = logging.getLogger()
     
-
     # We need to wait a bit to prevent multiple jobs from starting at the same time
     sleep_time = int(cfg.fold * 5)
     logger.info(f"Sleeping for {sleep_time} seconds")
