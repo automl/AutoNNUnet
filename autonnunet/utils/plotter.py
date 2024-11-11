@@ -149,19 +149,19 @@ class Plotter:
 
     def load_data(self):
         self._baseline_data = self._load_baseline_data(datasets=self.datasets)
-        # self._hpo_data = self._load_hpo_data(datasets=self.datasets)
-        # self._nas_data = self._load_nas_data(datasets=self.datasets)
+        self._hpo_data = self._load_hpo_data(datasets=self.datasets)
+        self._nas_data = self._load_nas_data(datasets=self.datasets)
 
         self._baseline_datasets = self._baseline_data.progress["Dataset"].unique().tolist()
-        # self._hpo_datasets = self._hpo_data.history["Dataset"].unique().tolist()
-        # self._nas_datasets = self._nas_data.history["Dataset"].unique().tolist()
+        self._hpo_datasets = self._hpo_data.history["Dataset"].unique().tolist()
+        self._nas_datasets = self._nas_data.history["Dataset"].unique().tolist()
 
         self.logger.info(
             f"Loaded {len(self._baseline_datasets)} datasets for baseline.")
-        # self.logger.info(
-        #     f"Loaded {len(self._hpo_datasets)} datasets for HPO.")
-        # self.logger.info(
-        #     f"Loaded {len(self._nas_datasets)} datasets for NAS.")
+        self.logger.info(
+            f"Loaded {len(self._hpo_datasets)} datasets for HPO.")
+        self.logger.info(
+            f"Loaded {len(self._nas_datasets)} datasets for NAS.")
 
     def get_baseline_data(self, dataset: str):
         progress = self._baseline_data.progress[

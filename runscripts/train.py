@@ -10,6 +10,7 @@ import sys
 import os
 from pathlib import Path
 from typing import TYPE_CHECKING
+import time
 
 import hydra
 import torch
@@ -38,8 +39,15 @@ def run(cfg: DictConfig):
     if torch.cuda.is_available():
         cudnn.deterministic = False
         cudnn.benchmark = True
-    
+
     logger = logging.getLogger()
+    
+
+    # We need to wait a bit to prevent multiple jobs from starting at the same time
+    sleep_time = int(cfg.fold * 5)
+    logger.info(f"Sleeping for {sleep_time} seconds")
+    time.sleep(sleep_time)   
+    
     logger.setLevel(logging.INFO)
     logger.info("Starting training script")
     logger.info(f"torch.cuda.is_available(): {torch.cuda.is_available()}")
