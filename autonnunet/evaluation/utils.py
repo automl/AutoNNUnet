@@ -81,20 +81,28 @@ def run_prediction(
     )
 
 
-def extract_incumbent(dataset_name: str, approach: str, configuration: str, smac_seed: int) -> None:
-    output_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration / str(smac_seed)
-    target_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration / "incumbent"
+def extract_incumbent(dataset_name: str, approach: str, configuration: str, hpo_seed: int) -> None:
+    output_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration / str(hpo_seed)
+    target_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration / str(hpo_seed) / "incumbent"
 
-    incumbent_df = pd.read_csv(output_dir / "incumbent.csv")
-    incumbent_config_id = int(incumbent_df["config_id"].values[-1])
+    if target_dir.exists():
+        return
+
+    incumbent_df = pd.read_csv(output_dir / "incumbent_loss.csv")
+    incumbent_run_id = int(incumbent_df["run_id"].values[-1])
 
     for fold in range(5):
-        run_id = incumbent_config_id * 5 + fold
+        run_id = incumbent_run_id * 5 + fold
+        source_dir_fold_dir = output_dir / str(run_id)
         target_fold_dir = target_dir / f"fold_{fold}"
+
+        if target_fold_dir.exists():
+            continue
+
         target_fold_dir.mkdir(exist_ok=True, parents=True)
 
         # Copy the run to the incumbent directory
-        os.system(f"cp -r {run_id}/ {target_fold_dir}/")
+        os.system(f"cp -r {source_dir_fold_dir}/* {target_fold_dir}/")
 
 
 def compress_msd_submission(approach: str, configuration: str):

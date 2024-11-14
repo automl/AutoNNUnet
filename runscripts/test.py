@@ -15,7 +15,7 @@ if __name__  == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--approach", type=str, default="baseline")
     argparser.add_argument("--configuration", type=str, default="3d_fullres")
-    argparser.add_argument("--smac_seed", type=int, default=0)
+    argparser.add_argument("--hpo_seed", type=int, default=0)
     argparser.add_argument("--use_folds", nargs="+", type=int, default=[0, 1, 2, 3, 4])
     args = argparser.parse_args()
 
@@ -24,14 +24,16 @@ if __name__  == "__main__":
     logger.info("Starting MSD evaluation.")
 
     for dataset_name in ALL_DATASETS:
-        if args.approach == "smac_mf":
+        if args.approach != "baseline":
             logger.info(f"Extracting incumbent for {dataset_name}.")
             extract_incumbent(
                 dataset_name=dataset_name,
                 approach=args.approach,
                 configuration=args.configuration,
-                smac_seed=args.smac_seed
+                hpo_seed=args.hpo_seed
             )
+            logger.info(f"Done.")
+
     
         logger.info(f"Running prediction for {dataset_name}.")
         run_prediction(
@@ -40,10 +42,14 @@ if __name__  == "__main__":
             configuration=args.configuration,
             use_folds=args.use_folds
         )
+        logger.info(f"Done.")
+
 
     logger.info("Compressing MSD submission.")
     compress_msd_submission(
         approach=args.approach,
         configuration=args.configuration
     )
+    logger.info(f"Done.")
+
         

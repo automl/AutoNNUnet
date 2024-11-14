@@ -34,18 +34,12 @@ def run(cfg: DictConfig):
         seed_everything,
     )
     from torch.backends import cudnn
-
     
     if torch.cuda.is_available():
         cudnn.deterministic = False
         cudnn.benchmark = True
 
     logger = logging.getLogger()
-    
-    # We need to wait a bit to prevent multiple jobs from starting at the same time
-    sleep_time = int(cfg.fold * 5)
-    logger.info(f"Sleeping for {sleep_time} seconds")
-    time.sleep(sleep_time)   
     
     logger.setLevel(logging.INFO)
     logger.info("Starting training script")
@@ -61,6 +55,11 @@ def run(cfg: DictConfig):
     if objectives is not None and cfg.pipeline.return_if_done:
         logger.info(f"Job already done. Returning objectives: {objectives}")
         return objectives
+    
+    # We need to wait a bit to prevent multiple jobs from starting at the same time
+    sleep_time = int(cfg.fold * 5)
+    logger.info(f"Sleeping for {sleep_time} seconds")
+    time.sleep(sleep_time)   
 
     # --------------------------------------------------------------------------------------------
     # CODECARBON SETUP
@@ -128,6 +127,24 @@ def run(cfg: DictConfig):
         logger.info(f"Mean Validation Dice Score: {1 - objectives['loss']}")
         logger.info(f"Mean Epoch Runtime: {objectives['epoch_runtime']}")
         logger.info(f"Objectives: {str(objectives)}")
+
+    if cfg.save:
+        checkpoint_best_path = Path(".").resolve() / "checkpoint_best.pth"
+        checkpoint_final_path = Path(".").resolve() / "checkpoint_final.pth"
+
+        logger.info("Removing local checkpoints.")
+        os.remove(checkpoint_final_path)
+        os.remove(checkpoint_best_path)
+        logger.info("Removed checkpoints.")
+        
+    if cfg.load:
+        load_path_best = Path(cfg.load + "_best.pth").resolve()
+        load_path_final = Path(cfg.load + "_final.pth").resolve()
+    
+        logger.info("Removing loaded checkpoints.")
+        os.remove(load_path_best)
+        os.remove(load_path_final)
+        logger.info("Removed checkpoints.")
 
     return objectives
 

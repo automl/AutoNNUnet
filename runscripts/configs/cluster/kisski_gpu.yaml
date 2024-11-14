@@ -14,7 +14,7 @@ hydra:
     mem_gb: 120
     timeout_min: 2880 # 2 days
     # additional_parameters:
-    #   reservation: test
+    #   reservation: test5
     setup:
       - module load Miniforge3
       - module load CUDA

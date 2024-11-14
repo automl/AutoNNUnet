@@ -7,6 +7,7 @@ defaults:
 
 pipeline:
   return_if_done: false
+  continue_training: false
 
 hydra:
   output_subdir: "."
@@ -14,9 +15,9 @@ hydra:
     stdout: true  
     stderr: true  
   run:
-    dir: output/baseline_nas/${dataset.name}/${trainer.configuration}
+    dir: output/baseline_test/${dataset.name}/${trainer.configuration}
   sweep:
-    dir: output/baseline_nas/${dataset.name}/${trainer.configuration}
+    dir: output/baseline_test/${dataset.name}/${trainer.configuration}
     subdir: fold_${fold}     
   job:
     chdir: true

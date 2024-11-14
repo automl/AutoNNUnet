@@ -42,8 +42,9 @@ hydra:
         max_budget: ${max_budget}
         seed: ${neps_seed}
         optimizer:
-          _target_: neps.optimizers.multi_fidelity_prior.priorband.PriorBand
+          _target_: neps.optimizers.multi_objective.mo_priorband.MOPriorBand
           _partial_: true
+          objectives: ${objectives}
           budget: ${hydra.sweeper.budget}
           eta: ${eta}
           prior_confidence: medium
@@ -55,9 +56,6 @@ hydra:
           model_based: False
           sample_default_first: True
           sample_default_at_target: False
-          mo_optimizer:
-            _target_: neps.optimizers.multi_objective.epsnet.EpsNet
-            objectives: ${objectives}
   run:  
     dir: output/prior_band_nas/${dataset.name}/${trainer.configuration}/${neps_seed}
   sweep:

@@ -677,32 +677,31 @@ class Plotter:
 
         history = nas_data.history
 
-        print(history)
+        # Plot lines for baseline objectives
+        plt.axhline(y=baseline_time, color=sns.color_palette()[0], linestyle="--", label="Baseline")
+        plt.axvline(x=1 - baseline_dice, color=sns.color_palette()[0], linestyle="--")
 
-        g = sns.scatterplot(
-            x=[1 - baseline_dice],
-            y=[baseline_time],
-            color="red",
-            s=100,
-            label="Baseline",
-        )
+        pareto_front = history.sort_values(by="1 - Dice")
+        pareto_front = pareto_front[pareto_front["Epoch Runtime"] == pareto_front["Epoch Runtime"].cummin()]
 
         g = sns.scatterplot(
             data=history,
             x="1 - Dice",
             y="Epoch Runtime",
-            size="Budget",
-            ax=g
+            label="Configurations",
+            color=sns.color_palette()[1],
+            # size="Budget",
+            s=10,
+            alpha=0.7,
         )
-
-        pareto_front = history.sort_values(by="1 - Dice")
-        pareto_front = pareto_front[pareto_front["Epoch Runtime"] == pareto_front["Epoch Runtime"].cummin()]
 
         sns.lineplot(
             data=pareto_front,
             x="1 - Dice",
             y="Epoch Runtime",
-            ax=g,
+            color=sns.color_palette()[2],
+            label="Pareto Front",
+            ax=g
         )
 
         g.set_title(f"Optimization Process for {format_dataset_name(dataset)}")
