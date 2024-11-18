@@ -125,7 +125,13 @@ data/
 **.egg-info/
 .ruff_cache
 
+output/baseline_test
+output/predictions
 output/prior_band
 output/prior_band_nas
 output/prior_band_nas_parego
+
 output_bkp/
+
+*.err
+*.out
