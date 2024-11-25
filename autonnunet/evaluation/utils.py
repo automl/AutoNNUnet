@@ -2,13 +2,15 @@ from __future__ import annotations
 
 import os
 import zipfile
+import yaml
+import ast
 
 import pandas as pd
 import torch
 from omegaconf import DictConfig, OmegaConf
 
-from autonnunet.utils import dataset_name_to_msd_task
-from autonnunet.utils.paths import (AUTONNUNET_MSD_SUBMISSIONS,
+from autonnunet.utils import dataset_name_to_msd_task, load_json
+from autonnunet.utils.paths import (AUTONNUNET_MSD_SUBMISSIONS, AUTONNUNET_CONFIGS,
                                     AUTONNUNET_OUTPUT, AUTONNUNET_PREDCITIONS,
                                     NNUNET_RAW)
 
@@ -44,9 +46,6 @@ def run_prediction(
     else:
         model_base_output_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration / "incumbent"
 
-    # Read config from yaml
-    cfg = DictConfig(OmegaConf.load(model_base_output_dir / "fold_0" / "config.yaml"))
-
     predictor = AutoNNUNetPredictor(
         tile_step_size=0.5,
         use_gaussian=True,
@@ -59,13 +58,12 @@ def run_prediction(
     )
 
     predictor.initialize_from_config(
-        hp_config=cfg.hp_config,
         model_training_output_dir=str(model_base_output_dir),
         use_folds=use_folds,
         checkpoint_name="checkpoint_best.pth",
     )
 
-    source_folder = str(NNUNET_RAW / cfg.dataset.name / "imagesTs")
+    source_folder = str(NNUNET_RAW / dataset_name / "imagesTs")
     target_folder = str(AUTONNUNET_PREDCITIONS / approach / dataset_name / configuration)
 
     predictor.predict_from_files(
@@ -81,7 +79,60 @@ def run_prediction(
     )
 
 
-def extract_incumbent(dataset_name: str, approach: str, configuration: str, hpo_seed: int) -> None:
+def extract_incumbent(
+        dataset_name: str, 
+        approach: str, 
+        configuration: str, 
+        hpo_seed: int,
+    ) -> None:
+    # TODO replace prior_band with actual approach as soon as directory is renamed to hpo
+    output_dir = AUTONNUNET_OUTPUT / "prior_band" / dataset_name / configuration / str(hpo_seed)
+    target_dir = AUTONNUNET_CONFIGS / "incumbent"
+
+    target_dir.mkdir(exist_ok=True, parents=True)
+
+
+    incumbent_df = pd.read_csv(output_dir / "incumbent_loss.csv")
+    incumbent_config_id = int(incumbent_df["run_id"].values[-1])
+
+    run_id = incumbent_config_id * 5 
+    debug_info_path = output_dir / str(run_id) / "debug.json"
+
+    debug_info = load_json(debug_info_path)
+    hp_config = ast.literal_eval(debug_info["hp_config"]) 
+    actual_hp_config = {}
+
+    search_space = OmegaConf.load(AUTONNUNET_CONFIGS / "search_space" / f"{approach}.yaml")
+    search_space = dict(search_space.hyperparameters)
+
+    for hp in hp_config:
+        if hp == "num_epochs" or f"hp_config.{hp}" in search_space:
+            actual_hp_config[hp] = hp_config[hp]
+
+    yaml_dict = {
+        "hp_config": actual_hp_config,
+    }
+
+    hydra_outpur_dir = f"output/{approach}/{dataset_name}/{configuration}/{hpo_seed}/incubment"
+    yaml_dict["hydra"] = {}
+    yaml_dict["hydra"]["output_subdir"] = "'.'"
+    yaml_dict["hydra"]["job_logging"] = {}
+    yaml_dict["hydra"]["job_logging"]["stdout"] = True
+    yaml_dict["hydra"]["job_logging"]["stderr"] = True
+    yaml_dict["hydra"]["run"] = {}
+    yaml_dict["hydra"]["run"]["dir"] = hydra_outpur_dir
+    yaml_dict["hydra"]["sweep"] = {}
+    yaml_dict["hydra"]["sweep"]["dir"] = hydra_outpur_dir
+    yaml_dict["hydra"]["sweep"]["subdir"] = "fold_${fold}"
+    yaml_dict["hydra"]["job"] = {}
+    yaml_dict["hydra"]["job"]["chdir"] = True
+
+    with open(target_dir / f"{dataset_name}_{approach}.yaml", "w") as f:
+        f.write("# @package _global_\n")
+        yaml.dump(yaml_dict, f)
+
+
+def extract_incumbent_config(dataset_name: str, approach: str, configuration: str, hpo_seed: int) -> None:
     output_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration / str(hpo_seed)
     target_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration / str(hpo_seed) / "incumbent"
 

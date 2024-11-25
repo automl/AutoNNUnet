@@ -42,14 +42,31 @@ python runscripts/train.py -m "dataset=glob(*)" "fold=range(5)"
 ## Compute Hyperband budgets
 
 ```bash
-python runscripts/determine_hyperband_budgets.py --b_min=15 --b_max=1000 --eta=4
+python runscripts/determine_hyperband_budgets.py --b_min=10 --b_max=1000 --eta=3
 ```
 
 ## HPO
 
 ```bash
-python runscripts/train.py --config-name=tune_smac_mf -m "dataset=glob(*)"
+python runscripts/train.py --config-name=tune_hpo -m "dataset=Dataset001_BrainTumour"
 ```
+
+## HPO + NAS
+
+```bash
+python runscripts/train.py --config-name=tune_hpo_nas -m "dataset=Dataset001_BrainTumour"
+```
+
+## Extract & Train Incumbent
+
+```bash
+python runscripts/extract_incumbents.py --approach=hpo
+```
+
+```bash
+python runscripts/train.py -m "dataset=Dataset001_BrainTumour" "+incumbent=Dataset001_BrainTumour_hpo" "fold=range(5)"
+```
+
 
 ## Credits
 

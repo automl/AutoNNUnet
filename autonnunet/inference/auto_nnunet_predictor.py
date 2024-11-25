@@ -43,7 +43,6 @@ class AutoNNUNetPredictor(nnUNetPredictor):
 
     def initialize_from_config(
             self,
-            hp_config: DictConfig,
             model_training_output_dir: str,
             use_folds: tuple[int],
             checkpoint_name: str

@@ -47,7 +47,7 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 from autonnunet.training.auto_nnunet_logger import AutoNNUNetLogger
 from autonnunet.training.dummy_lr_scheduler import DummyLRScheduler
 from autonnunet.utils.paths import NNUNET_PREPROCESSED
-from autonnunet.experiment_planning.plan_experiment import plan_experiment
+from autonnunet.experiment_planning.plan_experiment_nas import plan_experiment
 
 if TYPE_CHECKING:
     from omegaconf import DictConfig

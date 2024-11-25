@@ -67,11 +67,9 @@ def compute_hyperband_budgets(
         eta: int,
         n_stages: int | None = None,
         print_output: bool = True,
-        is_prior_band: bool = False
+        sample_default_at_target: bool = False
     ) -> tuple[dict[int, list], dict[int, list], dict[int, list], int, float, float]:
     s_max, n_configs_in_stage, budgets_in_stage = compute_hyperband_brackets(b_min, b_max, eta)
-
-
 
     total_real_budget = 0
     total_budget = 0
@@ -93,7 +91,7 @@ def compute_hyperband_budgets(
     if n_stages is None:
         n_stages = s_max + 1
 
-    if is_prior_band:
+    if sample_default_at_target:
         # We start by evaluationg the default configuration
         n_configs_in_stage[0] = [1] + n_configs_in_stage[0]
         budgets_in_stage[0] = [b_max] + budgets_in_stage[0]
@@ -111,7 +109,7 @@ def compute_hyperband_budgets(
 
         # In hyperband, only the first budget in each stages contains new configurations.
         # In PriorBand, we have to check whether this is the default configuration (i=0)
-        if is_prior_band and i == 0:
+        if sample_default_at_target and i == 0:
             total_configs += n_configs_in_stage[i][1]
         else:
             total_configs += n_configs_in_stage[i][0]

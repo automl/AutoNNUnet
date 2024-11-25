@@ -37,16 +37,16 @@ def plan_experiment(
         planner.UNet_base_num_features = hp_config.base_num_features
         planner.UNet_max_features_3d = hp_config.max_features
 
-        planner.UNet_blocks_per_stage_encoder = (
-            hp_config.encoder_blocks_stage1,
-            hp_config.encoder_blocks_stage2, 
-            hp_config.encoder_blocks_stage3, 
-            *[hp_config.encoder_blocks_remaining_stages] * 11)
-        planner.UNet_blocks_per_stage_encoder = (
-            hp_config.decoder_blocks_stage1,
-            hp_config.decoder_blocks_stage2, 
-            hp_config.decoder_blocks_stage3, 
-            *[hp_config.decoder_blocks_remaining_stages] * 10)
+        # planner.UNet_blocks_per_stage_encoder = (
+        #     hp_config.encoder_blocks_stage1,
+        #     hp_config.encoder_blocks_stage2, 
+        #     hp_config.encoder_blocks_stage3, 
+        #     *[hp_config.encoder_blocks_remaining_stages] * 11)
+        # planner.UNet_blocks_per_stage_encoder = (
+        #     hp_config.decoder_blocks_stage1,
+        #     hp_config.decoder_blocks_stage2, 
+        #     hp_config.decoder_blocks_stage3, 
+        #     *[hp_config.decoder_blocks_remaining_stages] * 10)
         
         plans = planner.plan_experiment()
         

@@ -11,12 +11,20 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from deepcave.runs.converters.deepcave import DeepCAVERun
+from deepcave.evaluators.fanova import fANOVA 
 import seaborn as sns
 
 from autonnunet.utils import (compute_hyperband_budgets, format_dataset_name,
                               get_budget_per_config, load_json)
-from autonnunet.utils.paths import (AUTONNUNET_OUTPUT, AUTONNUNET_PLOTS,
-                                    AUTONNUNET_TABLES)
+from autonnunet.analysis.deepcave_utils import data_to_deepcave
+from autonnunet.utils.paths import (AUTONNUNET_OUTPUT, AUTONNUNET_RESULTS,
+                                    AUTONNUNET_PLOTS, AUTONNUNET_TABLES)
+
+APPROACH_REPLACE_MAP = {
+    "hpo": "HPO",
+    "hpo_nas": "HPO + NAS"
+}
 
 PROGRESS_REPLACEMENT_MAP = {
     "mean_fg_dice": "Mean Foreground Dice",
@@ -24,6 +32,17 @@ PROGRESS_REPLACEMENT_MAP = {
     "train_losses": "Training Loss",
     "val_losses": "Validation Loss",
     "lrs": "Learning Rate",
+}
+
+HYPERPARAMETER_REPLACEMENT_MAP = {
+    "optimizer": "Optimizer",
+    "momentum": "Momentum (SGD)",
+    "initial_lr": "Initial LR",
+    "lr_scheduler": "LR Scheduler",
+    "weight_decay": "Weight Decay",
+    "loss_function": "Loss Function",
+    "aug_factor": "Data Augmentation [%]",
+    "oversample_foreground_percent": "Oversample Foreground [%]",
 }
 
 HISTORY_REPLACEMENT_MAP = {
@@ -59,13 +78,13 @@ class BaselineResult:
     metrics_per_case: pd.DataFrame
     emissions: pd.DataFrame
 
-
 @dataclass
 class HPOResult:
     history: pd.DataFrame
     incumbent: pd.DataFrame
     incumbent_progress: pd.DataFrame
     emissions: pd.DataFrame
+    deepcave_runs: dict[str, DeepCAVERun]
 
 @dataclass
 class NASResult:
@@ -83,7 +102,7 @@ class Plotter:
             max_budget: float = 1000.0,
             eta: int = 3,
             n_folds: int = 5,
-            style: STYLES_TYPE = "whitegrid",
+            style: STYLES_TYPE = "darkgrid",
             palette: str = "colorblind",
             figsize: tuple = (8, 3),
             hpo_seed: int = 0,
@@ -100,34 +119,58 @@ class Plotter:
         self.n_folds = n_folds
         self.hpo_seed = hpo_seed
 
-        # Hyperband configuration
+        # Hyperband configuration for HPO, here we start by sampling the
+        # the default configuration at full budget
         (
-            self.n_configs_in_stage,
-            self.budgets_in_stage,
-            self.real_budgets_in_stage,
+            self.n_configs_in_stage_hpo,
+            self.budgets_in_stage_hpo,
+            self.real_budgets_in_stage_hpo,
             _,
             _,
-            self.total_real_budget
+            self.total_real_budget_hpo
         ) = compute_hyperband_budgets(
             b_min=min_budget,
             b_max=max_budget,
             eta=eta,
             print_output=False,
-            is_prior_band=True  
+            sample_default_at_target=True  
         )
-        self.n_full_trainings = self.total_real_budget / self.max_budget
-        # self.n_full_trainings = 5
+        self.n_full_trainings_hpo = self.total_real_budget_hpo / self.max_budget
 
         # We need this to assign the real budget for each configuration
-        self.real_budgets_per_config = get_budget_per_config(
-            n_configs_in_stage=self.n_configs_in_stage,
-            budgets_in_stage=self.real_budgets_in_stage
+        self.real_budgets_per_config_hpo = get_budget_per_config(
+            n_configs_in_stage=self.n_configs_in_stage_hpo,
+            budgets_in_stage=self.real_budgets_in_stage_hpo
+        )
+
+        # Hyperband configuration for NAS, here we start by sampling the
+        # the default configuration at the lowest budget
+        (
+            self.n_configs_in_stage_nas,
+            self.budgets_in_stage_nas,
+            self.real_budgets_in_stage_nas,
+            _,
+            _,
+            self.total_real_budget_nas
+        ) = compute_hyperband_budgets(
+            b_min=min_budget,
+            b_max=max_budget,
+            eta=eta,
+            print_output=False,
+            sample_default_at_target=False  
+        )
+        self.n_full_trainings_nas = self.total_real_budget_nas / self.max_budget
+
+        # We need this to assign the real budget for each configuration
+        self.real_budgets_per_config_nas = get_budget_per_config(
+            n_configs_in_stage=self.n_configs_in_stage_nas,
+            budgets_in_stage=self.real_budgets_in_stage_nas
         )
 
         # Directories
         self.baseline_dir =  AUTONNUNET_OUTPUT / "baseline"
         self.hpo_dir = AUTONNUNET_OUTPUT / "prior_band"
-        self.nas_dir = AUTONNUNET_OUTPUT / "prior_band_nas"
+        self.nas_dir = AUTONNUNET_OUTPUT / "hpo_nas"
 
         # Seaborn settings
         sns.set_style(style=style)
@@ -197,7 +240,8 @@ class Plotter:
             incumbent_progress=prior_band_incumbent_progress,
             emissions=prior_band_emissions,
             history=prior_band_history,
-            incumbent=prior_band_incumbent
+            incumbent=prior_band_incumbent,
+            deepcave_runs=self._hpo_data.deepcave_runs
         )
     
     def get_nas_data(self, dataset: str):
@@ -343,6 +387,7 @@ class Plotter:
 
     def _load_incumbent(
             self,
+            approach: str,
             run_dir: Path,
             filename: str = INCUMBENT_FILENAME,
             objective: str = "o0_loss"
@@ -355,8 +400,14 @@ class Plotter:
         # in the runhistory
         history.loc[:, "real_budget"] = 0.
 
-        for run_id, real_budget in self.real_budgets_per_config.items():
-            history.loc[history["run_id"] == run_id, "real_budget"] = real_budget
+        if approach == "HPO":
+            for run_id, real_budget in self.real_budgets_per_config_hpo.items():
+                history.loc[history["run_id"] == run_id, "real_budget"] = real_budget
+        elif approach == "HPO + NAS":
+            for run_id, real_budget in self.real_budgets_per_config_nas.items():
+                history.loc[history["run_id"] == run_id, "real_budget"] = real_budget
+        else:
+            raise ValueError(f"Unknown approach {approach}.")
 
         # The real used budget is the sum of all additional budgets
         incumbent["real_budget_used"] = history["real_budget"].cumsum()
@@ -393,14 +444,16 @@ class Plotter:
 
     def _load_history(self, history_path: Path) -> pd.DataFrame:
         history = pd.read_csv(history_path)
-        return history.rename(columns=HISTORY_REPLACEMENT_MAP)
-
+        history = history.rename(columns=HISTORY_REPLACEMENT_MAP)
+        return history
+    
     def _load_nas_data(self, datasets: list[str]) -> NASResult:
         all_emissions = []
         all_history = []
         all_incumbent = defaultdict(list)
 
-        approach = "PriorBand NAS"
+        approach_key = "hpo_nas"
+        approach = APPROACH_REPLACE_MAP[approach_key]
 
         for dataset in datasets:
             dataset_dir = self.nas_dir / dataset
@@ -423,6 +476,7 @@ class Plotter:
                 obj_name = f"o{i}_{OBJECTIVES_MAPPING[objective]}"
 
                 incumbent = self._load_incumbent(
+                    approach=approach,
                     run_dir=nas_run_dir,
                     filename=incumbent_filename,
                     objective=obj_name
@@ -463,14 +517,16 @@ class Plotter:
             incumbents=all_incumbent_df,
             emissions=all_emissions
         )
-
+    
     def _load_hpo_data(self, datasets: list[str]) -> HPOResult:
         all_progress  = []
         all_emissions = []
         all_history = []
         all_incumbent = []
+        deepcave_runs = {}
 
-        approach = "PriorBand"
+        approach_key = "hpo"
+        approach = APPROACH_REPLACE_MAP[approach_key]
 
         for dataset in datasets:
             dataset_dir = self.hpo_dir / dataset
@@ -488,7 +544,16 @@ class Plotter:
             history["Dataset"] = dataset
             history["Approach"] = approach
 
-            incumbent = self._load_incumbent(hpo_run_dir)
+            deepcave_runs[dataset] = data_to_deepcave(
+                dataset=dataset,
+                history=history,
+                approach=approach_key
+            )
+
+            incumbent = self._load_incumbent(
+                approach=approach,
+                run_dir=hpo_run_dir
+            )
             incumbent["Dataset"] = dataset
             incumbent["Approach"] = approach
 
@@ -532,7 +597,8 @@ class Plotter:
             history=all_history,
             incumbent=all_incumbent,
             incumbent_progress=all_progress,
-            emissions=all_emissions
+            emissions=all_emissions,
+            deepcave_runs=deepcave_runs
         )
 
     def _plot_baseline(self, dataset: str) -> None:
@@ -558,7 +624,7 @@ class Plotter:
 
         plt.tight_layout()
         plt.savefig(
-            AUTONNUNET_PLOTS / f"{dataset}_{self.configuration}_baseline.png",
+            self.baseline_plots / f"{dataset}_{self.configuration}.png",
             dpi=400
         )
 
@@ -574,7 +640,7 @@ class Plotter:
             self,
             dataset: str,
             x_log_scale: bool = False,
-            y_log_scale: bool = False
+            y_log_scale: bool = False,
         ) -> None:
         hpo_data = self.get_hpo_data(dataset)
         baseline_data = self.get_baseline_data(dataset)
@@ -588,7 +654,7 @@ class Plotter:
             columns=metrics.columns
         )
         metrics_expanded["Full Model Trainings"] = np.tile(
-            [0, self.n_full_trainings],
+            [0, self.n_full_trainings_hpo],
             len(metrics)
         )
         metrics_expanded["1 - Dice"] = 1 - metrics_expanded["Dice"]
@@ -622,9 +688,9 @@ class Plotter:
 
         if x_log_scale:
             g.set_xscale("log")
-            g.set_xlim(0.1, self.n_full_trainings)
+            g.set_xlim(0.1, self.n_full_trainings_hpo)
         else:
-            g.set_xlim(0, self.n_full_trainings)
+            g.set_xlim(0, self.n_full_trainings_hpo)
 
         if y_log_scale:
             g.set_ylim(1e-2, 1)
@@ -662,6 +728,124 @@ class Plotter:
                 self.logger.info(f"Unable to plot HPO for {dataset}.")
                 continue
 
+    def plot_hpo_combined(
+            self,
+            x_log_scale: bool = False,
+            y_log_scale: bool = False              
+        ) -> None:
+
+        fig, axes = plt.subplots(
+            nrows=2,
+            ncols=5,
+            sharex=True,
+            # sharey=True,
+            figsize=(12, 6)
+        )
+        axes = axes.flatten()
+
+        max_approaches = 0
+        max_approaches_ax = axes[0]
+
+        for ax, dataset in zip(axes, self._hpo_datasets):
+            hpo_data = self.get_hpo_data(dataset)
+            if dataset in self._nas_datasets:
+                nas_data = self.get_nas_data(dataset)
+                incumbent = pd.concat([hpo_data.incumbent, nas_data.incumbents["1 - Dice"]])
+            else:
+                incumbent = hpo_data.incumbent
+
+            baseline_data = self.get_baseline_data(dataset)
+
+            metrics = baseline_data.metrics_foreground_mean
+
+            metrics_expanded = pd.DataFrame(
+                np.repeat(metrics.values, 2, axis=0),
+                columns=metrics.columns
+            )
+            metrics_expanded["Full Model Trainings"] = np.tile(
+                [0, self.n_full_trainings_hpo],
+                len(metrics)
+            )
+            metrics_expanded["1 - Dice"] = 1 - metrics_expanded["Dice"]
+
+            n_approaches = len(incumbent["Approach"].unique())
+            if n_approaches > max_approaches:
+                max_approaches = n_approaches
+                max_approaches_ax = ax
+
+            g = sns.lineplot(
+                data=metrics_expanded,
+                x="Full Model Trainings",
+                y="1 - Dice",
+                label="Baseline",
+                linestyle="--",
+                errorbar=("sd"),
+                ax=ax
+            )
+
+            sns.lineplot(
+                x="Full Model Trainings",
+                y="1 - Dice",
+                data=incumbent,
+                drawstyle="steps-post",
+                hue="Approach",
+                errorbar=("sd"),
+                palette=sns.color_palette()[1: n_approaches + 1],
+                ax=ax
+            )
+
+            g.set_title(format_dataset_name(dataset).replace(" ", "\n"))
+            g.set_xlabel("Full Model Trainings")
+            g.set_ylabel("1 - Dice")
+
+            # g.set_xticks(np.arange(0, N_FULL_TRAININGS + 1, 5))
+
+            if x_log_scale:
+                g.set_xscale("log")
+                g.set_xlim(0.1, self.n_full_trainings_hpo)
+            else:
+                g.set_xlim(0, self.n_full_trainings_hpo)
+
+            if y_log_scale:
+                g.set_ylim(1e-2, 1)
+                g.set_yscale("log")
+            
+            if ax != axes[0] and ax != axes[5]:
+                ax.set_ylabel("")
+
+            ax.get_legend().remove()
+
+        # We use the axis with most approaches to get the legend
+        handles, labels = max_approaches_ax.get_legend_handles_labels()
+
+        fig.subplots_adjust(
+            top=0.92,   
+            bottom=0.15, 
+            left=0.06,  
+            right=0.99,  
+            hspace=0.3, 
+            wspace=0.35  
+        )
+
+        axes[-3].legend(
+            handles,
+            labels,
+            loc="upper center",
+            bbox_to_anchor=(0.5, -0.23),
+            ncol=max_approaches + 1,
+            fancybox=False,
+            shadow=False,
+            frameon=False
+        )
+
+        # plt.tight_layout()
+        plt.savefig(
+            self.hpo_plots / f"hpo_combined.png",
+            dpi=400
+        )
+
+        plt.clf()
+
     def _plot_nas_(
             self,
             dataset: str,
@@ -669,7 +853,7 @@ class Plotter:
         nas_data = self.get_nas_data(dataset)
         baseline_data = self.get_baseline_data(dataset)
 
-        plt.figure(1, figsize=self.figsize)
+        plt.figure(1, figsize=(6, 6))
 
         metrics = baseline_data.metrics_foreground_mean
         baseline_dice = metrics["Dice"].mean()
@@ -711,7 +895,14 @@ class Plotter:
         g.set_xscale("log")
         g.set_yscale("log")
 
-        plt.legend()
+        plt.legend(
+            loc="upper center",
+            bbox_to_anchor=(0.5, -0.2),
+            ncol=3,
+            fancybox=False,
+            shadow=False,
+            frameon=False
+        )
         plt.tight_layout()
         plt.savefig(
             self.nas_plots / f"{dataset}_{self.configuration}_nas.png",
@@ -728,85 +919,104 @@ class Plotter:
                 self.logger.info(f"Unable to plot NAS for {dataset}.")
                 continue
 
-    def _plot_hyperband(self, dataset: str) -> None:
-        hpo_data = self.get_hpo_data(dataset)
+    def plot_hyperparameter_importances(
+            self,
+            budget: int | Literal["combined"] = "combined"  
+        ):
+        fig, axes = plt.subplots(
+            nrows=2,
+            ncols=5,
+            sharex=True,
+            sharey=True,
+            figsize=(12, 6)
+        )
+        axes = axes.flatten()
 
-        plt.figure(1, figsize=self.figsize)
+        for ax, dataset in zip(axes, self._hpo_datasets):
+            deepcave_run = self._hpo_data.deepcave_runs[dataset]
 
-        history = hpo_data.history.copy()
-        history["Budget"] = history["Budget"].apply(lambda x: round(x))
+            budgets = deepcave_run.get_budgets()
+            if budget == "combined":
+                selected_budget = -1
+            else:
+                if not budget in range(len(budgets) - 1):
+                    raise ValueError(f"Budget index {budget} not found in {budgets}.")
+                selected_budget = float(budgets[budget])
 
-        budgets = sorted(np.unique([round(b) for b in self.budgets_in_stage[0]]))
-        for budget_key, budget in enumerate(budgets):
-            history.loc[history["Budget"] == budget, "Budget"] = budget_key + 1
+            evaluator = fANOVA(run=deepcave_run)
+            evaluator.calculate(n_trees=16, budget=selected_budget)
+            importances = evaluator.get_importances(hp_names=list(deepcave_run.configspace.keys()))
 
-        g = sns.lineplot(
-            x="Run ID",
-            y="Budget",
-            data=history,
-            drawstyle="steps-post",
+            importances_data = []
+            for hp_key, hp_name in HYPERPARAMETER_REPLACEMENT_MAP.items():
+                importance = importances[hp_key]
+                importances_data += [{
+                    "Hyperparameter": hp_name,
+                    "Importance": importance[0],
+                    "Error": importance[1],
+                }]
+            importances_df = pd.DataFrame(importances_data)
+
+            g = sns.barplot(
+                data=importances_df,
+                x="Importance",
+                y="Hyperparameter",
+                hue="Hyperparameter",
+                hue_order=HYPERPARAMETER_REPLACEMENT_MAP.values(),
+                ax=ax,
+                errorbar=None,
+                dodge=False,
+                legend='full'
+            )
+
+            g.errorbar(
+                y=importances_df["Hyperparameter"],
+                x=importances_df["Importance"],
+                xerr=importances_df["Error"],
+                fmt="none",
+                c="black",
+                capsize=5,
+            )            
+            
+            g.set_title(format_dataset_name(dataset).replace(" ", "\n"))
+            g.set_yticklabels([])
+
+            ax.legend().set_visible(False)
+            
+        axes[-1].legend().set_visible(False)
+
+        fig.subplots_adjust(
+            top=0.92,   
+            bottom=0.15, 
+            left=0.04,  
+            right=0.98,  
+            hspace=0.3, 
+            wspace=0.2  
         )
 
-        g.set_xlabel("Number of Trials")
+        # Create a single legend
+        axes[-3].legend(
+            loc="upper center",
+            bbox_to_anchor=(0.5, -0.21),
+            ncol=4,
+            fancybox=False,
+            shadow=False,
+            frameon=False
+        )
 
-        all_configs = [v for sublist in self.n_configs_in_stage.values() for v in sublist]
-        n_configs = sum(all_configs)
-
-        x_ticks = [next(iter(self.n_configs_in_stage.values()))[0], *np.cumsum([sum(sublist) for sublist in list(self.n_configs_in_stage.values())[:-1]]).tolist()]
-
-        g.set_xlim(0, n_configs + 1)
-        g.set_xticks(x_ticks)
-
-        g.set_ylim(0.9, len(self.budgets_in_stage[0]) + 0.1)
-        g.set_yticks(range(1, len(budgets) + 1))
-        g.set_yticklabels([str(b) for b in budgets])
-
-        plt.tight_layout()
-        plt.savefig(AUTONNUNET_PLOTS / f"{dataset}_{self.configuration}_hyperband.png", dpi=400)
+        plt.savefig(
+            self.hpo_plots / f"hyperparameter_importances.png",
+            dpi=400
+        )
 
         plt.clf()
 
-    def plot_hyperband(self) -> None:
-        for dataset in self._hpo_datasets:
-            self._plot_hyperband(dataset)
-
-    def plot_metrics(
-            self,
-            datasets: list[str],
-            metric: Literal["Dice", "IoU"] = "Dice"
-            ) -> None:
-        baseline = self._load_baseline_data(datasets=datasets)
-        hpo = self._load_hpo_data(datasets=datasets)
-        hpo.metrics["Approach"] = "SMAC MF"
-
-        # We can drop all other metrics
-        baseline.metrics = baseline.metrics[["Dataset", "Fold", "Approach", metric]]
-        hpo.metrics = hpo.metrics[["Dataset", "Fold", "Approach", metric]]
-
-        # Then, we average over all prediction files
-        baseline.metrics = baseline.metrics.groupby(
-            ["Dataset", "Fold", "Approach"]).mean().reset_index()
-        hpo.metrics = hpo.metrics.groupby(
-            ["Dataset", "Fold", "Approach"]).mean().reset_index()
-
-        metrics = pd.concat([baseline.metrics, hpo.metrics])
-
-        # Now, we can create the boxplot the metrics with variance over folds
-        plt.figure(1, figsize=self.figsize)
-        sns.boxplot(
-            x="Dataset",
-            y=metric,
-            data=metrics,
-            hue="Approach",
-        )
-        plt.tight_layout()
-        plt.savefig(AUTONNUNET_PLOTS / f"{self.configuration}_metrics.png", dpi=400)
-
     def compute_emissions(self):
         baseline_emissions = self._baseline_data.emissions[["run_id", "Approach", "Fold", "Dataset", "emissions"]]
-        hpo_emissions = self._smac_data.emissions[["run_id", "Approach", "Fold", "Dataset", "emissions"]]
+        hpo_emissions = self._hpo_data.emissions[["run_id", "Approach", "Fold", "Dataset", "emissions"]]
+        nas_emissions = self._hpo_data.emissions[["run_id", "Approach", "Fold", "Dataset", "emissions"]]
 
-        emissions = pd.concat([baseline_emissions, hpo_emissions])
+        emissions = pd.concat([baseline_emissions, hpo_emissions, nas_emissions])
         emissions["Dataset"] = emissions["Dataset"].apply(format_dataset_name)
         emissions_per_dataset = emissions.groupby(["Dataset", "Approach"])["emissions"].sum().reset_index()
 
@@ -822,8 +1032,8 @@ class Plotter:
 
     def create_table(self, datasets: list[str]):
         baseline = self._load_baseline_data(datasets=datasets)
-        hpo = self._load_baseline_data(datasets=datasets)
-        hpo.metrics["Approach"] = "SMAC MF"
+        hpo = self._load_hpo_data(datasets=datasets)
+        nas = self._load_nas_data(datasets=datasets)
 
         sys.exit()
 
