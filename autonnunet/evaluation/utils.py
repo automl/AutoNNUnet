@@ -85,8 +85,7 @@ def extract_incumbent(
         configuration: str, 
         hpo_seed: int,
     ) -> None:
-    # TODO replace prior_band with actual approach as soon as directory is renamed to hpo
-    output_dir = AUTONNUNET_OUTPUT / "prior_band" / dataset_name / configuration / str(hpo_seed)
+    output_dir = AUTONNUNET_OUTPUT / "hpo" / dataset_name / configuration / str(hpo_seed)
     target_dir = AUTONNUNET_CONFIGS / "incumbent"
 
     target_dir.mkdir(exist_ok=True, parents=True)

@@ -16,7 +16,7 @@ hydra:
     stdout: true
   output_subdir: "."
   run:
-    dir: output/prior_band/Dataset008_HepaticVessel/3d_fullres/0/incumbent
+    dir: output/hpo/Dataset008_HepaticVessel/3d_fullres/0/incumbent
   sweep:
-    dir: output/prior_band/Dataset008_HepaticVessel/3d_fullres/0/incumbent
+    dir: output/hpo/Dataset008_HepaticVessel/3d_fullres/0/incumbent
     subdir: fold_${fold}
