@@ -12,10 +12,9 @@ neps_seed: 0
 min_budget: 10    # Minimum number of epochs
 max_budget: 1000  # Maximum number of epochs
 eta: 3            # Reduction factor for successive halving
-budget: 22_000    # Total budget in epochs
+budget: 21_000    # Total budget in epochs
 
 objectives: [loss, epoch_runtime]
-objective_bounds: [[0.0, 1.0], [null, null]]
 maximize: [False, False]
 
 hydra:
@@ -43,8 +42,9 @@ hydra:
         max_budget: ${max_budget}
         seed: ${neps_seed}
         optimizer:
-          _target_: neps.optimizers.multi_fidelity_prior.priorband.PriorBand
+          _target_: neps.optimizers.multi_objective.mo_priorband.MOPriorBand
           _partial_: true
+          objectives: ${objectives}
           budget: ${hydra.sweeper.budget}
           eta: ${eta}
           prior_confidence: medium
@@ -56,13 +56,9 @@ hydra:
           model_based: False
           sample_default_first: True
           sample_default_at_target: False
-          mo_optimizer:
-            _target_: neps.optimizers.multi_objective.parego.ParEGO
-            objectives: ${objectives}
-            objective_bounds: ${objective_bounds}
   run:  
-    dir: output/prior_band_nas_parego/${dataset.name}/${trainer.configuration}/${neps_seed}
+    dir: output/hpo_nas/${dataset.name}/${trainer.configuration}/${neps_seed}
   sweep:
-    dir: output/prior_band_nas_parego/${dataset.name}/${trainer.configuration}/${neps_seed}
+    dir: output/hpo_nas/${dataset.name}/${trainer.configuration}/${neps_seed}
   job:
     chdir: true

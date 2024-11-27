@@ -61,8 +61,12 @@ class AutoExperimentPlanner(ExperimentPlanner):
             self.model_scale = MODEL_SCALES[hp_config.model_scale]
 
     def _apply_scales_to_blocks_per_scale(self) -> None:
-        self.UNet_blocks_per_stage_encoder = tuple([round(self.model_scale * n) for n in self.UNet_blocks_per_stage_encoder])
-        self.UNet_blocks_per_stage_decoder = tuple([round(self.model_scale * n) for n in self.UNet_blocks_per_stage_decoder])
+        def scale_blocks(blocks: int) -> int:
+            # We need to ensure a minimum of 1 block per stage
+            return max(1, round(self.model_scale * blocks))
+
+        self.UNet_blocks_per_stage_encoder = tuple([scale_blocks(n) for n in self.UNet_blocks_per_stage_encoder])
+        self.UNet_blocks_per_stage_decoder = tuple([scale_blocks(n) for n in self.UNet_blocks_per_stage_decoder])
         
         logger.info(f"Applied model_scale = {self.model_scale:.2f}")
         logger.info("Encoder blocks per stage: %s", self.UNet_blocks_per_stage_encoder)

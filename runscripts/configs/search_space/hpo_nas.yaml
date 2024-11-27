@@ -61,53 +61,11 @@ hyperparameters:
       - ConvolutionalEncoder
       - ResidualEncoderM
     default: ConvolutionalEncoder
-  hp_config.encoder_blocks_stage1:
+  hp_config.model_scale:
     type: uniform_int
     upper: 3
-    lower: 1
-    default: 2
-    log: false
-  hp_config.encoder_blocks_stage2:
-    type: uniform_int
-    upper: 3
-    lower: 1
-    default: 2
-    log: false
-  hp_config.encoder_blocks_stage3:
-    type: uniform_int
-    upper: 3
-    lower: 1
-    default: 2
-    log: false
-  hp_config.encoder_blocks_remaining_stages:
-    type: uniform_int
-    upper: 3
-    lower: 1
-    default: 2
-    log: false
-  hp_config.decoder_blocks_stage1:
-    type: uniform_int
-    upper: 3
-    lower: 1
-    default: 2
-    log: false
-  hp_config.decoder_blocks_stage2:
-    type: uniform_int
-    upper: 3
-    lower: 1
-    default: 2
-    log: false
-  hp_config.decoder_blocks_stage3:
-    type: uniform_int
-    upper: 3
-    lower: 1
-    default: 2
-    log: false
-  hp_config.decoder_blocks_remaining_stages:
-    type: uniform_int
-    upper: 3
-    lower: 1
-    default: 2
+    lower: 0
+    default: 1
     log: false
   hp_config.base_num_features:
     type: uniform_int
@@ -121,6 +79,27 @@ hyperparameters:
     lower: 160
     default: 320
     log: false  
+  hp_config.activation:
+    type: categorical
+    choices:
+      - LeakyReLU
+      - ReLU
+      - ELU
+      - GELU
+      - PReLU
+    default: LeakyReLU
+  hp_config.normalization:
+    type: categorical
+    choices:
+      - BatchNorm
+      - InstanceNorm
+    default: InstanceNorm
+  hp_config.dropout_rate:
+    type: uniform_float
+    upper: 0.5
+    lower: 0.0
+    default: 0.0
+    log: false
 conditions:
   - child: hp_config.momentum
     parent: hp_config.optimizer

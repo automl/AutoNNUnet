@@ -50,18 +50,17 @@ hp_config:
 
   # NAS
   encoder_type: ConvolutionalEncoder
-  encoder_blocks_stage1: 2
-  encoder_blocks_stage2: 2
-  encoder_blocks_stage3: 2
-  encoder_blocks_remaining_stages: 2
-  decoder_blocks_stage1: 2
-  decoder_blocks_stage2: 2
-  decoder_blocks_stage3: 2
-  decoder_blocks_remaining_stages: 2
   base_num_features: 32
   max_features: 320
+  activation: LeakyReLU
+  dropout_rate: 0.0
+  model_scale: 1
+  normalization: InstanceNorm
 
 hydra:
+  job_logging:
+    stdout: true  
+    stderr: true  
   job:
     env_set:
       nnUNet_datasets: /mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_datasets

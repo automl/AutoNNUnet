@@ -1,0 +1,23 @@
+# @package _global_
+hp_config:
+  aug_factor: 1.0
+  initial_lr: 0.01
+  loss_function: DiceAndCrossEntropyLoss
+  lr_scheduler: CosineAnnealingLR
+  momentum: 0.99
+  num_epochs: 1000.0
+  optimizer: SGD
+  oversample_foreground_percent: 0.33
+  weight_decay: 8.231505681644917e-06
+hydra:
+  job:
+    chdir: true
+  job_logging:
+    stderr: true
+    stdout: true
+  output_subdir: "."
+  run:
+    dir: output/hpo/Dataset006_Lung/3d_fullres/0/incumbent
+  sweep:
+    dir: output/hpo/Dataset006_Lung/3d_fullres/0/incumbent
+    subdir: fold_${fold}

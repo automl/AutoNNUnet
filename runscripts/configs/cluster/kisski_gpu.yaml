@@ -15,6 +15,7 @@ hydra:
     timeout_min: 2880 # 2 days
     # additional_parameters:
     #   reservation: test5
+    # exclude: gpu009.kisski
     setup:
       - module load Miniforge3
       - module load CUDA

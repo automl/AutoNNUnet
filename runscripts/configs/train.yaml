@@ -7,16 +7,15 @@ defaults:
 
 pipeline:
   return_if_done: false
-  continue_training: false
+  continue_training: true
 
 hydra:
   output_subdir: "."
-  job_logging:
-    stdout: true  
-    stderr: true  
-  run:
+  run: 
+    # dir: output/baseline/${hp_config.encoder_type}/${dataset.name}/${trainer.configuration}
     dir: output/baseline_test/${dataset.name}/${trainer.configuration}
   sweep:
+    # dir: output/baseline/${hp_config.encoder_type}/${dataset.name}/${trainer.configuration}
     dir: output/baseline_test/${dataset.name}/${trainer.configuration}
     subdir: fold_${fold}     
   job:

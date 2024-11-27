@@ -1,0 +1,22 @@
+# @package _global_
+hp_config:
+  initial_lr: 0.01
+  loss_function: DiceAndCrossEntropyLoss
+  lr_scheduler: PolyLRScheduler
+  momentum: 0.99
+  num_epochs: 1000
+  optimizer: SGD
+  oversample_foreground_percent: 0.33
+  weight_decay: 3.0e-05
+hydra:
+  job:
+    chdir: true
+  job_logging:
+    stderr: true
+    stdout: true
+  output_subdir: "."
+  run:
+    dir: output/hpo/Dataset010_Colon/3d_fullres/0/incumbent
+  sweep:
+    dir: output/hpo/Dataset010_Colon/3d_fullres/0/incumbent
+    subdir: fold_${fold}

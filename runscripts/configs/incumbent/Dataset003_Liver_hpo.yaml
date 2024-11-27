@@ -1,0 +1,23 @@
+# @package _global_
+hp_config:
+  aug_factor: 0.33471086882285794
+  initial_lr: 0.0023916127275286207
+  loss_function: DiceAndCrossEntropyLoss
+  lr_scheduler: PolyLRScheduler
+  momentum: 0.9780750169417495
+  num_epochs: 1000.0
+  optimizer: SGD
+  oversample_foreground_percent: 0.4151485221356458
+  weight_decay: 9.401176430552344e-06
+hydra:
+  job:
+    chdir: true
+  job_logging:
+    stderr: true
+    stdout: true
+  output_subdir: "."
+  run:
+    dir: output/hpo/Dataset003_Liver/3d_fullres/0/incumbent
+  sweep:
+    dir: output/hpo/Dataset003_Liver/3d_fullres/0/incumbent
+    subdir: fold_${fold}

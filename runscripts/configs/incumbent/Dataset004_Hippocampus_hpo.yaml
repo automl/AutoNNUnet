@@ -1,0 +1,23 @@
+# @package _global_
+hp_config:
+  aug_factor: 0.9831612046713567
+  initial_lr: 0.010644237861415502
+  loss_function: DiceLoss
+  lr_scheduler: None
+  momentum: 0.8501895652619779
+  num_epochs: 111.1111111111111
+  optimizer: AdamW
+  oversample_foreground_percent: 0.7963914745173317
+  weight_decay: 0.006865408954631966
+hydra:
+  job:
+    chdir: true
+  job_logging:
+    stderr: true
+    stdout: true
+  output_subdir: "."
+  run:
+    dir: output/hpo/Dataset004_Hippocampus/3d_fullres/0/incumbent
+  sweep:
+    dir: output/hpo/Dataset004_Hippocampus/3d_fullres/0/incumbent
+    subdir: fold_${fold}

@@ -1,0 +1,23 @@
+# @package _global_
+hp_config:
+  aug_factor: 1.4193074067909766
+  initial_lr: 0.0025360983161343484
+  loss_function: DiceAndCrossEntropyLoss
+  lr_scheduler: CosineAnnealingLR
+  momentum: 0.99
+  num_epochs: 333.3333333333333
+  optimizer: SGD
+  oversample_foreground_percent: 0.33
+  weight_decay: 3.0e-05
+hydra:
+  job:
+    chdir: true
+  job_logging:
+    stderr: true
+    stdout: true
+  output_subdir: "."
+  run:
+    dir: output/hpo/Dataset001_BrainTumour/3d_fullres/0/incumbent
+  sweep:
+    dir: output/hpo/Dataset001_BrainTumour/3d_fullres/0/incumbent
+    subdir: fold_${fold}

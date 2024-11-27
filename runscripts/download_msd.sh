@@ -1,5 +1,5 @@
 #!/bin/bash
-conda activate unet
+conda activate automis
 
 cd ..
 # python runscripts/download_and_extract.py --dataset_name=Dataset001_BrainTumour

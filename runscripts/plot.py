@@ -6,7 +6,7 @@ import pathlib
 import argparse
 import logging
 
-from autonnunet.utils import Plotter
+from autonnunet.analysis.plotter import Plotter
 from autonnunet.datasets import ALL_DATASETS
 
 if __name__  == "__main__":
@@ -24,7 +24,9 @@ if __name__  == "__main__":
     plotter.load_data() 
     # plotter.plot_baselines()
     plotter.plot_nas()
-    plotter.plot_hpo()
+    plotter.plot_hpo_combined()
+    # plotter.plot_hyperparameter_importances(budget="combined")
+    # plotter.plot_hpo()
     # plotter.plot_hyperband()
     # plotter.compute_emissions() 
     # plotter.plot_baseline_runtimes()

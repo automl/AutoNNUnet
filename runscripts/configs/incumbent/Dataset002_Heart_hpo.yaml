@@ -1,0 +1,23 @@
+# @package _global_
+hp_config:
+  aug_factor: 1.0
+  initial_lr: 0.007760322343961424
+  loss_function: TopKLoss
+  lr_scheduler: None
+  momentum: 0.99
+  num_epochs: 1000.0
+  optimizer: SGD
+  oversample_foreground_percent: 0.33
+  weight_decay: 2.9303132858888967e-05
+hydra:
+  job:
+    chdir: true
+  job_logging:
+    stderr: true
+    stdout: true
+  output_subdir: "."
+  run:
+    dir: output/hpo/Dataset002_Heart/3d_fullres/0/incumbent
+  sweep:
+    dir: output/hpo/Dataset002_Heart/3d_fullres/0/incumbent
+    subdir: fold_${fold}

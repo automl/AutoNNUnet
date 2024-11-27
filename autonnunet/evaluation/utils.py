@@ -113,7 +113,7 @@ def extract_incumbent(
         "hp_config": actual_hp_config,
     }
 
-    hydra_outpur_dir = f"output/{approach}/{dataset_name}/{configuration}/{hpo_seed}/incubment"
+    hydra_outpur_dir = f"output/{approach}/{dataset_name}/{configuration}/{hpo_seed}/incumbent"
     yaml_dict["hydra"] = {}
     yaml_dict["hydra"]["output_subdir"] = "'.'"
     yaml_dict["hydra"]["job_logging"] = {}
@@ -127,12 +127,22 @@ def extract_incumbent(
     yaml_dict["hydra"]["job"] = {}
     yaml_dict["hydra"]["job"]["chdir"] = True
 
-    with open(target_dir / f"{dataset_name}_{approach}.yaml", "w") as f:
+    output_path = target_dir / f"{dataset_name}_{approach}.yaml"
+    with open(output_path, "w") as f:
         f.write("# @package _global_\n")
         yaml.dump(yaml_dict, f)
+    
+    # Now we need to fix the output_subdir
+    with open(output_path, "r") as f:
+        content = f.read()
+
+    content = content.replace("'''.'''", '"."')
+
+    with open(output_path, "w") as f:
+        f.write(content)
 
 
-def extract_incumbent_config(dataset_name: str, approach: str, configuration: str, hpo_seed: int) -> None:
+def extract_incumbent_directories(dataset_name: str, approach: str, configuration: str, hpo_seed: int) -> None:
     output_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration / str(hpo_seed)
     target_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration / str(hpo_seed) / "incumbent"
 

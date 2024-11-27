@@ -24,17 +24,6 @@ if __name__  == "__main__":
     logger.info("Starting MSD evaluation.")
 
     for dataset_name in ALL_DATASETS:
-        if args.approach != "baseline":
-            logger.info(f"Extracting incumbent for {dataset_name}.")
-            extract_incumbent(
-                dataset_name=dataset_name,
-                approach=args.approach,
-                configuration=args.configuration,
-                hpo_seed=args.hpo_seed
-            )
-            logger.info(f"Done.")
-
-    
         logger.info(f"Running prediction for {dataset_name}.")
         run_prediction(
             dataset_name=dataset_name,
