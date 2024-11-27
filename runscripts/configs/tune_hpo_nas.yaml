@@ -16,6 +16,7 @@ budget: 21_000    # Total budget in epochs
 
 objectives: [loss, epoch_runtime]
 maximize: [False, False]
+reference_point: [1.0, 500.0]
 
 hydra:
   sweeper:
@@ -38,6 +39,8 @@ hydra:
       deterministic: true
       optimizer_kwargs:
         fidelity_variable: ${hydra.sweeper.budget_variable}
+        incumbent_selection: hypervolume
+        reference_point: ${reference_point}
         min_budget: ${min_budget}
         max_budget: ${max_budget}
         seed: ${neps_seed}

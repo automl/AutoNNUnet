@@ -11,7 +11,7 @@ from omegaconf import DictConfig, OmegaConf
 
 from autonnunet.utils import dataset_name_to_msd_task, load_json
 from autonnunet.utils.paths import (AUTONNUNET_MSD_SUBMISSIONS, AUTONNUNET_CONFIGS,
-                                    AUTONNUNET_OUTPUT, AUTONNUNET_PREDCITIONS,
+                                    AUTONNUNET_OUTPUT, AUTONNUNET_PREDICTIONS,
                                     NNUNET_RAW)
 
 # According to the MSD, these predictions should not be included in the submission
@@ -41,10 +41,10 @@ def run_prediction(
     os.environ["nnUNet_results"] = "."      # noqa: SIM112
     os.environ["nnUNet_n_proc_DA"] = "20"   # noqa: SIM112
 
-    if approach == "baseline":
+    if "baseline" in approach:
         model_base_output_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration
     else:
-        model_base_output_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration / "incumbent"
+        model_base_output_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration / "0" / "incumbent"
 
     predictor = AutoNNUNetPredictor(
         tile_step_size=0.5,
@@ -64,7 +64,7 @@ def run_prediction(
     )
 
     source_folder = str(NNUNET_RAW / dataset_name / "imagesTs")
-    target_folder = str(AUTONNUNET_PREDCITIONS / approach / dataset_name / configuration)
+    target_folder = str(AUTONNUNET_PREDICTIONS / approach / dataset_name / configuration)
 
     predictor.predict_from_files(
         source_folder,
@@ -167,7 +167,7 @@ def extract_incumbent_directories(dataset_name: str, approach: str, configuratio
 
 
 def compress_msd_submission(approach: str, configuration: str):
-    predictions_dir = AUTONNUNET_PREDCITIONS / approach
+    predictions_dir = AUTONNUNET_PREDICTIONS / approach
     target_path = AUTONNUNET_MSD_SUBMISSIONS / f"{approach}_{configuration}.zip"
     AUTONNUNET_MSD_SUBMISSIONS.mkdir(exist_ok=True)
 

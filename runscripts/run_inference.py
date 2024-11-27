@@ -13,7 +13,7 @@ import logging
 
 if __name__  == "__main__":
     argparser = argparse.ArgumentParser()
-    argparser.add_argument("--approach", type=str, default="baseline")
+    argparser.add_argument("--approach", type=str, default="baseline_ConvolutionalEncoder")
     argparser.add_argument("--configuration", type=str, default="3d_fullres")
     argparser.add_argument("--hpo_seed", type=int, default=0)
     argparser.add_argument("--use_folds", nargs="+", type=int, default=[0, 1, 2, 3, 4])

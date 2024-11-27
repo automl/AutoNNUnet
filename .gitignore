@@ -130,6 +130,15 @@ output/predictions
 output/prior_band
 output/prior_band_nas
 output/prior_band_nas_parego
+output/hpo
+output/hpo_nas
+output/hpo_bkp
+output/deepcave_logs
+output/baseline_ConvolutionalEncoder
+output/baseline_ResidualEncoderM
+output/baseline_ResidualEncoderL
+output/baseline_ResidualEncoderXL
+
 
 output_bkp/
 

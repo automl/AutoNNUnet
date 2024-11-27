@@ -1,0 +1,66 @@
+defaults:
+  - _self_
+  - base
+  - cluster: kisski_gpu
+  - search_space: hpo_nas
+  - dataset: Dataset001_BrainTumour
+  - override hydra/sweeper: HyperNEPS
+
+neps_seed: 0
+
+# HPO configuration
+min_budget: 10    # Minimum number of epochs
+max_budget: 1000  # Maximum number of epochs
+eta: 3            # Reduction factor for successive halving
+budget: 21_000    # Total budget in epochs
+
+objectives: [loss, epoch_runtime]
+maximize: [False, False]
+
+hydra:
+  sweeper:
+    budget: ${budget}
+    budget_variable: hp_config.num_epochs
+    search_space: ${search_space}
+    loading_variable: load
+    saving_variable: save
+    sweeper_kwargs:
+      objectives: ${objectives}
+      maximize: ${maximize}
+      checkpoint_tf: true
+      load_tf: true
+      checkpoint_path_typing: ""
+      min_budget: ${min_budget}
+      max_budget: ${max_budget}
+      job_array_size_limit: 1   # only one config at a time
+      seeds: [0, 1, 2, 3, 4]    # these are the folds in our case
+      seed_keyword: fold
+      deterministic: true
+      optimizer_kwargs:
+        fidelity_variable: ${hydra.sweeper.budget_variable}
+        architecture: autonnunet.hnas.get_architecture
+        architecture_default: ""  # TODO
+        min_budget: ${min_budget}
+        max_budget: ${max_budget}
+        seed: ${neps_seed}
+        optimizer:
+          _target_: neps.optimizers.multi_objective.mo_priorband.MOPriorBand
+          _partial_: true
+          objectives: ${objectives}
+          budget: ${hydra.sweeper.budget}
+          eta: ${eta}
+          prior_confidence: medium
+          prior_weight_type: geometric
+          inc_sample_type: mutation
+          inc_style: dynamic
+          inc_mutation_rate: 0.5
+          inc_mutation_std: 0.25
+          model_based: False
+          sample_default_first: True
+          sample_default_at_target: False
+  run:  
+    dir: output/hpo_nas/${dataset.name}/${trainer.configuration}/${neps_seed}
+  sweep:
+    dir: output/hpo_nas/${dataset.name}/${trainer.configuration}/${neps_seed}
+  job:
+    chdir: true

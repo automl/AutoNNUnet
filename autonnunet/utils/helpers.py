@@ -52,6 +52,9 @@ def set_environment_variables() -> None:
 def dataset_name_to_msd_task(dataset_name: str) -> str:
     return f"Task{dataset_name[8:]}"
 
+def msd_task_to_dataset_name(msd_task: str) -> str:
+    return f"Dataset0{msd_task[4:]}"
+
 def format_dataset_name(dataset_name: str) -> str:
     # Extract number from Dataset002_Heart
     name = dataset_name[11:]

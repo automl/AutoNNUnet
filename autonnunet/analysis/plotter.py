@@ -17,11 +17,14 @@ import seaborn as sns
 
 from autonnunet.utils import (compute_hyperband_budgets, format_dataset_name,
                               get_budget_per_config, load_json)
+from autonnunet.utils.helpers import msd_task_to_dataset_name
 from autonnunet.analysis.deepcave_utils import data_to_deepcave
-from autonnunet.utils.paths import (AUTONNUNET_OUTPUT, AUTONNUNET_RESULTS,
+from autonnunet.utils.paths import (AUTONNUNET_OUTPUT, AUTONNUNET_MSD_RESULTS,
                                     AUTONNUNET_PLOTS, AUTONNUNET_TABLES)
 
 APPROACH_REPLACE_MAP = {
+    "baseline_ConvolutionalEncoder": "nnU-Net (org.)",
+    "baseline_ResidualEncoderM": "nnU-Net (ResEnc)",
     "hpo": "HPO",
     "hpo_nas": "HPO + NAS"
 }
@@ -168,7 +171,8 @@ class Plotter:
         )
 
         # Directories
-        self.baseline_dir =  AUTONNUNET_OUTPUT / "baseline"
+        self.baseline_conv =  AUTONNUNET_OUTPUT / "baseline_ConvolutionalEncoder"
+        self.baseline_resenc_m =  AUTONNUNET_OUTPUT / "baseline_ResidualEncoderM"
         self.hpo_dir = AUTONNUNET_OUTPUT / "prior_band"
         self.nas_dir = AUTONNUNET_OUTPUT / "hpo_nas"
 
@@ -335,41 +339,45 @@ class Plotter:
         all_metrics_mean = []
         all_metrics_per_case = []
 
-        for dataset in datasets:
-            dataset_dir = self.baseline_dir / dataset
-            if not dataset_dir.exists():
-                self.logger.info(f"Skipping {dataset}.")
-                continue
-
-            for fold in range(self.n_folds):
-                fold_dir = dataset_dir \
-                      / self.configuration / f"fold_{fold}"
-                if not (fold_dir).exists():
-                    self.logger.info(f"Skipping {fold_dir} of dataset {dataset}.")
+        for approach, baseline_dir in zip(
+            ["nnU-Net (org.)", "nnU-Net (ResEnc)"],
+            [self.baseline_conv, self.baseline_resenc_m]
+        ):
+            for dataset in datasets:
+                dataset_dir = baseline_dir / dataset
+                if not dataset_dir.exists():
+                    self.logger.info(f"{approach}: Skipping {dataset}.")
                     continue
 
-                progress = self._load_progress(fold_dir=fold_dir)
+                for fold in range(self.n_folds):
+                    fold_dir = dataset_dir \
+                        / self.configuration / f"fold_{fold}"
+                    if not (fold_dir / "validation" / "summary.json").exists():
+                        self.logger.info(f"{approach}: Skipping {fold} of dataset {dataset}.")
+                        continue
 
-                if (fold_dir / EMISSIONS_FILENAME).is_file():
-                    emissions = pd.read_csv(fold_dir / EMISSIONS_FILENAME)
-                else:
-                    emissions = pd.DataFrame()
-                (
-                    metrics_foreground_mean,
-                    metrics_mean,
-                    metrics_per_case
-                ) = self._load_metrics(fold_dir)
+                    progress = self._load_progress(fold_dir=fold_dir)
 
-                for df in [progress, emissions, metrics_foreground_mean, metrics_mean, metrics_per_case]:
-                    df["Approach"] = "Baseline"
-                    df["Fold"] = fold
-                    df["Dataset"] = dataset
+                    if (fold_dir / EMISSIONS_FILENAME).is_file():
+                        emissions = pd.read_csv(fold_dir / EMISSIONS_FILENAME)
+                    else:
+                        emissions = pd.DataFrame()
+                    (
+                        metrics_foreground_mean,
+                        metrics_mean,
+                        metrics_per_case
+                    ) = self._load_metrics(fold_dir)
 
-                all_progress.append(progress)
-                all_emissions.append(emissions)
-                all_metrics_foreground_mean.append(metrics_foreground_mean)
-                all_metrics_mean.append(metrics_mean)
-                all_metrics_per_case.append(metrics_per_case)
+                    for df in [progress, emissions, metrics_foreground_mean, metrics_mean, metrics_per_case]:
+                        df["Approach"] = approach
+                        df["Fold"] = fold
+                        df["Dataset"] = dataset
+
+                    all_progress.append(progress)
+                    all_emissions.append(emissions)
+                    all_metrics_foreground_mean.append(metrics_foreground_mean)
+                    all_metrics_mean.append(metrics_mean)
+                    all_metrics_per_case.append(metrics_per_case)
 
         all_progress = pd.concat(all_progress)
         all_emissions = pd.concat(all_emissions)
@@ -911,6 +919,117 @@ class Plotter:
 
         plt.clf()
 
+    def plot_nas_combined(
+            self,
+            x_log_scale: bool = False,
+            y_log_scale: bool = False              
+        ) -> None:
+
+        fig, axes = plt.subplots(
+            nrows=2,
+            ncols=5,
+            sharex=True,
+            # sharey=True,
+            figsize=(12, 6)
+        )
+        axes = axes.flatten()
+
+        max_approaches = 0
+        max_approaches_ax = axes[0]
+
+        for ax, dataset in zip(axes, self._hpo_datasets):
+            nas_data = self.get_nas_data(dataset)
+            baseline_data = self.get_baseline_data(dataset)
+
+            if len(nas_data.history) == 0:
+                continue
+
+            metrics = baseline_data.metrics_foreground_mean
+            baseline_dice = metrics["Dice"].mean()
+            baseline_time = baseline_data.progress["Runtime"][1:].mean()
+
+            history = nas_data.history
+
+            # Plot lines for baseline objectives
+            ax.axhline(
+                y=baseline_time,
+                color=sns.color_palette()[0],
+                linestyle="--",
+                label="Baseline",
+            )
+            ax.axvline(
+                x=1 - baseline_dice,
+                color=sns.color_palette()[0],
+                linestyle="--",
+            )
+
+            pareto_front = history.sort_values(by="1 - Dice")
+            pareto_front = pareto_front[pareto_front["Epoch Runtime"] == pareto_front["Epoch Runtime"].cummin()]
+
+            # g = sns.scatterplot(
+            #     data=history,
+            #     x="1 - Dice",
+            #     y="Epoch Runtime",
+            #     label="Configurations",
+            #     color=sns.color_palette()[1],
+            #     # size="Budget",
+            #     ax=ax,
+            #     s=10,
+            #     alpha=0.7,
+            # )
+
+            sns.lineplot(
+                data=pareto_front,
+                x="1 - Dice",
+                y="Epoch Runtime",
+                color=sns.color_palette()[2],
+                label="Pareto Front",
+                ax=ax
+            )
+
+            ax.set_title(format_dataset_name(dataset).replace(" ", "\n"))
+            ax.set_xlabel("1 - Dice")
+            ax.set_ylabel("Epoch Runtime [s]")
+
+            ax.set_xscale("log")
+            ax.set_yscale("log")
+            
+            if ax != axes[0] and ax != axes[5]:
+                ax.set_ylabel("")
+
+            ax.get_legend().remove()
+
+        # We use the axis with most approaches to get the legend
+        handles, labels = max_approaches_ax.get_legend_handles_labels()
+
+        fig.subplots_adjust(
+            top=0.92,   
+            bottom=0.15, 
+            left=0.06,  
+            right=0.99,  
+            hspace=0.3, 
+            wspace=0.35  
+        )
+
+        axes[-3].legend(
+            handles,
+            labels,
+            loc="upper center",
+            bbox_to_anchor=(0.5, -0.23),
+            ncol=max_approaches + 1,
+            fancybox=False,
+            shadow=False,
+            frameon=False
+        )
+
+        # plt.tight_layout()
+        plt.savefig(
+            self.nas_plots / f"nas_combined.png",
+            dpi=400
+        )
+
+        plt.clf()
+
     def plot_nas(self, **kwargs) -> None:
         for dataset in self._nas_datasets:
             try:
@@ -1107,4 +1226,30 @@ class Plotter:
 
         print(dataset_runtimes.groupby("Dataset")["Runtime"].mean().reset_index()["Runtime"] * 60)
 
+    def _read_msd_results(self, approaches: list[str]) -> pd.DataFrame:
+        results = []
 
+        for approach in approaches:
+            result_path = AUTONNUNET_MSD_RESULTS / f"{approach}_{self.configuration}.json"
+            if not result_path.exists():
+                continue 
+
+            msd_results = load_json(result_path)
+
+            for task_id, task_results in msd_results.items():
+                dataset = msd_task_to_dataset_name(task_id)
+
+                for cls in task_results["aggregates"]:
+                    results += [{
+                        "dataset": dataset,
+                        "class": cls,
+                        **task_results["aggregates"][cls]
+                    }]
+
+        return pd.DataFrame(results)
+    
+    def compare_msd_results(self):
+        approaches = ["baseline", "hpo", "hpo_nas"]
+        msd_results = self._read_msd_results(approaches)
+
+        print(msd_results)

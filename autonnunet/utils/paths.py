@@ -17,8 +17,9 @@ for k, v in DEFAULT_DATA_DIR.items():
 AUTONNUNET_CONFIGS = Path("./runscripts/configs").resolve()
 AUTONNUNET_OUTPUT = Path("./output").resolve()
 AUTONNUNET_RESULTS = Path("./results").resolve()
-AUTONNUNET_PREDCITIONS =  Path("./output/predictions").resolve()
+AUTONNUNET_PREDICTIONS =  Path("./output/predictions").resolve()
 AUTONNUNET_MSD_SUBMISSIONS = Path("./output/msd_submissions").resolve()
+AUTONNUNET_MSD_RESULTS = Path("./output/msd_results").resolve()
 
 AUTONNUNET_PLOTS = Path("./thesis/plots").resolve()
 AUTONNUNET_TABLES = Path("./thesis/tables").resolve()

@@ -12,11 +12,9 @@ pipeline:
 hydra:
   output_subdir: "."
   run: 
-    # dir: output/baseline/${hp_config.encoder_type}/${dataset.name}/${trainer.configuration}
-    dir: output/baseline_test/${dataset.name}/${trainer.configuration}
+    dir: output/baseline_${hp_config.encoder_type}/${dataset.name}/${trainer.configuration}
   sweep:
-    # dir: output/baseline/${hp_config.encoder_type}/${dataset.name}/${trainer.configuration}
-    dir: output/baseline_test/${dataset.name}/${trainer.configuration}
+    dir: output/baseline_${hp_config.encoder_type}/${dataset.name}/${trainer.configuration}
     subdir: fold_${fold}     
   job:
     chdir: true
