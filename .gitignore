@@ -144,3 +144,10 @@ output_bkp/
 
 *.err
 *.out
+
+.config_lock
+
+crash_gpu004.sh
+crash_gpu005.sh
+crash_gpu009.sh
+crash_gpu005_original.sh
