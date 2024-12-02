@@ -5,11 +5,16 @@ import pandas as pd
 from typing import Any
 from autonnunet.utils.hyperband import compute_hyperband_budgets
 from collections import defaultdict
+from pathlib import Path
+
 
 np.random.seed(42)
 
 sns.set_style(style="darkgrid")
 sns.set_palette(palette="colorblind")
+
+
+PLOTS_DIR = Path("./mockup_plots").resolve()
 
 
 def non_dominated_sorting(configs: dict[str, tuple[float]]) -> list[list[str]]:
@@ -51,63 +56,25 @@ def compute_distance(result1: tuple[float], result2: tuple[float]) -> float:
 
     return float(np.linalg.norm(r1 - r2))
 
-def crowding_distance_sorting(front: list[str], performances: dict[str, tuple[float]]) -> list[str]:
-    """Sort the front based on the crowding distance."""
-    distances = {config_id: 0 for config_id in front}
 
-    for i in range(2):
-        sorted_front = sorted(front, key=lambda x: performances[x][i])
+def crowding_distance_assignment(configs: dict[str, tuple[float]]) -> dict[str, float]:
+    distances = {c: 0. for c in configs}
+    objective_bounds = {
+        0: [0, 1],
+        1: [0, 1]
+    }
 
-        distances[sorted_front[0]] = np.inf
-        distances[sorted_front[-1]] = np.inf
+    for o in objective_bounds.keys(): 
+        o_min, o_max = objective_bounds[o]
+        sorted_configs = sorted(configs.keys(), key=lambda c: configs[c][o])
+        distances[sorted_configs[0]] = np.inf
+        distances[sorted_configs[-1]] = np.inf
 
-        for j in range(1, len(sorted_front) - 1):
-            distances[sorted_front[j]] += (performances[sorted_front[j + 1]][i] - performances[sorted_front[j - 1]][i])
+        for i in range(2, len(sorted_configs) - 1):
+            config_key = sorted_configs[i]
+            distances[config_key] += (configs[sorted_configs[i + 1]][o] - configs[sorted_configs[i + 1]][o]) / (o_max - o_min)
 
-    return sorted(front, key=lambda x: distances[x], reverse=True)
-
-# Non-Dominated Sorting Genetic Algorithm II (NSGA-II)
-def crowd_distance_sorting(performances_in_stage: dict[str, tuple[float]]):
-    fronts = non_dominated_sorting(performances_in_stage)
-
-    sorted_configs = []
-    ids = list(performances_in_stage.keys())
-    objectives = np.array(list(performances_in_stage.values()))  # Shape: (N, M), where N = number of configs, M = number of objectives
-    num_objectives = objectives.shape[1]
-    
-    # Initialize crowding distances
-    crowding_distances = np.zeros(len(ids))
-    
-    # Calculate crowding distance for each objective
-    for obj_idx in range(num_objectives):
-        # Sort indices based on the current objective
-        sorted_indices = np.argsort(objectives[:, obj_idx])
-        sorted_objectives = objectives[sorted_indices, obj_idx]
-        
-        # Set crowding distance for boundary points to infinity
-        crowding_distances[sorted_indices[0]] = float('inf')
-        crowding_distances[sorted_indices[-1]] = float('inf')
-        
-        # Calculate distances for intermediate points
-        for i in range(1, len(ids) - 1):
-            prev_obj = sorted_objectives[i - 1]
-            next_obj = sorted_objectives[i + 1]
-            norm = sorted_objectives[-1] - sorted_objectives[0]
-            if norm == 0:
-                # Avoid division by zero
-                norm = 1e-9
-            crowding_distances[sorted_indices[i]] += (next_obj - prev_obj) / norm
-    
-    # Combine IDs and distances for sorting
-    id_distance_pairs = [(ids[i], crowding_distances[i]) for i in range(len(ids))]
-    
-    # Sort by crowding distance in descending order
-    sorted_by_distance = sorted(id_distance_pairs, key=lambda x: x[1], reverse=True)
-    
-    # Return sorted IDs
-    return [x[0] for x in sorted_by_distance]
-
-
+    return distances    
 
 
 def eps_net(performances_in_stage: dict[str, tuple[float]]):
@@ -169,11 +136,24 @@ def get_mockup_moo_points(b_min: float = 10, b_max: float = 1000, eta: int = 3) 
                 # Now we select the best configurations from the previous stage
                 # and add some noise to them
                 previous_performances = performances_in_stage[stage][phase - 1]
-                previous_budget = budgets_in_stage[stage][phase - 1]
+                
+                fronts = non_dominated_sorting(previous_performances)
+                selected_configs = []
 
-                sorted_configs = eps_net(previous_performances)
+                # First we start by adding full pareto fronts
+                while True:
+                    if len(selected_configs) + len(fronts[0]) <= n_configs:
+                        # We can add the full front
+                        selected_configs.extend(fronts.pop(0))
+                    else:
+                        break
+                
+                # Now, we need to selct the remaining configs from the next front
+                remaining_front = {c: previous_performances[c] for c in fronts[0]}
+                crowding_distance = crowding_distance_assignment(remaining_front)
+                sorted_configs = sorted(crowding_distance.keys(), key=lambda c: (crowding_distance[c], compute_hypervolume(previous_performances[c])))
 
-                selected_configs = sorted_configs[:n_configs]
+                selected_configs.extend(sorted_configs[:n_configs - len(selected_configs)])
 
                 for config_id in selected_configs:
                     performances_in_stage[stage][phase][config_id] = (
@@ -194,6 +174,13 @@ def get_mockup_moo_points(b_min: float = 10, b_max: float = 1000, eta: int = 3) 
     )
 
     return performance_data, performances_in_stage
+
+
+def compute_hypervolume(performance: tuple[float]) -> float:
+    r = np.array((-0.1, -0.1))
+    p = np.array(performance)
+
+    return float(np.prod(p - r))
 
 
 def plot_mockup_moo_points(
@@ -270,7 +257,7 @@ def plot_mockup_moo_points(
                 performance = (row["Objective 1"], row["Objective 2"])
 
                 # Now we find the previous performance
-                prev_phase = relevant_performance[relevant_performance["Phase"] == phase - 1]
+                prev_phase = performance_stage[performance_stage["Phase"] == phase - 1]
                 prev_row = prev_phase[prev_phase["Configuration ID"] == config_id]
                 prev_performance = (prev_row["Objective 1"].values[0], prev_row["Objective 2"].values[0])
 
@@ -309,7 +296,7 @@ def plot_mockup_moo_points(
     axes[-2].set_xticks([-0.5, 0, 0.5, 1])
     
     plt.tight_layout()
-    plt.savefig(f"mo_pb_selection_strategy_{step}.png", dpi=400)
+    plt.savefig(PLOTS_DIR / f"mo_pb_selection_strategy_{step}.png", dpi=400)
 
 
 if __name__ == "__main__":
