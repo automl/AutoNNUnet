@@ -282,7 +282,7 @@ def plot_mockup_moo_points(
         handles=handles,
         labels=labels,
         loc="upper center",
-        bbox_to_anchor=(0.5, -0.23),
+        bbox_to_anchor=(0.5, -0.1),
         ncol=len(performance_stage["Phase"].unique()),
         fancybox=False,
         shadow=False,
