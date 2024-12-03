@@ -196,7 +196,7 @@ def plot_mockup_moo_points(
     fig, axes = plt.subplots(
         1,
         n_phases - 1,
-        figsize=(12, 6),
+        figsize=(10, 4),
         sharex=True,
         sharey=True
     )
@@ -225,7 +225,7 @@ def plot_mockup_moo_points(
         # ---------------------------------------------------------------------
         # Plot the selection strategy
         # ---------------------------------------------------------------------
-        if step >= 1:
+        if step >= 1 and step <= 2:
             fronts = non_dominated_sorting(performances_in_stage[stage][phase - 1])
             sorted_configs = eps_net(performances_in_stage[stage][phase - 1])
 
@@ -282,7 +282,7 @@ def plot_mockup_moo_points(
         handles=handles,
         labels=labels,
         loc="upper center",
-        bbox_to_anchor=(0.5, -0.23),
+        bbox_to_anchor=(0.5, -0.17),
         ncol=len(performance_stage["Phase"].unique()),
         fancybox=False,
         shadow=False,
@@ -295,11 +295,11 @@ def plot_mockup_moo_points(
     axes[-2].set_xlim(-0.75, 1.05)
     axes[-2].set_xticks([-0.5, 0, 0.5, 1])
     
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, -0.05, 1, 1])
     plt.savefig(PLOTS_DIR / f"mo_pb_selection_strategy_{step}.png", dpi=400)
 
 
 if __name__ == "__main__":
     performance_data, performances_in_stage = get_mockup_moo_points()
-    for step in range(3):
+    for step in range(4):
         plot_mockup_moo_points(performance_data, performances_in_stage, stage=1, step=step)
