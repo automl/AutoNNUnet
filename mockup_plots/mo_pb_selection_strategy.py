@@ -166,11 +166,12 @@ def get_mockup_moo_points(b_min: float = 10, b_max: float = 1000, eta: int = 3) 
     for stage, performances in performances_in_stage.items():
         for phase, configs in performances.items():
             for config_id, performance in configs.items():
-                data.append([config_id, performance[0], performance[1], stage, phase])
+                budget = budgets_in_stage[stage][phase]
+                data.append([config_id, performance[0], performance[1], stage, phase, budget])
 
     performance_data = pd.DataFrame(
         data=data,
-        columns=["Configuration ID", "Objective 1", "Objective 2", "Stage", "Phase"]
+        columns=["Configuration ID", "Objective 1", "Objective 2", "Stage", "Phase", "Budget"]
     )
 
     return performance_data, performances_in_stage
@@ -274,20 +275,20 @@ def plot_mockup_moo_points(
 
     # Add a legend for the phases
     handles, labels = [], []
-    for phase in range(n_phases):
-        handles.append(plt.Line2D([0], [0], marker="o", color="w", markerfacecolor=sns.color_palette()[phase], markersize=10))
-        labels.append(phase)
+    for i, budget in enumerate(np.unique(performance_stage["Budget"])):
+        handles.append(plt.Line2D([0], [0], marker="o", color="w", markerfacecolor=sns.color_palette()[i], markersize=10))
+        labels.append(round(budget))
 
     axes[-2].legend(
         handles=handles,
         labels=labels,
         loc="upper center",
-        bbox_to_anchor=(0.5, -0.17),
+        bbox_to_anchor=(0.5, -0.22),
         ncol=len(performance_stage["Phase"].unique()),
         fancybox=False,
         shadow=False,
         frameon=False,
-        title="Phase"
+        title="Budget"
     )
 
     axes[-2].set_ylim(-0.6, 1.05)
@@ -295,7 +296,14 @@ def plot_mockup_moo_points(
     axes[-2].set_xlim(-0.75, 1.05)
     axes[-2].set_xticks([-0.5, 0, 0.5, 1])
     
-    plt.tight_layout(rect=[0, -0.05, 1, 1])
+    fig.subplots_adjust(
+        top=0.92,   
+        bottom=0.28, 
+        left=0.065,  
+        right=0.99,  
+        wspace=0.1  
+    )
+
     plt.savefig(PLOTS_DIR / f"mo_pb_selection_strategy_{step}.png", dpi=400)
 
 
