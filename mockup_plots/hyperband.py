@@ -76,7 +76,6 @@ def plot_mockup_points(
         1,
         n_stages - 2,
         figsize=(10, 3),
-        sharey=True,
     )
 
     axes = axes.flatten()
@@ -118,8 +117,10 @@ def plot_mockup_points(
                     alpha=alpha,
                 )
 
+        ax.set_xscale("log")
         ax.set_xticks(np.unique(performance_stage["Budget"]))
         ax.set_xticklabels([])
+        ax.set_yticklabels([])
         ax.set_xlabel("Budget")
 
     # We use the budgets and colors from palette as handles and labels
