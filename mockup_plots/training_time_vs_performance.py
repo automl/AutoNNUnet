@@ -44,8 +44,6 @@ def plot(step: int, prev_g=None):
     g.set_xlim(86.4275, 88.4825)
     g.set_ylim(0, 250)
 
-
-
     g.set_xlabel("Dice Score [%]")
     g.set_ylabel("Training Time [h]")
 
