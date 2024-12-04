@@ -8,7 +8,6 @@ from pathlib import Path
 PLOTS_DIR = Path("./mockup_plots").resolve()
 
 
-
 def plot(step: int, prev_g=None):
     # Data from https://arxiv.org/pdf/2404.09556
     data = pd.DataFrame({
@@ -30,7 +29,7 @@ def plot(step: int, prev_g=None):
 
     data["Dice"] = data["Dice"].apply(lambda x: np.mean(x))
 
-    plt.figure(figsize=(8, 4))
+    plt.figure(figsize=(10, 3))
     g = sns.scatterplot(data=data, y="Runtime [h]", x="Dice", s=100, hue="Type", palette="colorblind")
     type_colors = {
         "nnU-Net": sns.color_palette("colorblind")[0],
@@ -42,10 +41,9 @@ def plot(step: int, prev_g=None):
         color = type_colors[row["Type"]]
         plt.plot([row["Dice"], row["Dice"]], [0, row["Runtime [h]"]], color=color, linewidth=3)
 
-    plt.grid(True)
-    # g.set_xscale("log")
-    g.set_xlim(86.7, 88.25)
+    g.set_xlim(86.4275, 88.4825)
     g.set_ylim(0, 250)
+
 
 
     g.set_xlabel("Dice Score [%]")
@@ -60,12 +58,16 @@ def plot(step: int, prev_g=None):
         handles=handles,
         labels=labels,
         loc="upper center",
-        bbox_to_anchor=(0.5, -0.2),
+        bbox_to_anchor=(0.5, -0.4),
         ncol=3,
         fancybox=False,
         shadow=False,
         frameon=False,
     )
+
+    plt.grid(False)
+    g.spines['top'].set_visible(False)
+    g.spines['right'].set_visible(False)
 
     plt.tight_layout()
     plt.savefig(PLOTS_DIR / f"training_time_vs_performance_{step}.png", dpi=400)
@@ -76,7 +78,7 @@ def plot(step: int, prev_g=None):
         return g
 
 if __name__ == "__main__":
-    sns.set_theme(style="darkgrid")
+    sns.set_theme(style="whitegrid")
     sns.set_palette("colorblind")
 
     g = None
