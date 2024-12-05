@@ -52,24 +52,25 @@ def plot(step: int, prev_g=None):
     else:
         handles, labels = None, None
 
-    g.legend(
-        handles=handles,
-        labels=labels,
-        loc="upper center",
-        bbox_to_anchor=(0.5, -0.25),
-        ncol=3,
-        fancybox=False,
-        shadow=False,
-        frameon=False,
-    )
+    # g.legend(
+    #     handles=handles,
+    #     labels=labels,
+    #     loc="upper center",
+    #     bbox_to_anchor=(0.5, -0.25),
+    #     ncol=3,
+    #     fancybox=False,
+    #     shadow=False,
+    #     frameon=False,
+    # )
 
     fig.subplots_adjust(
         top=0.96,   
-        bottom=0.3, 
+        bottom=0.2, 
         left=0.08,  
         right=0.99,  
         # wspace=0.1  
     )
+    g.legend().remove()
 
 
     plt.grid(True)
