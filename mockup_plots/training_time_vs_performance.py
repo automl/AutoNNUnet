@@ -29,7 +29,7 @@ def plot(step: int, prev_g=None):
 
     data["Dice"] = data["Dice"].apply(lambda x: np.mean(x))
 
-    plt.figure(figsize=(10, 3))
+    fig = plt.figure(figsize=(10, 3))
     g = sns.scatterplot(data=data, y="Runtime [h]", x="Dice", s=100, hue="Type", palette="colorblind")
     type_colors = {
         "nnU-Net": sns.color_palette("colorblind")[0],
@@ -56,18 +56,24 @@ def plot(step: int, prev_g=None):
         handles=handles,
         labels=labels,
         loc="upper center",
-        bbox_to_anchor=(0.5, -0.4),
+        bbox_to_anchor=(0.5, -0.25),
         ncol=3,
         fancybox=False,
         shadow=False,
         frameon=False,
     )
 
-    plt.grid(False)
-    g.spines['top'].set_visible(False)
-    g.spines['right'].set_visible(False)
+    fig.subplots_adjust(
+        top=0.96,   
+        bottom=0.3, 
+        left=0.08,  
+        right=0.99,  
+        # wspace=0.1  
+    )
 
-    plt.tight_layout()
+
+    plt.grid(True)
+
     plt.savefig(PLOTS_DIR / f"training_time_vs_performance_{step}.png", dpi=400)
 
     if prev_g:
@@ -76,7 +82,7 @@ def plot(step: int, prev_g=None):
         return g
 
 if __name__ == "__main__":
-    sns.set_theme(style="whitegrid")
+    sns.set_theme(style="darkgrid")
     sns.set_palette("colorblind")
 
     g = None
