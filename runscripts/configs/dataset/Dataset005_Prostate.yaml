@@ -1,3 +1,4 @@
 _target_: automis.datasets.msd_dataset.MSDDataset
 name: Dataset005_Prostate
 runtime_min: 314
+runtime_min_nas: 1369

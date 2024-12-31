@@ -1,3 +1,4 @@
 _target_: automis.datasets.msd_dataset.MSDDataset
 name: Dataset001_BrainTumour
 runtime_min: 905
+runtime_min_nas: 3395

@@ -12,7 +12,7 @@ neps_seed: 0
 min_budget: 10    # Minimum number of epochs
 max_budget: 1000  # Maximum number of epochs
 eta: 3            # Reduction factor for successive halving
-budget: 21_000    # Total budget in epochs
+budget: 22_000    # Total budget in epochs
 
 objectives: [loss, epoch_runtime]
 maximize: [False, False]
@@ -35,6 +35,8 @@ hydra:
       job_array_size_limit: 1   # only one config at a time
       seeds: [0, 1, 2, 3, 4]    # these are the folds in our case
       seed_keyword: fold
+      slurm: true
+      slurm_timeout: ${dataset.runtime_min}
       deterministic: true
       optimizer_kwargs:
         fidelity_variable: ${hydra.sweeper.budget_variable}

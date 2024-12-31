@@ -13,10 +13,11 @@ arrow==1.3.0
 astroid==3.2.4
 asttokens==2.4.1
 async-lru==2.0.4
+async-timeout==5.0.1
 attrs==24.2.0
 autodocsumm==0.2.13
 automl_sphinx_theme==0.2.0
--e git+https://github.com/LUH-AI/MSC-JannisBecktepe-AutoNNUnet@f2c1b96a71381115a8db33e31d79b7e94929ee82#egg=AutoNNU_Net
+-e git+https://github.com/LUH-AI/MSC-JannisBecktepe-AutoNNUnet@837280cce5749a18bb3252aaf207ea16856d0c7b#egg=AutoNNU_Net
 babel==2.16.0
 backports.tarfile==1.2.0
 -e git+https://github.com/becktepe/batchgenerators.git@dc848284cb14f6ae6ed572f298dabf618cf1b059#egg=batchgenerators
@@ -25,8 +26,10 @@ beautifulsoup4==4.12.3
 black==24.8.0
 bleach==6.1.0
 bracex==2.5
+Brotli==1.1.0
 bump-my-version==0.26.0
 CacheControl==0.14.0
+cachelib==0.9.0
 cachetools==5.5.0
 certifi==2024.8.30
 cffi==1.17.0
@@ -43,14 +46,22 @@ ConfigSpace==1.2.0
 connected-components-3d==3.18.0
 contourpy==1.3.0
 coverage==7.6.1
+cramjam==2.9.0
 cryptography==43.0.1
 cssutils==2.11.1
 cycler==0.12.1
 Cython==3.0.11
+dash==2.0.0
+dash-bootstrap-components==1.0.3
+dash-core-components==2.0.0
+dash-extensions==0.0.71
+dash-html-components==2.0.0
+dash-table==5.0.0
 dask==2024.8.2
 dask-jobqueue==0.9.0
 debugpy==1.8.5
 decorator==5.1.1
+deepcave==1.3.2
 defusedxml==0.7.1
 dicom2nifti==2.4.11
 dict2css==0.3.0.post1
@@ -61,21 +72,27 @@ docker-pycreds==0.4.0
 docutils==0.21.2
 domdf-python-tools==3.9.0
 dynamic_network_architectures==0.3.1
+EditorConfig==0.12.4
 einops==0.8.0
 emcee==3.1.6
 exceptiongroup==1.2.2
 execnet==2.1.1
 executing==2.1.0
 fastjsonschema==2.20.0
+fastparquet==2024.5.0
 fft-conv-pytorch==1.2.0
 filelock==3.15.4
 flake8==7.1.1
+Flask==2.1.3
+Flask-Caching==2.3.0
+Flask-Compress==1.17
 fonttools==4.53.1
 fqdn==1.5.1
 fsspec==2024.6.1
 future==1.0.0
 gitdb==4.0.11
 GitPython==3.1.43
+gplearn==0.4.2
 GraKeL==0.1.10
 graphviz==0.20.3
 grpcio==1.66.1
@@ -86,7 +103,7 @@ httpx==0.27.2
 hydra-colorlog==1.2.0
 hydra-core==1.3.2
 hydra-submitit-launcher==1.2.0
--e git+https://github.com/becktepe/hypersweeper.git@c43bf15ba5c6898543374e59136c660a4c2b1a0b#egg=HyperSweeper
+-e git+https://github.com/becktepe/hypersweeper.git@4033a0fdbebbaa3a59ad53ec57f10db343996f7f#egg=HyperSweeper
 identify==2.6.0
 idna==3.8
 imagecodecs==2024.6.1
@@ -99,6 +116,7 @@ ipython==8.27.0
 ipywidgets==8.1.5
 isoduration==20.11.0
 isort==5.13.2
+itsdangerous==2.2.0
 jaraco.classes==3.4.0
 jaraco.context==6.0.1
 jaraco.functools==4.0.2
@@ -106,7 +124,9 @@ jedi==0.19.1
 jeepney==0.8.0
 Jinja2==3.1.4
 joblib==1.4.2
+jsbeautifier==1.15.1
 json5==0.9.25
+jsonlines==4.0.0
 jsonpointer==3.0.0
 jsonschema==4.23.0
 jsonschema-specifications==2023.12.1
@@ -122,6 +142,7 @@ jupyterlab==4.2.5
 jupyterlab_pygments==0.3.0
 jupyterlab_server==2.27.3
 jupyterlab_widgets==3.0.13
+kaleido==0.2.1
 keyring==25.3.0
 kiwisolver==1.4.7
 lazy_loader==0.4
@@ -130,7 +151,7 @@ locket==1.0.0
 Markdown==3.7
 markdown-it-py==3.0.0
 MarkupSafe==2.1.5
-matplotlib==3.9.2
+matplotlib==3.9.0
 matplotlib-inline==0.1.7
 mccabe==0.7.0
 mdit-py-plugins==0.4.2
@@ -149,7 +170,7 @@ nbconvert==7.16.4
 nbformat==5.10.4
 nest-asyncio==1.6.0
 networkx==2.8.8
--e git+https://github.com/becktepe/neps@bff20a8a630ca13106c5780322a889650d2d1ee5#egg=neural_pipeline_search
+-e git+https://github.com/becktepe/neps@512afd3e67dbc3dc969d3c08b5f245809509ca39#egg=neural_pipeline_search
 nh3==0.2.18
 nibabel==5.2.1
 nltk==3.9.1
@@ -184,6 +205,7 @@ pexpect==4.9.0
 pillow==10.4.0
 pkginfo==1.10.0
 platformdirs==4.2.2
+plotly==5.24.1
 pluggy==0.13.1
 portalocker==2.10.1
 pox==0.3.4
@@ -197,6 +219,7 @@ ptyprocess==0.7.0
 pure_eval==0.2.3
 py==1.11.0
 py-cpuinfo==9.0.0
+pyarrow==16.1.0
 pycodestyle==2.12.1
 pycparser==2.22
 pydantic==2.8.2
@@ -210,6 +233,7 @@ pylint==3.2.7
 pynisher==1.0.10
 pynvml==11.5.3
 pyparsing==3.1.4
+pyPDPPartitioner==0.1.9
 pyproject-api==1.7.1
 pyrfr==0.9.0
 pytest==7.4.4
@@ -228,6 +252,7 @@ QtPy==2.4.1
 questionary==2.0.1
 rapidfuzz==3.9.7
 readme_renderer==44.0
+redis==5.2.0
 referencing==0.35.1
 regex==2024.7.24
 requests==2.32.3
@@ -238,6 +263,7 @@ rfc3986-validator==0.1.1
 rich==13.8.0
 rich-click==1.8.3
 rpds-py==0.20.0
+rq==2.0.0
 ruamel.yaml==0.18.6
 ruamel.yaml.clib==0.2.8
 ruff==0.6.3
@@ -276,6 +302,7 @@ submitit==1.5.1
 sympy==1.13.2
 tabulate==0.9.0
 tblib==3.0.0
+tenacity==9.0.0
 tensorboard==2.17.1
 tensorboard-data-server==0.7.2
 terminado==0.18.1
@@ -311,8 +338,9 @@ wcwidth==0.2.13
 webcolors==24.8.0
 webencodings==0.5.1
 websocket-client==1.8.0
-Werkzeug==3.0.4
+Werkzeug==2.0.3
 widgetsnbextension==4.0.13
 yacs==0.1.8
 zict==3.0.0
 zipp==3.20.1
+zstandard==0.23.0

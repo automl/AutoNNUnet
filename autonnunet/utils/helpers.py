@@ -17,19 +17,26 @@ def seed_everything(seed: int) -> None:
     np.random.seed(seed)    # noqa: NPY002
     random.seed(seed)
 
-def read_objectives() -> dict | None:
-    if os.path.exists("./validation/summary.json") and os.path.exists("./progress.csv"):
-        with open("./validation/summary.json") as f:
-            metrics = json.load(f)
-            loss = 1 - metrics["foreground_mean"]["Dice"]
+
+def read_objectives(skip_loss: bool = False) -> dict | None:
+    if (skip_loss or os.path.exists("./validation/summary.json")) and os.path.exists("./progress.csv"):
+        if skip_loss:
+            loss = 1.0
+        else:
+            with open("./validation/summary.json") as f:
+                metrics = json.load(f)
+                loss = 1 - metrics["foreground_mean"]["Dice"]
 
         progress = pd.read_csv("./progress.csv")
         progress["runtime"] = progress["epoch_end_timestamps"] - progress["epoch_start_timestamps"]
-        runtime = float(progress["runtime"][1:].mean())
+        runtime = float(progress["runtime"].sum())
+
+        # Seconds to hours
+        runtime = runtime / 3600
 
         return {
             "loss": loss,
-            "epoch_runtime": runtime
+            "runtime": runtime
         }
     else:
         return None

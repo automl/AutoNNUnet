@@ -1,3 +1,4 @@
 _target_: automis.datasets.msd_dataset.MSDDataset
 name: Dataset010_Colon
 runtime_min: 347
+runtime_min_nas: 1231

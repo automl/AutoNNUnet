@@ -109,10 +109,23 @@ def run(cfg: DictConfig):
                 str(Path(nnunet_trainer.output_folder) /  "checkpoint_best.pth")
             )
 
-        nnunet_trainer.perform_actual_validation(
-            save_probabilities=cfg.trainer.export_validation_probabilities
-        )
-        logger.info("Validation finished")
+        validation_failed = True
+        try:
+            nnunet_trainer.perform_actual_validation(
+                save_probabilities=cfg.trainer.export_validation_probabilities
+            )
+            validation_failed = False
+            logger.info("Validation finished")
+        except RuntimeError as e:
+            # We need to catch this exception because the
+            # validation might fail due to infinity values in the
+            # predictions. This can happen when the model is too
+            # confident and the ground truth is zero or when the
+            # model is not confident enough and the ground truth is
+            # one. In this case, the Dice score will be infinity.
+            # We set the Dice score to 0.0 in this case.
+            logger.error(f"Validation failed: {e}")
+            logger.error("Setting Dice score to 0.0")
 
         if cfg.pipeline.remove_validation_files:
             logger.info("Removing validation files")
@@ -121,13 +134,16 @@ def run(cfg: DictConfig):
                 if ".nii.gz" in file_path.name:
                     os.remove(file_path.resolve())
 
-        objectives = read_objectives()
+        objectives = read_objectives(skip_loss=validation_failed)
         assert objectives is not None
 
         logger.info(f"Mean Validation Dice Score: {1 - objectives['loss']}")
-        logger.info(f"Mean Epoch Runtime: {objectives['epoch_runtime']}")
+        logger.info(f"Runtime: {objectives['runtime']}")
         logger.info(f"Objectives: {str(objectives)}")
 
+    # --------------------------------------------------------------------------------------------
+    # CHECKPOINT HANDLING
+    # --------------------------------------------------------------------------------------------
     if cfg.save:
         checkpoint_best_path = Path(".").resolve() / "checkpoint_best.pth"
         checkpoint_final_path = Path(".").resolve() / "checkpoint_final.pth"
@@ -137,14 +153,14 @@ def run(cfg: DictConfig):
         os.remove(checkpoint_best_path)
         logger.info("Removed checkpoints.")
         
-    if cfg.load:
-        load_path_best = Path(cfg.load + "_best.pth").resolve()
-        load_path_final = Path(cfg.load + "_final.pth").resolve()
+    # if cfg.load:
+    #     load_path_best = Path(cfg.load + "_best.pth").resolve()
+    #     load_path_final = Path(cfg.load + "_final.pth").resolve()
     
-        logger.info("Removing loaded checkpoints.")
-        os.remove(load_path_best)
-        os.remove(load_path_final)
-        logger.info("Removed checkpoints.")
+    #     logger.info("Removing loaded checkpoints.")
+    #     os.remove(load_path_best)
+    #     os.remove(load_path_final)
+    #     logger.info("Removed checkpoints.")
 
     return objectives
 

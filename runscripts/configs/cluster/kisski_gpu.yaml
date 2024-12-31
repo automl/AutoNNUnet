@@ -11,11 +11,12 @@ hydra:
     gres: gpu:1
     gpus_per_task: 1
     cpus_per_task: 48
-    mem_gb: 120
-    timeout_min: 2880 # 2 days
+    mem_gb: 64
+    timeout_min: 4320  # 3 days
     # additional_parameters:
     #   reservation: test9
-    # exclude: gpu009.kisski
+    # exclude: gpu002.kisski, gpu006.kisski
+    exclude: gpu008.kisski
     setup:
       - module load Miniforge3
       - module load CUDA

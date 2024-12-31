@@ -1,3 +1,5 @@
 Submissions to https://decathlon-10.grand-challenge.org as user jbecktepe:
 Nov. 18, 2024, 10:34 a.m. -> baseline_ConvolutionalEncoder_3d_fullres.zip
 Nov. 28, 2024, 2:39 p.m. -> hpo_3d_fullres.zip
+Dec. 4, 2024, 8:43 a.m. -> baseline_ResidualEncoderM_3d_fullres.zip
+Dec. 6, 2024, 9:23 p.m. -> baseline_ResidualEncoderL_3d_fullres.zip

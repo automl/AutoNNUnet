@@ -1,3 +1,4 @@
 _target_: automis.datasets.msd_dataset.MSDDataset
 name: Dataset004_Hippocampus
 runtime_min: 101
+runtime_min_nas: 1515

@@ -12,7 +12,6 @@ import pandas as pd
 from deepcave.runs.recorder import Recorder
 from deepcave.runs.objective import Objective
 from deepcave.runs.converters.deepcave import DeepCAVERun
-import numpy as np
 
 def format_hp_name(name: str) -> str:
     return name.split(".")[-1]
@@ -89,7 +88,7 @@ def row_to_config(row: pd.Series, config_space: ConfigurationSpace) -> Configura
         config_id=int(row["Run ID"]),
     )
 
-def data_to_deepcave(dataset: str, history: pd.DataFrame, approach: str) -> DeepCAVERun:
+def runhistory_to_deepcave(dataset: str, history: pd.DataFrame, approach: str) -> DeepCAVERun:
     save_path = Path(f"./output/deepcave_logs").resolve()
     prefix = f"{dataset}_{approach}"
 

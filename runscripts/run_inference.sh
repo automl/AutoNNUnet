@@ -11,8 +11,8 @@
 #SBATCH --mail-type fail
 #SBATCH --mail-user becktepe@stud.uni-hannover.de      
 #SBATCH -p kisski-inference                                         
-#SBATCH --output test_%A.out
-#SBATCH --error test_%A.err
+#SBATCH --output inference_%A.out
+#SBATCH --error inference_%A.err
 
 module load Miniforge3
 module load CUDA
@@ -20,5 +20,5 @@ module load CUDA
 export nnUNet_n_proc_DA=30
 
 cd ..
-/mnt/home/jbecktep/.conda/envs/automis/bin/python runscripts/run_inference.py --approach=baseline
+/mnt/home/jbecktep/.conda/envs/automis/bin/python runscripts/run_inference.py --approach=baseline_ResidualEncoderL
 

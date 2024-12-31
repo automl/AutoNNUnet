@@ -12,11 +12,10 @@ neps_seed: 0
 min_budget: 10    # Minimum number of epochs
 max_budget: 1000  # Maximum number of epochs
 eta: 3            # Reduction factor for successive halving
-budget: 21_000    # Total budget in epochs
+budget: 22_000    # Total budget in epochs
 
-objectives: [loss, epoch_runtime]
+objectives: [loss, runtime]
 maximize: [False, False]
-reference_point: [1.0, 500.0]
 
 hydra:
   sweeper:
@@ -36,11 +35,12 @@ hydra:
       job_array_size_limit: 1   # only one config at a time
       seeds: [0, 1, 2, 3, 4]    # these are the folds in our case
       seed_keyword: fold
+      slurm: true
+      slurm_timeout: ${dataset.runtime_min_nas}
       deterministic: true
       optimizer_kwargs:
         fidelity_variable: ${hydra.sweeper.budget_variable}
         incumbent_selection: hypervolume
-        reference_point: ${reference_point}
         min_budget: ${min_budget}
         max_budget: ${max_budget}
         seed: ${neps_seed}
@@ -58,7 +58,7 @@ hydra:
           inc_mutation_std: 0.25
           model_based: False
           sample_default_first: True
-          sample_default_at_target: False
+          sample_default_at_target: True
   run:  
     dir: output/hpo_nas/${dataset.name}/${trainer.configuration}/${neps_seed}
   sweep:

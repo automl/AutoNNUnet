@@ -67,6 +67,13 @@ python runscripts/extract_incumbents.py --approach=hpo
 python runscripts/train.py -m "dataset=Dataset001_BrainTumour" "+incumbent=Dataset001_BrainTumour_hpo" "fold=range(5)"
 ```
 
+## Inference and MSD Submission
+
+```bash
+python runscripts/run_inference.py --approach=hpo
+```
+
+Creates the MSD submission in `output/msd_submissions`
 
 ## Credits
 
