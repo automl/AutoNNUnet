@@ -1,8 +1,10 @@
 from __future__ import annotations
+
 import math
 from collections import defaultdict
-from smac.intensifier.successive_halving import SuccessiveHalving
+
 import numpy as np
+
 
 def compute_successive_halving(
         min_budget: float,
@@ -13,7 +15,7 @@ def compute_successive_halving(
     stopping_rate_limit = np.floor(
             np.log(max_budget / min_budget) / np.log(eta)
         ).astype(int)
-    
+
     new_min_budget = min_budget * (eta**early_stopping_rate)
     nrungs = (
         np.floor(np.log(max_budget / new_min_budget) / np.log(eta)).astype(
@@ -21,10 +23,10 @@ def compute_successive_halving(
         )
         + 1
     )
-    
+
     # Rung Map
     _max_budget = max_budget
-    rung_map = dict()
+    rung_map = {}
     for i in reversed(range(nrungs)):
         rung_map[i + early_stopping_rate] = _max_budget
         _max_budget /= eta
@@ -33,7 +35,7 @@ def compute_successive_halving(
     s_max = stopping_rate_limit + 1
     _s = stopping_rate_limit - early_stopping_rate
     _n_config = np.floor(s_max / (_s + 1)) * eta**_s
-    config_map = dict()
+    config_map = {}
     for i in range(nrungs):
         config_map[i + early_stopping_rate] = int(_n_config)
         _n_config //= eta

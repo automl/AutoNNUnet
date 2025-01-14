@@ -1,6 +1,13 @@
-from omegaconf import DictConfig
-from autonnunet.experiment_planning.auto_experiment_planners_nas import AutoExperimentPlanner, nnUNetPlannerResEncM, nnUNetPlannerResEncL, nnUNetPlannerResEncXL
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+from autonnunet.experiment_planning.auto_experiment_planners_nas import (
+    AutoExperimentPlanner, nnUNetPlannerResEncL, nnUNetPlannerResEncM,
+    nnUNetPlannerResEncXL)
+
+if TYPE_CHECKING:
+        from omegaconf import DictConfig
 
 PLANNER_CLASSES = {
     "ConvolutionalEncoder": AutoExperimentPlanner,
@@ -17,9 +24,9 @@ def plan_experiment(
     ) -> dict:
         if hp_config.encoder_type in PLANNER_CLASSES:
             planner_cls = PLANNER_CLASSES[hp_config.encoder_type]
-        else: 
+        else:
             raise ValueError(f"Invalid encoder type: {hp_config.encoder_type}")
-        
+
         planner = planner_cls(
                 hp_config=hp_config,
                 dataset_name_or_id=dataset_name,

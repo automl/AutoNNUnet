@@ -38,8 +38,7 @@ def read_objectives(skip_loss: bool = False) -> dict | None:
             "loss": loss,
             "runtime": runtime
         }
-    else:
-        return None
+    return None
 
 
 def set_environment_variables() -> None:

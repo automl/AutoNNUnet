@@ -1,23 +1,32 @@
-from ConfigSpace import (
-    ConfigurationSpace,
-    Configuration,
-    UniformFloatHyperparameter as Float,
-    UniformIntegerHyperparameter as Integer,
-    CategoricalHyperparameter as Categorical,
-    EqualsCondition,
-)
+from __future__ import annotations
+
 from pathlib import Path
+from typing import TYPE_CHECKING
+
 import yaml
-import pandas as pd
-from deepcave.runs.recorder import Recorder
-from deepcave.runs.objective import Objective
+from ConfigSpace import CategoricalHyperparameter as Categorical
+from ConfigSpace import Configuration, ConfigurationSpace, EqualsCondition
+from ConfigSpace import UniformFloatHyperparameter as Float
+from ConfigSpace import UniformIntegerHyperparameter as Integer
 from deepcave.runs.converters.deepcave import DeepCAVERun
+from deepcave.runs.objective import Objective
+from deepcave.runs.recorder import Recorder
+
+if TYPE_CHECKING:
+    import pandas as pd
+
+ORIGIN_MAP = {
+    "incubment": "Incubmnt-based Sampling",
+    "random": "Random Sampling",
+    "prior": "Prior-based Sampling",
+}
+
 
 def format_hp_name(name: str) -> str:
     return name.split(".")[-1]
 
 def yaml_to_configspace(yaml_path: Path) -> ConfigurationSpace:
-    with open(yaml_path, "r") as file:
+    with open(yaml_path) as file:
         config_space_dict = yaml.safe_load(file)
 
     config_space = ConfigurationSpace()
@@ -56,7 +65,7 @@ def yaml_to_configspace(yaml_path: Path) -> ConfigurationSpace:
         else:
             raise ValueError(f"Unknown hyperparameter type: {hp['type']}")
 
-        
+
     for cond in config_space_dict["conditions"]:
         if cond["type"] == "EQ":
             config_space.add(
@@ -89,7 +98,7 @@ def row_to_config(row: pd.Series, config_space: ConfigurationSpace) -> Configura
     )
 
 def runhistory_to_deepcave(dataset: str, history: pd.DataFrame, approach: str) -> DeepCAVERun:
-    save_path = Path(f"./output/deepcave_logs").resolve()
+    save_path = Path("./output/deepcave_logs").resolve()
     prefix = f"{dataset}_{approach}"
 
     if (save_path / prefix).exists():
@@ -99,7 +108,7 @@ def runhistory_to_deepcave(dataset: str, history: pd.DataFrame, approach: str) -
     config_space = yaml_to_configspace(config_space_path)
 
     for col in history.columns:
-        if not "hp_config" in col:
+        if "hp_config" not in col:
             continue
 
         name = format_hp_name(col)

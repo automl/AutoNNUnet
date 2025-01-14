@@ -1,16 +1,17 @@
 from __future__ import annotations
 
+import ast
 import os
 import zipfile
-import yaml
-import ast
 
 import pandas as pd
 import torch
-from omegaconf import DictConfig, OmegaConf
+import yaml
+from omegaconf import OmegaConf
 
 from autonnunet.utils import dataset_name_to_msd_task, load_json
-from autonnunet.utils.paths import (AUTONNUNET_MSD_SUBMISSIONS, AUTONNUNET_CONFIGS,
+from autonnunet.utils.paths import (AUTONNUNET_CONFIGS,
+                                    AUTONNUNET_MSD_SUBMISSIONS,
                                     AUTONNUNET_OUTPUT, AUTONNUNET_PREDICTIONS,
                                     NNUNET_RAW)
 
@@ -80,9 +81,9 @@ def run_prediction(
 
 
 def extract_incumbent(
-        dataset_name: str, 
-        approach: str, 
-        configuration: str, 
+        dataset_name: str,
+        approach: str,
+        configuration: str,
         hpo_seed: int,
     ) -> None:
     output_dir = AUTONNUNET_OUTPUT / "hpo" / dataset_name / configuration / str(hpo_seed)
@@ -94,11 +95,11 @@ def extract_incumbent(
     incumbent_df = pd.read_csv(output_dir / "incumbent_loss.csv")
     incumbent_config_id = int(incumbent_df["run_id"].values[-1])
 
-    run_id = incumbent_config_id * 5 
+    run_id = incumbent_config_id * 5
     debug_info_path = output_dir / str(run_id) / "debug.json"
 
     debug_info = load_json(debug_info_path)
-    hp_config = ast.literal_eval(debug_info["hp_config"]) 
+    hp_config = ast.literal_eval(debug_info["hp_config"])
     actual_hp_config = {}
 
     search_space = OmegaConf.load(AUTONNUNET_CONFIGS / "search_space" / f"{approach}.yaml")
@@ -130,9 +131,9 @@ def extract_incumbent(
     with open(output_path, "w") as f:
         f.write("# @package _global_\n")
         yaml.dump(yaml_dict, f)
-    
+
     # Now we need to fix the output_subdir
-    with open(output_path, "r") as f:
+    with open(output_path) as f:
         content = f.read()
 
     content = content.replace("'''.'''", '"."')

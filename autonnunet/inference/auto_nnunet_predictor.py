@@ -1,13 +1,10 @@
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING
 
 import torch
 from batchgenerators.utilities.file_and_folder_operations import (join,
                                                                   load_json)
-from dynamic_network_architectures.building_blocks.helper import \
-    get_matching_batchnorm
 from nnunetv2.inference.predict_from_raw_data import nnUNetPredictor
 from nnunetv2.utilities.label_handling.label_handling import \
     determine_num_input_channels
@@ -15,9 +12,6 @@ from nnunetv2.utilities.plans_handling.plans_handler import PlansManager
 from torch._dynamo import OptimizedModule
 
 from autonnunet.training.auto_nnunet_trainer import AutoNNUNetTrainer
-
-if TYPE_CHECKING:
-    from omegaconf import DictConfig
 
 
 class AutoNNUNetPredictor(nnUNetPredictor):
@@ -84,8 +78,10 @@ class AutoNNUNetPredictor(nnUNetPredictor):
             self.trainer_name = trainer_name
             self.allowed_mirroring_axes = inference_allowed_mirroring_axes
             self.label_manager = plans_manager.get_label_manager(dataset_json)
-            if ("nnUNet_compile" in os.environ) and (os.environ["NNUNET_COMPILE"].lower() in ("true", "1", "t")) \
-                    and not isinstance(self.network, OptimizedModule):
+
+            do_compile = ("nnUNet_compile" in os.environ) and (os.environ["nnUNet_compile"].lower() in ("true", "1", "t")) # noqa: SIM112
+
+            if do_compile and not isinstance(self.network, OptimizedModule):
                 print("Using torch.compile")
                 self.network = torch.compile(self.network)
 

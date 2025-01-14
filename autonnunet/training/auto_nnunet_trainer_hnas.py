@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 import torch
+import torch.nn as nn
 from batchgenerators.transforms.abstract_transforms import (AbstractTransform,
                                                             Compose)
 from batchgenerators.transforms.color_transforms import (
@@ -22,6 +23,7 @@ from batchgenerators.transforms.spatial_transforms import (MirrorTransform,
 from batchgenerators.transforms.utility_transforms import (
     NumpyToTensor, RemoveLabelTransform, RenameTransform)
 from batchgenerators.utilities.file_and_folder_operations import load_json
+from nnunetv2.utilities.label_handling.label_handling import determine_num_input_channels
 from nnunetv2.training.data_augmentation.custom_transforms.cascade_transforms import (
     ApplyRandomBinaryOperatorTransform, MoveSegAsOneHotToData,
     RemoveRandomConnectedComponentFromOneHotEncodingTransform)
@@ -43,8 +45,10 @@ from nnunetv2.training.lr_scheduler.polylr import PolyLRScheduler
 from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
 from nnunetv2.utilities.helpers import softmax_helper_dim1
 from torch.optim.lr_scheduler import CosineAnnealingLR
+from torch.nn.parallel import DistributedDataParallel as DDP
 
 from autonnunet.experiment_planning.plan_experiment_nas import plan_experiment
+from autonnunet.hnas.unet import CFGUNet
 from autonnunet.training.auto_nnunet_logger import AutoNNUNetLogger
 from autonnunet.training.dummy_lr_scheduler import DummyLRScheduler
 from autonnunet.utils.paths import NNUNET_PREPROCESSED
@@ -72,6 +76,50 @@ class AutoNNUNetTrainer(nnUNetTrainer):
 
         self.log_file = os.path.join(self.output_folder, "training_log.txt")
         self.logger = AutoNNUNetLogger()
+
+    def initialize(self):
+        if not self.was_initialized:
+            self.num_input_channels = determine_num_input_channels(self.plans_manager, self.configuration_manager,
+                                                                   self.dataset_json)
+
+            if "architecture" in self.hp_config:
+                self.network = self.build_cfg_unet_architecture().to(self.device)
+            else:
+                self.network = self.build_network_architecture(
+                    self.configuration_manager.network_arch_class_name,
+                    self.configuration_manager.network_arch_init_kwargs,
+                    self.configuration_manager.network_arch_init_kwargs_req_import,
+                    self.num_input_channels,
+                    self.label_manager.num_segmentation_heads,
+                    self.enable_deep_supervision
+                ).to(self.device)
+            # compile network for free speedup
+            if self._do_i_compile():
+                self.print_to_log_file('Using torch.compile...')
+                self.network = torch.compile(self.network)
+
+            self.optimizer, self.lr_scheduler = self.configure_optimizers()
+            # if ddp, wrap in DDP wrapper
+            if self.is_ddp:
+                self.network = torch.nn.SyncBatchNorm.convert_sync_batchnorm(self.network)
+                self.network = DDP(self.network, device_ids=[self.local_rank])
+
+            self.loss = self._build_loss()
+            self.was_initialized = True
+        else:
+            raise RuntimeError("You have called self.initialize even though the trainer was already initialized. "
+                               "That should not happen.")
+
+    def build_cfg_unet_architecture(self) -> nn.Module:
+        return CFGUNet(
+            hp_config=self.hp_config,
+            string_tree=str(self.hp_config.architecture).replace("'", ""),
+            arch_init_kwargs=self.configuration_manager.network_arch_init_kwargs,
+            arch_kwargs_req_import=self.configuration_manager.network_arch_init_kwargs_req_import,
+            num_input_channels=self.num_input_channels,
+            num_output_channels=self.label_manager.num_segmentation_heads,
+            enable_deep_supervision=self.enable_deep_supervision
+        )
 
     @staticmethod
     def from_config(cfg: DictConfig) -> AutoNNUNetTrainer:
@@ -159,11 +207,11 @@ class AutoNNUNetTrainer(nnUNetTrainer):
                 border_mode_seg="constant",
                 border_cval_seg=border_val_seg,
                 order_seg=order_resampling_seg,
-                random_crop=False,
+                random_crop=False,  
                 p_el_per_sample=0,
                 p_scale_per_sample=self.hp_config.aug_scale_prob * self.hp_config.aug_factor,
                 p_rot_per_sample=self.hp_config.aug_rotate_prob * self.hp_config.aug_factor,
-                independent_scale_for_each_axis=False
+                independent_scale_for_each_axis=False  
             )
         )
 
@@ -216,7 +264,7 @@ class AutoNNUNetTrainer(nnUNetTrainer):
         )
         tr_transforms.append(
             GammaTransform(
-                (0.7, 1.5),
+                (0.7, 1.5), 
                 False,
                 True,
                 retain_stats=True,
@@ -301,7 +349,7 @@ class AutoNNUNetTrainer(nnUNetTrainer):
                 add_timestamp=False,
             )
 
-    def _build_loss(self) -> torch.nn.Module:
+    def _build_loss(self) -> nn.Module:
         if self.hp_config.loss_function == "DiceLoss":
             loss = self._build_dice_loss()
         elif self.hp_config.loss_function == "DiceAndCrossEntropyLoss":
@@ -337,7 +385,7 @@ class AutoNNUNetTrainer(nnUNetTrainer):
             loss = DeepSupervisionWrapper(loss, weights)
         return loss
 
-    def _build_dice_and_ce_loss(self) -> torch.nn.Module:
+    def _build_dice_and_ce_loss(self) -> nn.Module:
         # taken from https://github.com/MIC-DKFZ/nnUNet/blob/master/nnunetv2/training/nnUNetTrainer/nnUNetTrainer.py
         if self.label_manager.has_regions:
             loss = DC_and_BCE_loss(
@@ -393,7 +441,7 @@ class AutoNNUNetTrainer(nnUNetTrainer):
 
         return loss
 
-    def _build_dice_loss(self) -> torch.nn.Module:
+    def _build_dice_loss(self) -> nn.Module:
         # taken from https://github.com/MIC-DKFZ/nnUNet/blob/master/nnunetv2/training/nnUNetTrainer/variants/loss/nnUNetTrainerDiceLoss.py
         loss = MemoryEfficientSoftDiceLoss(
             batch_dice=self.configuration_manager.batch_dice, do_bg=self.label_manager.has_regions, smooth=1e-5, ddp=self.is_ddp,
@@ -414,7 +462,7 @@ class AutoNNUNetTrainer(nnUNetTrainer):
             loss = DeepSupervisionWrapper(loss, weights)
         return loss
 
-    def _build_topk10_loss(self) -> torch.nn.Module:
+    def _build_topk10_loss(self) -> nn.Module:
         # taken from https://github.com/MIC-DKFZ/nnUNet/blob/master/nnunetv2/training/nnUNetTrainer/variants/loss/nnUNetTrainerTopkLoss.py
         assert not self.label_manager.has_regions, "regions not supported by this trainer"
         loss = TopKLoss(
