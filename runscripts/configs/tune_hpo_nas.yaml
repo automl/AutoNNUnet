@@ -25,6 +25,8 @@ hydra:
     loading_variable: load
     saving_variable: save
     sweeper_kwargs:
+      env_vars: 
+        NEPS_LOG_DIR: ${hydra.run.dir}
       objectives: ${objectives}
       maximize: ${maximize}
       checkpoint_tf: true

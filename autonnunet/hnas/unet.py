@@ -10,7 +10,7 @@ from dynamic_network_architectures.building_blocks.unet_decoder import UNetDecod
 from dynamic_network_architectures.building_blocks.residual_encoders import ResidualEncoder
 from dynamic_network_architectures.building_blocks.unet_residual_decoder import UNetResDecoder
 from dynamic_network_architectures.building_blocks.helper import (
-    convert_conv_op_to_dim, convert_dim_to_conv_op, get_matching_batchnorm,
+    convert_conv_op_to_dim, get_matching_batchnorm,
     get_matching_dropout, get_matching_instancenorm)
 from torch import nn
 import logging
@@ -44,13 +44,68 @@ class CFGUNet(nn.Module):
 
         self.num_input_channels = num_input_channels
         self.num_output_channels = num_output_channels
-        self.enable_deep_supervision = enable_deep_supervision        
+        self.enable_deep_supervision = enable_deep_supervision   
 
-        encoder_cfg, decoder_cfg = self._extract_encoder_decoder_cfg(string_tree)
+        parsed_tree = self.parse_nested_brackets(string_tree)
+        encoder_cfg, decoder_cfg = self.extract_architecture_cfg(parsed_tree)
 
         self.encoder = self._build_encoder(**encoder_cfg)
         self.decoder = self._build_decoder(**decoder_cfg)
 
+    @staticmethod
+    def parse_nested_brackets(string_tree: str) -> list:
+        def helper(tokens):
+            result = []
+            while tokens:
+                token = tokens.pop(0)
+                if token == '(':
+                    # We need to start a new nested list
+                    result.append(helper(tokens))
+                elif token == ')':
+                    # We end the current nested list
+                    return result
+                else:
+                    # We add the token to the current list
+                    result.append(token)
+            return result
+
+        # Tokenize the string
+        tokens = re.findall(r'\(|\)|[^()\s]+', string_tree)
+        return helper(tokens)
+    
+    @staticmethod
+    def parse_encoder_decoder(sublist: list) -> dict:
+        result = {
+            "network_type": sublist[1],
+            "norm": sublist[2][1],
+            "nonlin": sublist[3][1],
+            "dropout": sublist[4][1],
+        }
+        
+        blocks_per_stage = []
+        blocks_list = sublist[5:]
+        for b in blocks_list:
+            if isinstance(b, str):
+                continue
+            else:
+                blocks_per_stage.append(int(b[1][0]))
+        result["n_blocks_per_stage"] = blocks_per_stage
+
+        return result
+
+    @staticmethod
+    def extract_architecture_cfg(nested_list: list) -> tuple[dict, dict]:
+        # First, we remove the unused parts of the nested list
+        while len(nested_list) == 1:
+            nested_list = nested_list[0]
+
+        # Now we have the initial structure and the encoder and decoder lists
+        assert len(nested_list) == 4
+
+        encoder_cfg = CFGUNet.parse_encoder_decoder(nested_list[2])
+        decoder_cfg = CFGUNet.parse_encoder_decoder(nested_list[3])
+
+        return encoder_cfg, decoder_cfg
     @staticmethod
     def get_norm_op(norm: str) -> Type[nn.Module]:
         # Normalization
@@ -71,74 +126,23 @@ class CFGUNet(nn.Module):
         elif nonlin == "elu":
             return "torch.nn.ELU", {"inplace": True}
         elif nonlin == "prelu":
-            return "torch.nn.PReLU", None
+            return "torch.nn.PReLU", {}
         elif nonlin == "gelu":
-            return "torch.nn.GELU", None
+            return "torch.nn.GELU", {}
         else:
             raise ValueError(f"Activation function {nonlin} not supported.")
 
-    @staticmethod
-    def get_dropout_op(dropout: str) -> tuple[str | None, dict | None]:
+    def get_dropout_op(self, dropout: str) -> tuple[str | None, dict | None]:
         # Dropout
         if dropout == "dropout":
             dimension = convert_conv_op_to_dim(nn.Conv3d)
             dropout_op = get_matching_dropout(dimension=dimension)
             return dropout_op.__module__ + "." + dropout_op.__name__, {"p": self.hp_config.dropout_rate}
         elif dropout == "no_dropout":
-            return None, None
+            return None, {}
         else:
             raise ValueError(f"Dropout {dropout} not supported.")
-
-    @staticmethod
-    def _extract_encoder_decoder_cfg(string_tree: str):
-        def args_to_kwargs(args: list[str]) -> dict:
-            kwargs = {}
-            kwargs["norm"] = args[0]
-            kwargs["nonlin"] = args[1]
-            kwargs["dropout"] = args[2]
-            kwargs["n_blocks_per_stage"] = CFGUNet.count_blocks_per_stage(args[3:])
-
-            return kwargs
         
-        pattern = r"(conv_encoder|res_encoder)\((.*?)\)|(conv_decoder|res_decoder)\((.*?)\)"
-    
-        matches = re.finditer(pattern, string_tree)
-        for match in matches:
-            if match.group(1): 
-                encoder_cfg = {
-                    "network_type": match.group(1),
-                    **args_to_kwargs([item.strip() for item in match.group(2).split(",")])
-                }
-            elif match.group(3): 
-                decoder_cfg = {
-                    "network_type": match.group(3),
-                    **args_to_kwargs([item.strip() for item in match.group(4).split(",")])
-                }
-
-        assert encoder_cfg is not None and decoder_cfg is not None, "Could not extract encoder and decoder configuration"
-        
-        return encoder_cfg, decoder_cfg
-
-    @staticmethod
-    def count_blocks_per_stage(blocks: list[str]) -> list[int]:
-        counts = []
-        current_count = 0
-
-        for block in blocks:
-            if block == "down" or block == "up":
-                if current_count > 0:
-                    counts.append(current_count)
-                current_count = 0
-            else:
-                # We assume format "bX" where X is a number
-                current_count += int(block[1:]) 
-        
-        # We also need to add the count for the last stage
-        if current_count > 0:
-            counts.append(current_count)
-        
-        return counts
-    
     def _features_per_stage(self, num_stages) -> Tuple[int, ...]:
         return tuple([min(self.hp_config.max_features, self.hp_config.base_num_features * 2 ** i) for i in range(num_stages)])
 
@@ -198,7 +202,7 @@ class CFGUNet(nn.Module):
         else:
             raise ValueError(f"Network type {network_type} not supported.")
 
-    def _build_decoder(self, network_type: str, nonlin: str, norm: str, dropout: str, n_blocks_per_stage: list[int]) -> nn.Module:
+    def _build_decoder(self, network_type: str, nonlin: str, norm: str, dropout: str, n_blocks_per_stage: list[int]) -> UNetDecoder | UNetResDecoder:
         norm_op = self.get_norm_op(norm)
         logger.info(f"Using decoder normalization: {norm_op}")
 
@@ -240,6 +244,8 @@ class CFGUNet(nn.Module):
                 nonlin_kwargs=nonlin_op_kwargs,         # type: ignore
                 conv_bias=self.architecture_kwargs["conv_bias"],
             )
+        else:
+            raise ValueError(f"Network type {network_type} not supported.")
 
     def forward(self, x):
         skips = self.encoder(x)

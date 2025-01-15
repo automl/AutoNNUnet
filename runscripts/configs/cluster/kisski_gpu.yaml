@@ -16,7 +16,7 @@ hydra:
     # additional_parameters:
     #   reservation: test9
     # exclude: gpu002.kisski, gpu006.kisski
-    exclude: gpu008.kisski
+    # exclude: gpu007.kisski
     setup:
       - module load Miniforge3
       - module load CUDA

@@ -132,6 +132,7 @@ output/prior_band_nas
 output/prior_band_nas_parego
 output/hpo
 output/hpo_nas
+output/hpo_hnas
 output/hpo_bkp
 output/deepcave_logs
 output/baseline_ConvolutionalEncoder

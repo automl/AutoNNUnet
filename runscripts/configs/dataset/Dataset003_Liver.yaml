@@ -2,3 +2,4 @@ _target_: automis.datasets.msd_dataset.MSDDataset
 name: Dataset003_Liver
 runtime_min: 359
 runtime_min_nas: 1361
+default_n_stages: 6

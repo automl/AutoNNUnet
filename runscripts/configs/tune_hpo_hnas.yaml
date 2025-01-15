@@ -2,11 +2,44 @@ defaults:
   - _self_
   - base
   - cluster: kisski_gpu
-  - search_space: hpo_nas
+  - search_space: hpo_hnas
   - dataset: Dataset001_BrainTumour
   - override hydra/sweeper: HyperNEPS
 
 neps_seed: 0
+
+architecture: unet(conv_encoder(instance_norm, leaky_relu, no_dropout, b2, down, b2, down, b2, down, b2), conv_decoder(instance_norm, leaky_relu, no_dropout, up, b2, up, b2, up, b2))
+
+hp_config:
+  # Fidelity
+  num_epochs: 1000
+  total_epochs: 1000
+
+  # Base Hyperparameters
+  optimizer: SGD
+  momentum: 0.99
+  initial_lr: 1e-2
+  weight_decay: 3e-5
+  lr_scheduler: PolyLRScheduler
+  oversample_foreground_percent: 0.33
+  loss_function: DiceAndCrossEntropyLoss
+  aug_factor: 1.
+
+  # Fine-grained data augmentation
+  aug_scale_prob: 0.2
+  aug_rotate_prob: 0.2
+  aug_gaussian_noise_prob: 0.1
+  aug_gaussian_blur_prob: 0.2
+  aug_brightness_prob: 0.15
+  aug_contrast_prob: 0.15
+  aug_lowres_prob: 0.25
+  aug_gamma_1_prob: 0.1
+  aug_gamma_2_prob: 0.3
+
+  # HNAS
+  architecture: ${architecture}
+  base_num_features: 32
+  max_features: 320
 
 # HPO configuration
 min_budget: 10    # Minimum number of epochs
@@ -14,7 +47,7 @@ max_budget: 1000  # Maximum number of epochs
 eta: 3            # Reduction factor for successive halving
 budget: 22_000    # Total budget in epochs
 
-objectives: [loss, epoch_runtime]
+objectives: [loss, runtime]
 maximize: [False, False]
 
 hydra:
@@ -25,6 +58,8 @@ hydra:
     loading_variable: load
     saving_variable: save
     sweeper_kwargs:
+      env_vars: 
+        NEPS_LOG_DIR: ${hydra.run.dir}
       objectives: ${objectives}
       maximize: ${maximize}
       checkpoint_tf: true
@@ -41,7 +76,11 @@ hydra:
       optimizer_kwargs:
         fidelity_variable: ${hydra.sweeper.budget_variable}
         architecture: autonnunet.hnas.get_architecture
-        architecture_default: ""  # TODO
+        architecture_kwargs:
+          n_stages: ${dataset.default_n_stages}
+        architecture_default: autonnunet.hnas.get_default_architecture
+        architecture_default_kwargs:
+          n_stages: ${dataset.default_n_stages}
         min_budget: ${min_budget}
         max_budget: ${max_budget}
         seed: ${neps_seed}
@@ -59,10 +98,10 @@ hydra:
           inc_mutation_std: 0.25
           model_based: False
           sample_default_first: True
-          sample_default_at_target: False
+          sample_default_at_target: True
   run:  
-    dir: output/hpo_nas/${dataset.name}/${trainer.configuration}/${neps_seed}
+    dir: output/hpo_hnas/${dataset.name}/${trainer.configuration}/${neps_seed}
   sweep:
-    dir: output/hpo_nas/${dataset.name}/${trainer.configuration}/${neps_seed}
+    dir: output/hpo_hnas/${dataset.name}/${trainer.configuration}/${neps_seed}
   job:
     chdir: true

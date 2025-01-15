@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from deepcave.evaluators.fanova import fANOVA
+from deepcave.evaluators.footprint import Footprint
 
 from autonnunet.analysis.deepcave_utils import runhistory_to_deepcave
 from autonnunet.utils import (compute_hyperband_budgets,
@@ -32,7 +33,8 @@ APPROACH_REPLACE_MAP = {
     "baseline_ResidualEncoderM": "nnU-Net (ResM)",
     "baseline_ResidualEncoderL": "nnU-Net (ResL)",
     "hpo": "HPO (ours)",
-    "hpo_nas": "HPO + NAS (ours)"
+    "hpo_nas": "HPO + NAS (ours)",
+    "hpo_hnas": "HPO + HNAS (ours)"
 }
 
 PROGRESS_REPLACEMENT_MAP = {
@@ -71,6 +73,7 @@ OBJECTIVES_MAPPING = {
 
 PROGRESS_FILENAME = "progress.csv"
 HISTORY_FILENAME = "runhistory.csv"
+SAMPLING_POLICY_LOGS = "sampling_policy.log"
 INCUMBENT_FILENAME = "incumbent_loss.csv"
 VALIDATION_METRICS_FILENAME = "summary.json"
 EMISSIONS_FILENAME = "emissions.csv"
@@ -100,6 +103,7 @@ class NASResult:
     history: pd.DataFrame
     incumbents: dict[str, pd.DataFrame]
     emissions: pd.DataFrame
+    deepcave_runs: dict[str, DeepCAVERun]
 
 class Plotter:
     def __init__(
@@ -161,6 +165,7 @@ class Plotter:
         self.baseline_resenc_l =  AUTONNUNET_OUTPUT / "baseline_ResidualEncoderL"
         self.hpo_dir = AUTONNUNET_OUTPUT / "hpo"
         self.nas_dir = AUTONNUNET_OUTPUT / "hpo_nas"
+        self.hnas_dir = AUTONNUNET_OUTPUT / "hpo_hnas"
 
         # Seaborn settings
         sns.set_style(style=style)
@@ -176,24 +181,30 @@ class Plotter:
         self.hpo_plots.mkdir(parents=True, exist_ok=True)
         self.nas_plots = AUTONNUNET_PLOTS / "hpo_nas"
         self.nas_plots.mkdir(parents=True, exist_ok=True)
+        self.hnas_plots = AUTONNUNET_PLOTS / "hpo_hnas"
+        self.hnas_plots.mkdir(parents=True, exist_ok=True)
         self.baseline_plots = AUTONNUNET_PLOTS / "baseline"
         self.baseline_plots.mkdir(parents=True, exist_ok=True)
 
     def load_data(self):
         self._baseline_data = self._load_baseline_data(datasets=self.datasets)
         self._hpo_data = self._load_hpo_data(datasets=self.datasets)
-        self._nas_data = self._load_nas_data(datasets=self.datasets)
+        self._nas_data = self._load_nas_data(datasets=self.datasets, approach_key="hpo_nas")
+        self._hnas_data = self._load_nas_data(datasets=self.datasets, approach_key="hpo_hnas")
 
         self._baseline_datasets = self._baseline_data.progress["Dataset"].unique().tolist()
         self._hpo_datasets = self._hpo_data.history["Dataset"].unique().tolist()
         self._nas_datasets = self._nas_data.history["Dataset"].unique().tolist()
+        self._hnas_datasets = self._nas_data.history["Dataset"].unique().tolist()
 
         self.logger.info(
             f"Loaded {len(self._baseline_datasets)} datasets for baseline.")
         self.logger.info(
             f"Loaded {len(self._hpo_datasets)} datasets for HPO.")
         self.logger.info(
-            f"Loaded {len(self._nas_datasets)} datasets for NAS.")
+            f"Loaded {len(self._nas_datasets)} datasets for HPO + NAS.")
+        self.logger.info(
+            f"Loaded {len(self._hnas_datasets)} datasets for HPO + HNAS.")
 
     def get_baseline_data(self, dataset: str):
         progress = self._baseline_data.progress[
@@ -246,7 +257,25 @@ class Plotter:
         return NASResult(
             emissions=emissions,
             history=history,
-            incumbents=incumbents
+            incumbents=incumbents,
+            deepcave_runs=self._nas_data.deepcave_runs
+        )
+    
+    def get_hnas_data(self, dataset: str):
+        emissions = self._hnas_data.emissions[
+            self._hnas_data.emissions["Dataset"] == dataset]
+        history = self._hnas_data.history[
+            self._hnas_data.history["Dataset"] == dataset]
+        incumbents = {}
+        for objective in self.objectives:
+            incumbents[objective] = self._hnas_data.incumbents[objective][
+                self._hnas_data.incumbents[objective]["Dataset"] == dataset]
+
+        return NASResult(
+            emissions=emissions,
+            history=history,
+            incumbents=incumbents,
+            deepcave_runs=self._hnas_data.deepcave_runs
         )
 
     def _load_metrics(self, fold_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
@@ -426,21 +455,49 @@ class Plotter:
         incumbent["Full Model Trainings"] = incumbent["Real Budget Used"] / self.max_budget
 
         return incumbent
+    
+    def _load_sampling_policy(self, log_path: Path) -> list[str]:
+        with open(log_path, "r") as file:
+            lines = file.readlines()
 
-    def _load_history(self, history_path: Path) -> pd.DataFrame:
-        history = pd.read_csv(history_path)
+        lines = [line.strip() for line in lines]
+
+        return lines
+
+    def _load_history(self, run_path: Path) -> pd.DataFrame:
+        history = pd.read_csv(run_path / HISTORY_FILENAME)
+
+        sample_policy_path = run_path / SAMPLING_POLICY_LOGS
+        if sample_policy_path.exists():
+            # Read the sampling policy containing config origins
+            config_origins = self._load_sampling_policy(sample_policy_path)
+
+            if len(config_origins) == len(history):
+                # We did not start with the default config
+                history["Config Origin"] = config_origins
+            elif len(config_origins) == len(history) - 1:
+                # We started with the default config
+                history["Config Origin"] = ["default"] + config_origins                
+
         return history.rename(columns=HISTORY_REPLACEMENT_MAP)
 
-    def _load_nas_data(self, datasets: list[str]) -> NASResult:
+    def _load_nas_data(self, datasets: list[str], approach_key: str) -> NASResult:
         all_emissions = []
         all_history = []
         all_incumbent = defaultdict(list)
+        deepcave_runs = {}
+        
+        if approach_key == "hpo_nas":
+            base_dir = self.nas_dir 
+        elif approach_key == "hpo_hnas":
+            base_dir = self.hnas_dir
+        else:
+            raise ValueError(f"Unknown approach key {approach_key}.")
 
-        approach_key = "hpo_nas"
         approach = APPROACH_REPLACE_MAP[approach_key]
 
         for dataset in datasets:
-            dataset_dir = self.nas_dir / dataset
+            dataset_dir = base_dir / dataset
             if not dataset_dir.exists():
                 self.logger.info(f"{approach}: Skipping {dataset}.")
                 continue
@@ -451,7 +508,7 @@ class Plotter:
                 self.logger.info(f"{approach}: Skipping {dataset}.")
                 continue
 
-            history = self._load_history(nas_run_dir / HISTORY_FILENAME)
+            history = self._load_history(nas_run_dir)
             history["Dataset"] = dataset
             history["Approach"] = approach
 
@@ -470,6 +527,12 @@ class Plotter:
                 all_incumbent[objective].append(incumbent)
 
             all_history.append(history)
+
+            deepcave_runs[dataset] = runhistory_to_deepcave(
+                dataset=dataset,
+                history=history,
+                approach=approach_key
+            )
 
             for run_id in history["Run ID"].unique():
                 for fold in range(self.n_folds):
@@ -498,7 +561,8 @@ class Plotter:
         return NASResult(
             history=all_history,
             incumbents=all_incumbent_df,
-            emissions=all_emissions
+            emissions=all_emissions,
+            deepcave_runs=deepcave_runs
         )
 
     def _load_hpo_data(self, datasets: list[str]) -> HPOResult:
@@ -523,7 +587,7 @@ class Plotter:
                 self.logger.info(f"{approach}: Skipping {dataset}.")
                 continue
 
-            history = self._load_history(hpo_run_dir / HISTORY_FILENAME)
+            history = self._load_history(hpo_run_dir)
             history["Dataset"] = dataset
             history["Approach"] = approach
 
@@ -624,16 +688,20 @@ class Plotter:
             x_log_scale: bool = False,
             y_log_scale: bool = False,
             include_nas: bool = False,
+            include_hnas: bool = False,
             show_error: bool = False
         ) -> None:
         plt.figure(1, figsize=(5.5, 4.5))
 
         hpo_data = self.get_hpo_data(dataset)
+        incumbent = hpo_data.incumbent
+
         if include_nas and dataset in self._nas_datasets:
             nas_data = self.get_nas_data(dataset)
-            incumbent = pd.concat([hpo_data.incumbent, nas_data.incumbents["1 - Dice"]])
-        else:
-            incumbent = hpo_data.incumbent
+            incumbent = pd.concat([incumbent, nas_data.incumbents["1 - Dice"]])
+        if include_nas and dataset in self._nas_datasets:
+            hnas_data = self.get_hnas_data(dataset)
+            incumbent = pd.concat([incumbent, hnas_data.incumbents["1 - Dice"]])
 
         baseline_data = self.get_baseline_data(dataset)
 
@@ -744,7 +812,8 @@ class Plotter:
             x_log_scale: bool = False,
             y_log_scale: bool = False,
             show_error: bool = False,
-            include_nas: bool = False
+            include_nas: bool = False,
+            include_hnas: bool = False
         ) -> None:
 
         fig, axes = plt.subplots(
@@ -763,11 +832,14 @@ class Plotter:
 
         for ax, dataset in zip(axes, self._hpo_datasets, strict=False):
             hpo_data = self.get_hpo_data(dataset)
+            incumbent = hpo_data.incumbent
+
             if include_nas and dataset in self._nas_datasets:
                 nas_data = self.get_nas_data(dataset)
-                incumbent = pd.concat([hpo_data.incumbent, nas_data.incumbents["1 - Dice"]])
-            else:
-                incumbent = hpo_data.incumbent
+                incumbent = pd.concat([incumbent, nas_data.incumbents["1 - Dice"]])
+            if include_hnas and dataset in self._hnas_datasets:
+                hnas_data = self.get_hnas_data(dataset)
+                incumbent = pd.concat([incumbent, hnas_data.incumbents["1 - Dice"]])
 
             incumbent.loc[:, "1 - Dice"] *= 100
 
@@ -894,9 +966,16 @@ class Plotter:
     def _plot_nas_(
             self,
             dataset: str,
+            approach_key: str,
             show_configs: bool = True,
         ) -> None:
-        nas_data = self.get_nas_data(dataset)
+        if approach_key == "hpo_nas":
+            nas_data = self.get_nas_data(dataset)
+        elif approach_key == "hpo_hnas":
+            nas_data = self.get_hnas_data(dataset)
+        else:
+            raise ValueError(f"Unknown approach key {approach_key}.")
+        
         baseline_data = self.get_baseline_data(dataset)
 
         fig, ax = plt.subplots(1, 1, figsize=(5.5, 4.5))
@@ -990,8 +1069,12 @@ class Plotter:
             frameon=False
         )
         plt.tight_layout()
+        if approach_key == "hpo_nas":
+            dir = self.nas_plots
+        else:
+            dir = self.hnas_plots
         plt.savefig(
-            self.nas_plots / f"{dataset}_{self.configuration}{'_nas' if show_configs else '_nas_no_configs'}.png",
+            dir / f"{dataset}_{self.configuration}{f'_nas' if show_configs else f'_nas_no_configs'}.png",
             dpi=400
         )
 
@@ -999,6 +1082,7 @@ class Plotter:
 
     def plot_nas_combined(
             self,
+            approach_key: str,
             x_log_scale: bool = False,
             y_log_scale: bool = False
         ) -> None:
@@ -1016,7 +1100,12 @@ class Plotter:
         max_approaches_ax = axes[0]
 
         for ax, dataset in zip(axes, self._hpo_datasets, strict=False):
-            nas_data = self.get_nas_data(dataset)
+            if approach_key == "hpo_nas":
+                nas_data = self.get_nas_data(dataset)
+            elif approach_key == "hpo_hnas":
+                nas_data = self.get_hnas_data(dataset)
+            else:
+                raise ValueError(f"Unknown approach key {approach_key}.")
             baseline_data = self.get_baseline_data(dataset)
 
             n_baseline_approaches = 0
@@ -1087,18 +1176,21 @@ class Plotter:
             frameon=False
         )
 
-        # plt.tight_layout()
+        if approach_key == "hpo_nas":
+            dir = self.nas_plots
+        else:
+            dir = self.hnas_plots
         plt.savefig(
-            self.nas_plots / "nas_combined.png",
+            dir / f"nas_combined.png",
             dpi=400
         )
 
         plt.clf()
 
-    def plot_nas(self, **kwargs) -> None:
+    def plot_nas(self, approach_key: str, **kwargs) -> None:
         for dataset in self._nas_datasets:
             try:
-                self._plot_nas_(dataset, **kwargs)
+                self._plot_nas_(dataset, approach_key=approach_key, **kwargs)
             except ValueError as e:
                 self.logger.error(e)
                 self.logger.info(f"Unable to plot NAS for {dataset}.")
@@ -1199,9 +1291,10 @@ class Plotter:
     def compute_emissions(self):
         baseline_emissions = self._baseline_data.emissions[["run_id", "Approach", "Fold", "Dataset", "emissions"]]
         hpo_emissions = self._hpo_data.emissions[["run_id", "Approach", "Fold", "Dataset", "emissions"]]
-        nas_emissions = self._hpo_data.emissions[["run_id", "Approach", "Fold", "Dataset", "emissions"]]
+        nas_emissions = self._nas_data.emissions[["run_id", "Approach", "Fold", "Dataset", "emissions"]]
+        hnas_emissions = self._hnas_data.emissions[["run_id", "Approach", "Fold", "Dataset", "emissions"]]
 
-        emissions = pd.concat([baseline_emissions, hpo_emissions, nas_emissions])
+        emissions = pd.concat([baseline_emissions, hpo_emissions, nas_emissions, hnas_emissions])
         emissions["Dataset"] = emissions["Dataset"].apply(format_dataset_name)
         emissions_per_dataset = emissions.groupby(["Dataset", "Approach"])["emissions"].sum().reset_index()
 
@@ -1218,7 +1311,6 @@ class Plotter:
     def create_table(self, datasets: list[str]):
         baseline = self._load_baseline_data(datasets=datasets)
         hpo = self._load_hpo_data(datasets=datasets)
-        self._load_nas_data(datasets=datasets)
 
         sys.exit()
 
@@ -1488,3 +1580,14 @@ class Plotter:
             plt.tight_layout()
             plt.savefig(output_dir / f"{dataset}_label.png", dpi=500)
             plt.close()
+
+    def _plot_footprint(self, dataset: str, approach: str, objective: str):
+        deepcave_run = self._hpo_data.deepcave_runs[dataset]
+
+        fp = Footprint(
+            run=deepcave_run
+        )
+
+        fp.calculate()
+
+       

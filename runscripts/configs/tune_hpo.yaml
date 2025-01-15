@@ -23,6 +23,8 @@ hydra:
     loading_variable: load
     saving_variable: save
     sweeper_kwargs:
+      env_vars: 
+        NEPS_LOG_DIR: ${hydra.run.dir}
       checkpoint_tf: true
       load_tf: true
       checkpoint_path_typing: ""
@@ -54,8 +56,8 @@ hydra:
           sample_default_first: True
           sample_default_at_target: True
   run:  
-    dir: output/prior_band/${dataset.name}/${trainer.configuration}/${neps_seed}
+    dir: output/hpo/${dataset.name}/${trainer.configuration}/${neps_seed}
   sweep:
-    dir: output/prior_band/${dataset.name}/${trainer.configuration}/${neps_seed}
+    dir: output/hpo/${dataset.name}/${trainer.configuration}/${neps_seed}
   job:
     chdir: true

@@ -111,9 +111,10 @@ class AutoNNUNetTrainer(nnUNetTrainer):
                                "That should not happen.")
 
     def build_cfg_unet_architecture(self) -> nn.Module:
+        string_tree = str(self.hp_config.architecture).replace("'", "")
         return CFGUNet(
             hp_config=self.hp_config,
-            string_tree=str(self.hp_config.architecture).replace("'", ""),
+            string_tree=string_tree,
             arch_init_kwargs=self.configuration_manager.network_arch_init_kwargs,
             arch_kwargs_req_import=self.configuration_manager.network_arch_init_kwargs_req_import,
             num_input_channels=self.num_input_channels,

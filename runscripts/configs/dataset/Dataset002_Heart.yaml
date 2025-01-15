@@ -2,3 +2,4 @@ _target_: automis.datasets.msd_dataset.MSDDataset
 name: Dataset002_Heart
 runtime_min: 446
 runtime_min_nas: 1700
+default_n_stages: 6
