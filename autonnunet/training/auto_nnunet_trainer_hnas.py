@@ -126,11 +126,17 @@ class AutoNNUNetTrainer(nnUNetTrainer):
     def from_config(cfg: DictConfig) -> AutoNNUNetTrainer:
         preprocessed_dataset_folder_base = NNUNET_PREPROCESSED / cfg.dataset.name
         dataset_json = load_json(preprocessed_dataset_folder_base / "dataset.json")
-        plans = plan_experiment(
-            dataset_name=cfg.dataset.name,
-            plans_name=cfg.trainer.plans_identifier,
-            hp_config=cfg.hp_config,
-        )
+
+        if "hp_config.encoder_type" in cfg.search_space.hyperparameters:
+            # We only use this for HPO + NAS
+            plans = plan_experiment(
+                dataset_name=cfg.dataset.name,
+                plans_name=cfg.trainer.plans_identifier,
+                hp_config=cfg.hp_config,
+            )
+        else:
+            # For HPO and HPO + HNAS we can use the default plans
+            plans = load_json(preprocessed_dataset_folder_base / f"{cfg.trainer.plans_identifier}.json")
 
         nnunet_trainer = AutoNNUNetTrainer(
             plans=plans,
@@ -156,8 +162,9 @@ class AutoNNUNetTrainer(nnUNetTrainer):
 
                 nnunet_trainer.load_checkpoint(str(load_path_final))
 
-        # Even if we continue another training run in HyperBand, we want to load the
+        # Even if we continue another training run in succesive halving, we want to load the
         # latest checkpoint in the current directory as this is based on the previous run
+        # which has been initially loaded from the checkpoint already
         if cfg.pipeline.continue_training and Path("./checkpoint_latest.pth").exists():
             nnunet_trainer.load_checkpoint("checkpoint_latest.pth")
 
