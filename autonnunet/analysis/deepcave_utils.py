@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 import yaml
 from ConfigSpace import CategoricalHyperparameter as Categorical
-from ConfigSpace import Configuration, ConfigurationSpace, EqualsCondition
+from ConfigSpace import Configuration, ConfigurationSpace, EqualsCondition, AndConjunction
 from ConfigSpace import UniformFloatHyperparameter as Float
 from ConfigSpace import UniformIntegerHyperparameter as Integer
 from deepcave.runs.converters.deepcave import DeepCAVERun
@@ -110,17 +110,26 @@ def extract_architecture_features(string_tree: str) -> dict:
 def row_to_config(row: pd.Series, config_space: ConfigurationSpace) -> Configuration:
     values = {}
 
+    # We need to manually collect the hyperparameter configuraiton
+    # from the corresponding row in the runhistory
     for name, value in row.items():
         name = format_hp_name(str(name))
         if name in list(config_space.keys()):
             values[name] = value
 
+    # To match the config space, we need to pretend
+    # that the learning rate was not sampled
     if values["optimizer"] != "SGD":
         values.pop("momentum")
 
     if "architecture" in row:
+        # This means were in HPO + HNAS
         architecture_features = extract_architecture_features(row["architecture"])
         values.update(architecture_features)
+
+        # To match the config space, we need to pretend that the dropout rate was not sampled
+        if values["encoder_dropout"] != "dropout" and values["decoder_dropout"] != "dropout":
+            values.pop("dropout_rate")
 
     origin = ORIGIN_MAP[row["Config Origin"]] if "Config Origin" in row else None
 
@@ -205,6 +214,22 @@ def get_extended_hnas_config_space(
         ),
     ])
 
+    # We need to ensure that the dropout rate is only active if dropout is enabled
+    config_space.add(
+        AndConjunction(
+            EqualsCondition(
+                child=config_space["dropout_rate"],
+                parent=config_space["encoder_dropout"],
+                value="dropout"
+            ),
+            EqualsCondition(
+                child=config_space["dropout_rate"],
+                parent=config_space["decoder_dropout"],
+                value="dropout"
+            )
+        ),
+    )
+        
     return config_space
 
 

@@ -409,12 +409,12 @@ class Plotter:
 
     def _load_incumbent(
             self,
-            run_dir: Path,
+            run_path: Path,
             filename: str = INCUMBENT_FILENAME,
             objective: str = "o0_loss"
         ) -> pd.DataFrame:
-        incumbent = pd.read_csv(run_dir / filename)
-        history = pd.read_csv(run_dir / HISTORY_FILENAME)
+        incumbent = pd.read_csv(run_path / filename)
+        history = pd.read_csv(run_path / HISTORY_FILENAME)
 
         # Since we run succesive halving, we have to insert the real
         # budget of a run by subtracting the budget of the previous run
@@ -428,6 +428,7 @@ class Plotter:
 
         assert len(incumbent) == len(history)
 
+        # Now we exapand the incumbent to have one row per fold
         incumbent_expanded = []
         for _, row in incumbent.iterrows():
             for fold, performance_key in enumerate(
@@ -439,6 +440,7 @@ class Plotter:
 
                 row_data = {
                     "Run ID": row["run_id"],
+                    "Configuration ID": row["config_id"],
                     "1 - Dice": performance,
                     "Budget": row["budget"],
                     "Fold": fold,
@@ -450,36 +452,48 @@ class Plotter:
 
         incumbent = pd.DataFrame(incumbent_expanded)
 
-        # Used budget is the cumulative sum of all additional budgets
-        # Since one training consists of N_FOLDS, we divide by N_FOLDS
+        # In addition to the hypersweeper incubment, we also log the
+        # config origins manually in NePS. Now we want to merge them
+        if origins := self._load_sampling_policy(run_path / SAMPLING_POLICY_LOGS):
+            incumbent.loc[:, "Config Origin"] = ""   
+            for run_id, origin in origins.items():
+                incumbent.loc[incumbent["Configuration ID"] == run_id, "Config Origin"] = origin    
+
         incumbent["Full Model Trainings"] = incumbent["Real Budget Used"] / self.max_budget
 
         return incumbent
     
-    def _load_sampling_policy(self, log_path: Path) -> list[str]:
+    def _load_sampling_policy(self, log_path: Path) -> dict[int, str] | None:
+        if not log_path.exists():
+            return None
+        
         with open(log_path, "r") as file:
             lines = file.readlines()
 
         lines = [line.strip() for line in lines]
 
-        return lines
+        # In case the optimization was re-run due to some job crashes,
+        # we only keep the origins from the last full run
+        if len(lines) > 128:
+            lines = lines[-128:]
+
+        origins = {i + 1: origin for i, origin in enumerate(lines)}
+        origins[0] = "default"
+
+        return origins
 
     def _load_history(self, run_path: Path) -> pd.DataFrame:
         history = pd.read_csv(run_path / HISTORY_FILENAME)
+        history = history.rename(columns=HISTORY_REPLACEMENT_MAP)
 
-        sample_policy_path = run_path / SAMPLING_POLICY_LOGS
-        if sample_policy_path.exists():
-            # Read the sampling policy containing config origins
-            config_origins = self._load_sampling_policy(sample_policy_path)
+        # In addition to the hypersweeper history, we also log the
+        # config origins manually in NePS. Now we want to merge them
+        if origins := self._load_sampling_policy(run_path / SAMPLING_POLICY_LOGS):
+            history.loc[:, "Config Origin"] = ""   
+            for run_id, origin in origins.items():
+                history.loc[history["Configuration ID"] == run_id, "Config Origin"] = origin    
 
-            if len(config_origins) == len(history):
-                # We did not start with the default config
-                history["Config Origin"] = config_origins
-            elif len(config_origins) == len(history) - 1:
-                # We started with the default config
-                history["Config Origin"] = ["default"] + config_origins                
-
-        return history.rename(columns=HISTORY_REPLACEMENT_MAP)
+        return history
 
     def _load_nas_data(self, datasets: list[str], approach_key: str) -> NASResult:
         all_emissions = []
@@ -517,7 +531,7 @@ class Plotter:
                 obj_name = f"o{i}_{OBJECTIVES_MAPPING[objective]}"
 
                 incumbent = self._load_incumbent(
-                    run_dir=nas_run_dir,
+                    run_path=nas_run_dir,
                     filename=incumbent_filename,
                     objective=obj_name
                 )
@@ -598,7 +612,7 @@ class Plotter:
             )
 
             incumbent = self._load_incumbent(
-                run_dir=hpo_run_dir
+                run_path=hpo_run_dir
             )
             incumbent["Dataset"] = dataset
             incumbent["Approach"] = approach
@@ -699,7 +713,7 @@ class Plotter:
         if include_nas and dataset in self._nas_datasets:
             nas_data = self.get_nas_data(dataset)
             incumbent = pd.concat([incumbent, nas_data.incumbents["1 - Dice"]])
-        if include_nas and dataset in self._nas_datasets:
+        if include_hnas and dataset in self._hnas_datasets:
             hnas_data = self.get_hnas_data(dataset)
             incumbent = pd.concat([incumbent, hnas_data.incumbents["1 - Dice"]])
 
@@ -898,10 +912,11 @@ class Plotter:
                 approach = hpo_approaches[i]
                 grouped_approach = incumbent[incumbent["Approach"] == approach].groupby("Full Model Trainings")
                 last_value = grouped_approach["1 - Dice"].mean().iloc[-1]
+                last_x = grouped_approach["Full Model Trainings"].mean().iloc[-1]
 
                 color = sns.color_palette()[3 + i]
                 ax.scatter(
-                    self.n_full_trainings,
+                    last_x,
                     last_value,
                     color=color,
                     zorder=5,

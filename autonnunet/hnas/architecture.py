@@ -82,8 +82,8 @@ def get_architecture(n_stages: int) -> neps.CFGArchitectureParameter: # type: ig
 
 
 def get_default_architecture(n_stages: int) -> str:
-    encoder_blocks_and_stages = ', '.join([f'({_n}EB, 2b), down' for _n in range(1, n_stages)]) + f", ({n_stages}EB, 2b)"
-    decoder_blocks_and_stages = ', '.join([f'up, ({_n}DB, 2b)' for _n in range(1, n_stages)])
+    encoder_blocks_and_stages = ', '.join([f'({_n}EB 2b) down' for _n in range(1, n_stages)]) + f", ({n_stages}EB 2b)"
+    decoder_blocks_and_stages = ', '.join([f'up ({_n}DB 2b)' for _n in range(1, n_stages)])
 
     arch = f"(S unet ({n_stages}E conv_encoder (ENORM instance_norm) (ENONLIN leaky_relu) (EDROPOUT no_dropout) {encoder_blocks_and_stages}) ({n_stages}D conv_decoder (DNORM instance_norm) (DNONLIN leaky_relu) (DDROPOUT no_dropout) {decoder_blocks_and_stages}))"
 
