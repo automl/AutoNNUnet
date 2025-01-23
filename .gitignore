@@ -135,6 +135,7 @@ output/hpo_nas
 output/hpo_hnas
 output/hpo_bkp
 output/deepcave_logs
+output/deepcave_cache
 output/baseline_ConvolutionalEncoder
 output/baseline_ResidualEncoderM
 output/baseline_ResidualEncoderL

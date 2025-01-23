@@ -5,16 +5,11 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import logging
-import shutil
 import sys
-import os
 from pathlib import Path
 from typing import TYPE_CHECKING
-import time
-
 import hydra
 import torch
-from codecarbon import OfflineEmissionsTracker
 
 if TYPE_CHECKING:
     from omegaconf import DictConfig
@@ -22,12 +17,6 @@ if TYPE_CHECKING:
 
 @hydra.main(version_base=None, config_path="configs", config_name="train")
 def run(cfg: DictConfig):
-    # --------------------------------------------------------------------------------------------
-    # GENERAL SETUP
-    # --------------------------------------------------------------------------------------------
-    # We have to do lazy imports here to make everything pickable for SLURM.
-    # Also, we need to ensure that environment variables are set
-    # before importing AutoNNUNet
     from autonnunet.training import AutoNNUNetTrainer
 
     logger = logging.getLogger()

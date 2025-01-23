@@ -84,6 +84,7 @@ class AutoNNUNetTrainer(nnUNetTrainer):
 
             if "architecture" in self.hp_config:
                 self.network = self.build_cfg_unet_architecture().to(self.device)
+                logging.getLogger("Trainer").info(f"Using architecture: {self.network.__class__.__name__}")
             else:
                 self.network = self.build_network_architecture(
                     self.configuration_manager.network_arch_class_name,
@@ -127,15 +128,19 @@ class AutoNNUNetTrainer(nnUNetTrainer):
         preprocessed_dataset_folder_base = NNUNET_PREPROCESSED / cfg.dataset.name
         dataset_json = load_json(preprocessed_dataset_folder_base / "dataset.json")
 
-        if "hp_config.encoder_type" in cfg.search_space.hyperparameters:
-            # We only use this for HPO + NAS
+        if "architecture" in cfg.hp_config:
+            if "conv_encoder" in cfg.hp_config.architecture:
+                cfg.hp_config.encoder_type = "ConvolutionalEncoder"
+            else:
+                cfg.hp_config.encoder_type = "ResidualEncoderM"
+        
+        if "encoder_type" in cfg.hp_config:
             plans = plan_experiment(
                 dataset_name=cfg.dataset.name,
                 plans_name=cfg.trainer.plans_identifier,
                 hp_config=cfg.hp_config,
             )
         else:
-            # For HPO and HPO + HNAS we can use the default plans
             plans = load_json(preprocessed_dataset_folder_base / f"{cfg.trainer.plans_identifier}.json")
 
         nnunet_trainer = AutoNNUNetTrainer(

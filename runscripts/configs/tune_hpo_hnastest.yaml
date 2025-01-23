@@ -1,3 +1,4 @@
+# @package _global_
 defaults:
   - _self_
   - base
@@ -8,24 +9,23 @@ defaults:
 
 neps_seed: 0
 
-architecture: dummy
+architecture: (S unet (7E res_encoder (ENORM instance_norm) (ENONLIN leaky_relu) (EDROPOUT
+  no_dropout) (1REB 1b) down (2REB 4b) down (3REB 8b) down (4REB 8b) down (5REB 6b)
+  down (6REB 4b) down (7REB 4b)) (7D conv_decoder (DNORM instance_norm) (DNONLIN prelu)
+  (DDROPOUT dropout) up (1DB 2b) up (2DB 2b) up (3DB 2b) up (4DB 3b) up (5DB 1b) up
+  (6DB 2b)))
 
 hp_config:
-  # Fidelity
-  num_epochs: 1000
+  num_epochs: 12.345679012345677
   total_epochs: 1000
-
-  # Base Hyperparameters
-  optimizer: SGD
-  momentum: 0.99
-  initial_lr: 1e-2
-  weight_decay: 3e-5
-  lr_scheduler: PolyLRScheduler
-  oversample_foreground_percent: 0.33
+  optimizer: AdamW
+  momentum: 0.8411827156417522
+  initial_lr: 0.0031615003563072743
+  weight_decay: 2.9522869844756197e-05
+  lr_scheduler: None
+  oversample_foreground_percent: 0.00013327515718930538
   loss_function: DiceAndCrossEntropyLoss
-  aug_factor: 1.
-
-  # Fine-grained data augmentation
+  aug_factor: 1.2776741384729031
   aug_scale_prob: 0.2
   aug_rotate_prob: 0.2
   aug_gaussian_noise_prob: 0.1
@@ -35,11 +35,14 @@ hp_config:
   aug_lowres_prob: 0.25
   aug_gamma_1_prob: 0.1
   aug_gamma_2_prob: 0.3
-
-  # HNAS
   architecture: ${architecture}
-  base_num_features: 32
-  max_features: 320
+  base_num_features: 60
+  max_features: 370
+  encoder_type: ConvolutionalEncoder
+  activation: LeakyReLU
+  dropout_rate: 0.26618207735809685
+  model_scale: 1
+  normalization: InstanceNorm
 
 # HPO configuration
 min_budget: 10    # Minimum number of epochs
@@ -110,8 +113,8 @@ hydra:
           sample_default_first: True
           sample_default_at_target: True
   run:  
-    dir: output/hpo_hnas/${dataset.name}/${trainer.configuration}/${neps_seed}
+    dir: output/hpo_hnas_test/${dataset.name}/${trainer.configuration}/${neps_seed}
   sweep:
-    dir: output/hpo_hnas/${dataset.name}/${trainer.configuration}/${neps_seed}
+    dir: output/hpo_hnas_test/${dataset.name}/${trainer.configuration}/${neps_seed}
   job:
     chdir: true

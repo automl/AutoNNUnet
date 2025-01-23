@@ -7,7 +7,7 @@ warnings.filterwarnings("ignore")
 import argparse
 from autonnunet.datasets import ALL_DATASETS
 
-from autonnunet.evaluation import run_prediction, extract_incumbent, compress_msd_submission
+from autonnunet.evaluation import  extract_incumbent
 import logging
 
 
@@ -18,11 +18,11 @@ if __name__  == "__main__":
     argparser.add_argument("--hpo_seed", type=int, default=0)
     args = argparser.parse_args()
 
-    logger = logging.getLogger("Prediction")
+    logger = logging.getLogger("Incumbent Extractor")
     logger.setLevel(logging.INFO)
-    logger.info("Starting MSD evaluation.")
 
     for dataset_name in ALL_DATASETS:
+        logger.info(f"Extracting incumbent configuration for {args.approach} {dataset_name}.")
         extract_incumbent(
             dataset_name=dataset_name,
             approach=args.approach,

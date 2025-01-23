@@ -88,7 +88,8 @@ class CFGUNet(nn.Module):
             if isinstance(b, str):
                 continue
             else:
-                blocks_per_stage.append(int(b[1][0]))
+                n_blocks = int(b[1].replace("b", ""))
+                blocks_per_stage.append(n_blocks)
         result["n_blocks_per_stage"] = blocks_per_stage
 
         return result

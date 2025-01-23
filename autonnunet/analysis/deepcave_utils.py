@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 import yaml
 from ConfigSpace import CategoricalHyperparameter as Categorical
-from ConfigSpace import Configuration, ConfigurationSpace, EqualsCondition, AndConjunction
+from ConfigSpace import Configuration, ConfigurationSpace, EqualsCondition, OrConjunction
 from ConfigSpace import UniformFloatHyperparameter as Float
 from ConfigSpace import UniformIntegerHyperparameter as Integer
 from deepcave.runs.converters.deepcave import DeepCAVERun
@@ -17,13 +17,8 @@ from autonnunet.hnas.unet import CFGUNet
 if TYPE_CHECKING:
     import pandas as pd
 
-ORIGIN_MAP = {
-    "incubment": "Incubmnt-based Sampling",
-    "random": "Random Sampling",
-    "prior": "Prior-based Sampling",
-}
-
-MAX_BLOCKS_PER_STAGE = 6
+MAX_BLOCKS_PER_STAGE_ENCODER = 12
+MAX_BLOCKS_PER_STAGE_DECODER = 4
 
 def format_hp_name(name: str) -> str:
     return name.split(".")[-1]
@@ -97,7 +92,6 @@ def extract_architecture_features(string_tree: str) -> dict:
         "encoder_dropout": encoder_cfg["dropout"],
         "encoder_depth": sum(encoder_cfg["n_blocks_per_stage"][:-1]),
 
-        "decoder_type": decoder_cfg["network_type"],
         "decoder_norm": decoder_cfg["norm"],
         "decoder_nonlin": decoder_cfg["nonlin"],
         "decoder_dropout": decoder_cfg["dropout"],
@@ -131,7 +125,7 @@ def row_to_config(row: pd.Series, config_space: ConfigurationSpace) -> Configura
         if values["encoder_dropout"] != "dropout" and values["decoder_dropout"] != "dropout":
             values.pop("dropout_rate")
 
-    origin = ORIGIN_MAP[row["Config Origin"]] if "Config Origin" in row else None
+    origin = row["Config Origin"] if "Config Origin" in row else None
 
     return Configuration(
         configuration_space=config_space,
@@ -176,14 +170,8 @@ def get_extended_hnas_config_space(
         Integer(
             name="encoder_depth",
             lower=1,
-            upper=MAX_BLOCKS_PER_STAGE * (default_features["n_stages"] - 1),
+            upper=MAX_BLOCKS_PER_STAGE_ENCODER * (default_features["n_stages"] - 1),
             default_value=default_features["encoder_depth"],
-        ),
-
-        Categorical(
-            name="decoder_type",
-            choices=["conv_decoder", "res_decoder"],
-            default_value=default_features["decoder_type"],
         ),
         Categorical(
             name="decoder_norm",
@@ -203,20 +191,20 @@ def get_extended_hnas_config_space(
         Integer(
             name="decoder_depth",
             lower=1,
-            upper=MAX_BLOCKS_PER_STAGE * (default_features["n_stages"] - 1),
+            upper=MAX_BLOCKS_PER_STAGE_DECODER * (default_features["n_stages"] - 1),
             default_value=default_features["decoder_depth"],
         ),
         Integer(
             name="bottleneck_depth",
             lower=1,
-            upper=MAX_BLOCKS_PER_STAGE,
+            upper=MAX_BLOCKS_PER_STAGE_ENCODER,
             default_value=default_features["bottleneck_depth"],
         ),
     ])
 
     # We need to ensure that the dropout rate is only active if dropout is enabled
     config_space.add(
-        AndConjunction(
+        OrConjunction(
             EqualsCondition(
                 child=config_space["dropout_rate"],
                 parent=config_space["encoder_dropout"],
@@ -233,14 +221,14 @@ def get_extended_hnas_config_space(
     return config_space
 
 
-def runhistory_to_deepcave(dataset: str, history: pd.DataFrame, approach: str) -> DeepCAVERun:
+def runhistory_to_deepcave(dataset: str, history: pd.DataFrame, approach_key: str) -> DeepCAVERun:
     save_path = Path("./output/deepcave_logs").resolve()
-    prefix = f"{dataset}_{approach}"
+    prefix = f"{dataset}_{approach_key}"
 
     if (save_path / prefix).exists():
         return DeepCAVERun.from_path(save_path / prefix)
 
-    config_space_path = Path(f"./runscripts/configs/search_space/{approach}.yaml").resolve()
+    config_space_path = Path(f"./runscripts/configs/search_space/{approach_key}.yaml").resolve()
     config_space = yaml_to_configspace(config_space_path)
 
     if "architecture" in history.columns:
@@ -273,8 +261,6 @@ def runhistory_to_deepcave(dataset: str, history: pd.DataFrame, approach: str) -
     else:
         objectives = [dice_objective]
 
-    runtime_objective = Objective("Runtime", lower=0, optimize="lower")
-
     with Recorder(
         configspace=config_space,
         objectives=objectives,
@@ -284,13 +270,18 @@ def runhistory_to_deepcave(dataset: str, history: pd.DataFrame, approach: str) -
     ) as r:
         for _, run in history.iterrows():
             config = row_to_config(run, config_space)
-            
-            for fold in range(5):
-                r.start(config=config, budget=run["Budget"], seed=fold)
-                costs = [run[f"o0_loss_fold_{fold}"]]
-                if len(objectives) > 1:
-                    costs.append(run[f"o1_runtime_fold_{fold}"])
-                r.end(config=config, costs=costs, budget=run["Budget"], seed=fold)      # type: ignore
+
+            # for fold in range(5):
+            #     r.start(config=config, budget=run["Budget"], seed=fold, origin=config.origin)
+            #     costs = [run[f"o0_loss_fold_{fold}"]]
+            #     if len(objectives) > 1:
+            #         costs.append(run[f"o1_runtime_fold_{fold}"])
+            #     r.end(config=config, costs=costs, budget=run["Budget"], seed=fold)      # type: ignore
+            r.start(config=config, budget=run["Budget"], origin=config.origin)
+            costs = [run[f"1 - Dice"]]
+            if len(objectives) > 1:
+                costs.append(run[f"Runtime"])
+            r.end(config=config, costs=costs, budget=run["Budget"])      # type: ignore
 
     return DeepCAVERun.from_path(save_path / prefix)
 

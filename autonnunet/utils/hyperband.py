@@ -69,7 +69,7 @@ def compute_hyperband_budgets(
         eta: int,
         n_stages: int | None = None,
         print_output: bool = True,
-        sample_default_at_target: bool = False
+        sample_default_at_target: bool = False,
     ) -> tuple[dict[int, list], dict[int, list], dict[int, list], int, float, float]:
     s_max, n_configs_in_stage, budgets_in_stage = compute_hyperband_brackets(b_min, b_max, eta)
 
@@ -79,15 +79,19 @@ def compute_hyperband_budgets(
     total_trials = 0
     total_configs = 0
 
-    # Real budgets using checkpointing
-    real_budgets_in_stage = {}
-    for i in range(len(budgets_in_stage)):
-        # First budgets stays the same
-        real_budgets_in_stage[i] = [budgets_in_stage[i][0]]
+    epochs_in_stage = {}
 
-        for prev_budget, budget in zip(budgets_in_stage[i][:-1], budgets_in_stage[i][1:], strict=False):
+    # Real budgets using checkpointing
+    real_epochs_in_stage = {}
+    for i in range(len(budgets_in_stage)):
+        epochs_in_stage[i] = [round(b) for b in budgets_in_stage[i]]
+
+        # First budgets stays the same
+        real_epochs_in_stage[i] = [epochs_in_stage[i][0]]
+
+        for epochs, prev_epochs in zip(epochs_in_stage[i][:-1], epochs_in_stage[i][1:], strict=False):
             # We only train the difference
-            real_budgets_in_stage[i].append(budget - prev_budget)
+            real_epochs_in_stage[i].append(prev_epochs - epochs)
 
     # Now select how many stages we want
     if n_stages is None:
@@ -97,15 +101,16 @@ def compute_hyperband_budgets(
         # We start by evaluationg the default configuration
         n_configs_in_stage[0] = [1] + n_configs_in_stage[0]
         budgets_in_stage[0] = [b_max] + budgets_in_stage[0]
-        real_budgets_in_stage[0] = [b_max] + real_budgets_in_stage[0]
+        real_epochs_in_stage[0] = [b_max] + real_epochs_in_stage[0]
 
     for i in range(n_stages):
         configs_list = "[" + ", ".join([str(c).rjust(8) for c in n_configs_in_stage[i]]) + "]"
-        budgets_list = "[" + ", ".join([str(round(b, 3)).rjust(8) for b in budgets_in_stage[i]]) + "]"
-        real_budgets_list = "[" + ", ".join([str(round(b, 3)).rjust(8) for b in real_budgets_in_stage[i]]) + "]"
+        budgets_list = "[" + ", ".join([str(round(b, 2)).rjust(8) for b in budgets_in_stage[i]]) + "]"
+        epochs_list = "[" + ", ".join([str(round(b, 2)).rjust(8) for b in epochs_in_stage[i]]) + "]"
+        real_epochs_list = "[" + ", ".join([str(round(b, 2)).rjust(8) for b in real_epochs_in_stage[i]]) + "]"
 
         stage_budget = sum([n * b for n, b in zip(n_configs_in_stage[i], budgets_in_stage[i], strict=False)])
-        stage_real_budget = sum([n * b for n, b in zip(n_configs_in_stage[i], real_budgets_in_stage[i], strict=False)])
+        stage_real_budget = sum([n * b for n, b in zip(n_configs_in_stage[i], real_epochs_in_stage[i], strict=False)])
 
         total_trials += sum(n_configs_in_stage[i])
 
@@ -121,10 +126,11 @@ def compute_hyperband_budgets(
 
         if print_output:
             print("-" * 80)
-            print(f"Stage {i}: Budget {round(stage_budget, 3)}, Real Budget {round(stage_real_budget, 3)}")
+            print(f"Stage {i}: Budget {round(stage_budget, 2)}, Real Budget {round(stage_real_budget, 2)}")
             print(f"  #Configs:     {configs_list}")
             print(f"  Budgets:      {budgets_list}")
-            print(f"  Real Budgets: {real_budgets_list}")
+            print(f"  Epochs:       {epochs_list}")
+            print(f"  Real Epochs:  {real_epochs_list}")
             print("-" * 80)
 
     if print_output:
@@ -134,7 +140,7 @@ def compute_hyperband_budgets(
         print("Total budget: ", total_budget)
         print("Total real budget: ", total_real_budget)
 
-    return n_configs_in_stage, budgets_in_stage, real_budgets_in_stage, total_trials, total_budget, total_real_budget
+    return n_configs_in_stage, budgets_in_stage, real_epochs_in_stage, total_trials, total_budget, total_real_budget
 
 
 def get_budget_per_config(
