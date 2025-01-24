@@ -1,0 +1,9 @@
+[submodule "submodules/nnUNet"]
+	path = submodules/nnUNet
+	url = https://github.com/becktepe/nnUNet.git
+[submodule "submodules/batchgenerators"]
+	path = submodules/batchgenerators
+	url = https://github.com/becktepe/batchgenerators.git
+[submodule "submodules/Medical-SAM2"]
+	path = submodules/Medical-SAM2
+	url = https://github.com/becktepe/Medical-SAM2
