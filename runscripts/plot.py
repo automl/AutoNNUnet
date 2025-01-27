@@ -1,16 +1,11 @@
 from __future__ import annotations
 
-import argparse
 import logging
 
 from autonnunet.analysis.plotter import Plotter
 from autonnunet.datasets import ALL_DATASETS
 
 if __name__  == "__main__":
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument("--configuration", type=str, default="3d_fullres")
-    args = argparser.parse_args()
-
     logger = logging.getLogger(__name__)
     logging.basicConfig(level=logging.INFO)
 
@@ -18,47 +13,58 @@ if __name__  == "__main__":
         datasets=ALL_DATASETS,
         format="pdf",
     )
-    # plotter.create_emissions_table()
-    plotter.plot_baselines()
-    exit()
-    # plotter.compare_msd_results()
-    # plotter.plot_msd_overview()
 
-    # plotter.plot_ablation_paths(budget_idx=-1)
-    # plotter.plot_pdp(
-    #     dataset="Dataset004_Hippocampus",
-    #     approach_key="hpo",
-    #     hp_name_1="aug_factor",
-    #     hp_name_2="weight_decay",
-    # )
-    # plotter.plot_pdp(
-    #     dataset="Dataset004_Hippocampus",
-    #     approach_key="hpo",
-    #     hp_name_1="aug_factor",
-    # )
-    # plotter._plot_optimization(
-    #     dataset="Dataset005_Prostate",
-    # )
-    # plotter._plot_nas_budgets(dataset="Dataset004_Hippocampus", approach_key="hpo_nas")
-    # plotter._plot_nas_origins(dataset="Dataset004_Hippocampus", approach_key="hpo_nas")
-    # plotter.plot_nas_origins(approach_key="hpo_nas")
-    # plotter.plot_nas_budgets(approach_key="hpo_nas")
-    exit()
-    # plotter.plot_hpo_combined(include_nas=True, include_hnas=True, show_error=False)
-    # plotter.plot_footprints()
-    # plotter.plot_ablation_paths()
-    # plotter.plot_hpis()
-    # plotter.plot_nas(show_configs=False)
-    # plotter._plot_nas2_("Dataset004_Hippocampus", show_configs=False)
-    # plotter.plot_hpo_combined(show_error=False)
-    plotter.plot_hpo_combined(include_nas=True, include_hnas=True, show_error=False)
-    plotter.plot_nas_combined()
-    # plotter.plot_hyperparameter_importances(budget="combined")
-    # plotter.plot_hpo()
-    plotter.plot_nas(approach_key="hpo_hnas", show_configs=True)
-    plotter.plot_nas(approach_key="hpo_hnas", show_configs=False)
-    # plotter.plot_hpo(include_nas=True)
-    # plotter.plot_hpo(include_nas=False)
-    # plotter.compute_emissions() 
-    # plotter.plot_baseline_runtimes()
-    # plotter.plot_baseline_performances_and_runtimes()
+    # --------------------------------------------------------------------------------------------
+    # Baselines
+    # --------------------------------------------------------------------------------------------
+    # TODO add MedSam-2
+    plotter.plot_baselines()        # Baselines performance over time
+
+    # --------------------------------------------------------------------------------------------
+    # Overview / Comparison
+    # --------------------------------------------------------------------------------------------
+    # plotter.plot_optimization_combined()    # HPO + NAS + HNAS over time
+    # plotter.plot_nas_combined()             # NAS + HNAS Pareto front
+
+    # --------------------------------------------------------------------------------------------
+    # Overall Analysis
+    # --------------------------------------------------------------------------------------------
+    # TODO
+
+    # --------------------------------------------------------------------------------------------
+    # HPO 
+    # --------------------------------------------------------------------------------------------
+    # Results
+    plotter.plot_optimization()             # Single datasets HPO over time
+
+    # Analysis
+    plotter.plot_footprints(approach_keys=["hpo"])    # Footprints of HPO
+    plotter.plot_budget_correlations(approach_keys=["hpo"])  # Budget Correlations of HPO
+    plotter.plot_hpis(approach_keys=["hpo"])          # HPIS of HPO
+    plotter.plot_ablation_paths(approach_keys=["hpo"])  # Ablation Paths of HPO
+
+    # --------------------------------------------------------------------------------------------
+    # HPO + NAS
+    # --------------------------------------------------------------------------------------------
+    # Results
+    plotter.plot_nas_budgets(approach_key="hpo_nas")
+    plotter.plot_nas_origins(approach_key="hpo_nas")
+
+    # Analysis
+    plotter.plot_footprints(approach_keys=["hpo_nas"])    # Footprints of HPO
+    plotter.plot_budget_correlations(approach_keys=["hpo_nas"])  # Budget Correlations of HPO
+    plotter.plot_hpis(approach_keys=["hpo_nas"])          # HPIS of HPO
+    plotter.plot_ablation_paths(approach_keys=["hpo_nas"])  # Ablation Paths of HPO
+
+    # --------------------------------------------------------------------------------------------
+    # HPO + HNAS
+    # --------------------------------------------------------------------------------------------
+    # # Results
+    # plotter.plot_nas_budgets(approach_key="hpo_hnas")
+    # plotter.plot_nas_origins(approach_key="hpo_hnas")
+
+    # # Analysis
+    # plotter.plot_footprints(approach_keys=["hpo_hnas"])    # Footprints of HPO
+    # plotter.plot_budget_correlations(approach_keys=["hpo_hnas"])  # Budget Correlations of HPO
+    # plotter.plot_hpis(approach_keys=["hpo_hnas"])          # HPIS of HPO
+    # plotter.plot_ablation_paths(approach_keys=["hpo_hnas"])  # Ablation Paths of HPO

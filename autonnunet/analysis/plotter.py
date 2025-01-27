@@ -329,6 +329,8 @@ class Plotter:
         self.nas_dir = AUTONNUNET_OUTPUT / "hpo_nas"
         self.hnas_dir = AUTONNUNET_OUTPUT / "hpo_hnas"
 
+        self.combined_plots = AUTONNUNET_PLOTS / "combined"
+        self.combined_plots.mkdir(parents=True, exist_ok=True)
         self.hpo_plots = AUTONNUNET_PLOTS / "hpo"
         self.hpo_plots.mkdir(parents=True, exist_ok=True)
         self.nas_plots = AUTONNUNET_PLOTS / "hpo_nas"
@@ -338,14 +340,17 @@ class Plotter:
         self.baseline_plots = AUTONNUNET_PLOTS / "baseline"
         self.baseline_plots.mkdir(parents=True, exist_ok=True)
 
-        self.hpo_analysis_plots = AUTONNUNET_PLOTS / "hpo_analysis"
+        self.combined_analysis_plots = AUTONNUNET_PLOTS / "analysis" / "combined"
+        self.combined_analysis_plots.mkdir(parents=True, exist_ok=True)
+        self.hpo_analysis_plots = AUTONNUNET_PLOTS / "analysis" / "hpo"
         self.hpo_analysis_plots.mkdir(parents=True, exist_ok=True)
-        self.nas_analysis_plots = AUTONNUNET_PLOTS / "hpo_nas_analysis"
+        self.nas_analysis_plots = AUTONNUNET_PLOTS / "analysis" / "hpo_nas"
         self.nas_analysis_plots.mkdir(parents=True, exist_ok=True)
-        self.hnas_analysis_plots = AUTONNUNET_PLOTS / "hpo_hnas_analysis"
+        self.hnas_analysis_plots = AUTONNUNET_PLOTS / "analysis" / "hpo_hnas"
         self.hnas_analysis_plots.mkdir(parents=True, exist_ok=True)
 
         self.analysis_plots = {
+            "combined": self.combined_analysis_plots,
             "hpo": self.hpo_analysis_plots,
             "hpo_nas": self.nas_analysis_plots,
             "hpo_hnas": self.hnas_analysis_plots
@@ -1329,7 +1334,7 @@ class Plotter:
         )
 
         plt.savefig(
-            self.hpo_plots / f"hpo_combined.{self.format}" if not (include_nas or include_hnas) else self.hpo_plots / f"hpo_nas_combined.{self.format}",
+            self.combined_plots / f"performance_over_time.{self.format}",
             format=self.format,
             dpi=self.dpi
         )
@@ -1339,7 +1344,6 @@ class Plotter:
             self,
             dataset: str,
         ) -> None:
-
         fig, ax = plt.subplots(1, 1, figsize=(self.figwidth / 2, self.figwidth / 2))
 
         baseline_data = self.get_baseline_data(dataset)
@@ -1423,6 +1427,17 @@ class Plotter:
         ax.set_ylabel("Training Runtime [h]")
 
         ax.set_xscale("log")
+        from matplotlib.ticker import LogLocator, FuncFormatter
+        def scientific_e_notation_fixed(x, pos):
+            formatted = f"{x:.1e}"  # Format as scientific with 'e'
+            base, exponent = formatted.split('e')
+            return f"{base}e{int(exponent)}"  # Convert exponent to integer to remove leading zero
+
+        formatter = FuncFormatter(scientific_e_notation_fixed)
+        ax.xaxis.set_major_formatter(formatter)
+
+        # Optionally control tick locations
+        ax.xaxis.set_major_locator(LogLocator(base=10.0, subs=np.arange(1.0, 10.0) * 0.1, numticks=10))
         ax.set_yscale("log")
 
         self._format_axis(ax=ax, grid=True)
@@ -1444,7 +1459,7 @@ class Plotter:
         )
 
         plt.savefig(
-            self.nas_plots / f"{dataset}_nas_combined.{self.format}",
+            self.combined_plots / f"{dataset}_nas_combined.{self.format}",
             format=self.format,
             dpi=self.dpi
         )
@@ -1928,8 +1943,7 @@ class Plotter:
         _method = "Global" if method == "global" else "Local"
         fig.suptitle(f"{_method} MO-HPIs for HPO + {nas_approach} on {format_dataset_name(dataset)}")
         plt.grid(True)
-        output_dir = self.analysis_plots[approach_key]
-        plt.savefig(output_dir / f"{method}_mo_hpi_{dataset}.{self.format}",
+        plt.savefig(self.analysis_plots[approach_key] / f"{method}_mo_hpi_{dataset}.{self.format}",
             format=self.format,
             dpi=self.dpi
         )
