@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import time
 import hydra
 import torch
 from codecarbon import OfflineEmissionsTracker
@@ -56,9 +57,9 @@ def run(cfg: DictConfig):
         return objectives
     
     # We need to wait a bit to prevent multiple jobs from starting at the same time
-    # sleep_time = int(cfg.fold * 5)
-    # logger.info(f"Sleeping for {sleep_time} seconds")
-    # time.sleep(sleep_time)   
+    sleep_time = int(cfg.fold * 5)
+    logger.info(f"Sleeping for {sleep_time} seconds")
+    time.sleep(sleep_time)   
 
     # --------------------------------------------------------------------------------------------
     # CODECARBON SETUP
