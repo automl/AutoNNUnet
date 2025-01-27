@@ -235,7 +235,18 @@ class Plotter:
         self._setup_paths()
 
         # Seaborn settings
-        sns.set_style(style=style)
+        sns.set_style(
+            style=style,
+            rc={
+                "axes.edgecolor": "black",
+                "axes.linewidth": 1.0,
+                "xtick.color": "black",
+                "ytick.color": "black",
+                "xtick.bottom": True,
+                "ytick.left": True
+
+            }
+        )
         self.figwidth = figwidth
         self.dpi = dpi
         self.format = format
@@ -361,6 +372,7 @@ class Plotter:
         self._hpo_data.incumbent_progress = pd.concat([self._hpo_data.incumbent_progress, hpo_data.incumbent_progress])
         self._hpo_data.emissions = pd.concat([self._hpo_data.emissions, hpo_data.emissions])
         self._hpo_data.deepcave_runs.update(hpo_data.deepcave_runs)
+        self._hpo_datasets = [] if len(self._hpo_data.history) == 0 else self._hpo_data.history["Dataset"].unique().tolist()
 
     def _load_nas_data_lazy(self, dataset: str, approach_key: str):
         if approach_key == "hpo_nas":
@@ -380,6 +392,11 @@ class Plotter:
         data.incumbents = {k: pd.concat([v, nas_data.incumbents[k]]) for k, v in data.incumbents.items()}
         data.emissions = pd.concat([data.emissions, nas_data.emissions])
         data.deepcave_runs.update(nas_data.deepcave_runs)
+
+        if approach_key == "hpo_nas":
+            self._nas_datasets = [] if len(data.history) == 0 else data.history["Dataset"].unique().tolist()
+        else:
+            self._hnas_datasets = [] if len(data.history) == 0 else data.history["Dataset"].unique().tolist()
 
     def load_all_data(self):
         self._baseline_data = self._load_baseline_data(datasets=self.datasets)
@@ -429,6 +446,16 @@ class Plotter:
         if dataset not in self._hpo_datasets:
             self._load_hpo_data_lazy(dataset=dataset)
 
+        if dataset not in self._hpo_datasets:
+            # We have no data for this dataset
+            return HPOResult(
+                history=pd.DataFrame(),
+                incumbent=pd.DataFrame(),
+                incumbent_progress=pd.DataFrame(),
+                emissions=pd.DataFrame(),
+                deepcave_runs={}
+            )
+
         incumbent_progress = self._hpo_data.incumbent_progress[
             self._hpo_data.incumbent_progress["Dataset"] == dataset]
         emissions = self._hpo_data.emissions[
@@ -450,6 +477,15 @@ class Plotter:
         if dataset not in self._nas_datasets:
             self._load_nas_data_lazy(dataset=dataset, approach_key="hpo_nas")
 
+        if dataset not in self._nas_datasets:
+            # We have no data for this dataset
+            return NASResult(
+                emissions=pd.DataFrame(),
+                history=pd.DataFrame(),
+                incumbents={k: pd.DataFrame() for k in self.objectives},
+                deepcave_runs={}
+            )
+
         emissions = self._nas_data.emissions[
             self._nas_data.emissions["Dataset"] == dataset]
         history = self._nas_data.history[
@@ -467,9 +503,18 @@ class Plotter:
         )
     
     def get_hnas_data(self, dataset: str):
-        if dataset not in self._nas_datasets:
+        if dataset not in self._hnas_datasets:
             self._load_nas_data_lazy(dataset=dataset, approach_key="hpo_hnas")
-    
+
+        if dataset not in self._hnas_datasets:
+            # We have no data for this dataset
+            return NASResult(
+                emissions=pd.DataFrame(),
+                history=pd.DataFrame(),
+                incumbents={k: pd.DataFrame() for k in self.objectives},
+                deepcave_runs={}
+            )
+        
         emissions = self._hnas_data.emissions[
             self._hnas_data.emissions["Dataset"] == dataset]
         history = self._hnas_data.history[
@@ -478,12 +523,13 @@ class Plotter:
         for objective in self.objectives:
             incumbents[objective] = self._hnas_data.incumbents[objective][
                 self._hnas_data.incumbents[objective]["Dataset"] == dataset]
+        deepcave_runs = {dataset: self._hnas_data.deepcave_runs[dataset]}
 
         return NASResult(
             emissions=emissions,
             history=history,
             incumbents=incumbents,
-            deepcave_runs={dataset: self._hnas_data.deepcave_runs[dataset]}
+            deepcave_runs=deepcave_runs
         )
 
     def get_deepcave_data(self, dataset: str, approach_key: str, objective: str = "1 - Dice") -> tuple[DeepCAVERun, pd.DataFrame, pd.DataFrame]:
@@ -884,12 +930,19 @@ class Plotter:
                         emissions["Run ID"] = run_id
                         all_emissions.append(emissions)
 
-        all_emissions = pd.concat(all_emissions)
-        all_history = pd.concat(all_history)
+        if len(all_emissions) > 0:
+            all_emissions = pd.concat(all_emissions)
+            all_history = pd.concat(all_history)
+        else:
+            all_emissions = pd.DataFrame()
+            all_history = pd.DataFrame()
 
         all_incumbent_df = {}
         for objective in self.objectives:
-            all_incumbent_df[objective] = pd.concat(all_incumbent[objective])
+            if len(all_incumbent[objective]) > 0:
+                all_incumbent_df[objective] = pd.concat(all_incumbent[objective])
+            else:
+                all_incumbent_df[objective] = pd.DataFrame()
 
         return NASResult(
             history=all_history,
@@ -898,10 +951,38 @@ class Plotter:
             deepcave_runs=deepcave_runs
         )
 
-    def _enable_grid(self, ax: Any) -> None:
+    def _format_axis(self, ax: Any, grid: bool = False) -> None:
+        major_length = 4
+        minor_length = 2
+        linewidth = 0.8
+        grid_alpha = 0.8
+
         ax.minorticks_on()
-        ax.grid(which="major", linestyle="-", linewidth=0.5, alpha=0.7)
-        ax.grid(which="minor", linestyle="--", linewidth=0.5, alpha=0.7)
+        ax.tick_params(axis='x', which='major', length=major_length, width=linewidth, color='black') 
+        ax.tick_params(axis='x', which='minor', length=minor_length, width=linewidth, color='black')   
+        ax.tick_params(axis='y', which='major', length=major_length, width=linewidth, color='black') 
+        ax.tick_params(axis='y', which='minor', length=minor_length, width=linewidth, color='black') 
+        ax.spines['bottom'].set_color('black')
+        ax.spines['left'].set_color('black')
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+
+        if grid:
+            ax.grid(which="major", linestyle="-", linewidth=linewidth, alpha=grid_alpha, color="lightgray", zorder=-1) 
+            ax.grid(which="minor", linestyle="-", linewidth=linewidth, alpha=grid_alpha, color="lightgray", zorder=-1)
+
+    def _format_xscale_log(self, ax: Any) -> None:
+        from matplotlib.ticker import LogFormatter
+        class CustomLogFormatter(LogFormatter):
+            def __call__(self, x, pos=None):
+                if x == 0:
+                    return "0"
+                # Format in scientific notation
+                formatted = f"{x:.0e}".replace("e+0", "e").replace("e+1", "e1").replace("e+2", "e2")
+                formatted = formatted.replace("e-0", "e-")
+                return formatted
+
+        ax.xaxis.set_major_formatter(CustomLogFormatter())
 
     def _plot_baseline(self, dataset: str, log_x: bool = True) -> None:
         baseline_progress = self.get_baseline_data(dataset).progress
@@ -931,9 +1012,7 @@ class Plotter:
         g.set_xlabel("Epoch")
         g.set_ylabel("Mean Foreground Dice (Proxy)")
 
-        if log_x:
-            g.set_xscale("log")
-            g.set_xlim(1, 1000)
+        g.set_xscale("log")
 
         g.legend(
             loc="upper center",
@@ -943,7 +1022,7 @@ class Plotter:
             shadow=False,
             frameon=False
         )
-        self._enable_grid(g)
+        self._format_axis(ax=g, grid=True)
 
         fig.subplots_adjust(
             top=0.88,
@@ -1061,7 +1140,7 @@ class Plotter:
         else:
             pass
         
-        self._enable_grid(g)
+        self._format_axis(ax=g, grid=True)
 
         g.legend(
             loc="upper center",
@@ -1087,8 +1166,8 @@ class Plotter:
         plt.clf()
 
 
-    def plot_hpo(self, **kwargs) -> None:
-        for dataset in self._hpo_datasets:
+    def plot_optimization(self, **kwargs) -> None:
+        for dataset in self.datasets:
             try:
                 self._plot_optimization(dataset, **kwargs)
             except ValueError:
@@ -1118,16 +1197,18 @@ class Plotter:
         max_baseline_approaches_ax = axes[0]
         max_hpo_approaches_ax = axes[0]
 
-        for ax, dataset in zip(axes, self._hpo_datasets, strict=False):
+        for ax, dataset in zip(axes, self.datasets, strict=False):
             hpo_data = self.get_hpo_data(dataset)
             incumbent = hpo_data.incumbent
 
-            if include_nas and dataset in self._nas_datasets:
+            if include_nas and dataset in self.datasets:
                 nas_data = self.get_nas_data(dataset)
-                incumbent = pd.concat([incumbent, nas_data.incumbents["1 - Dice"]])
-            if include_hnas and dataset in self._hnas_datasets:
+                if len(nas_data.history) > 0:
+                    incumbent = pd.concat([incumbent, nas_data.incumbents["1 - Dice"]])
+            if include_hnas and dataset in self.datasets:
                 hnas_data = self.get_hnas_data(dataset)
-                incumbent = pd.concat([incumbent, hnas_data.incumbents["1 - Dice"]])
+                if len(hnas_data.history) > 0:
+                    incumbent = pd.concat([incumbent, hnas_data.incumbents["1 - Dice"]])
 
             incumbent.loc[:, "1 - Dice"] *= 100
 
@@ -1248,17 +1329,135 @@ class Plotter:
         )
 
         plt.savefig(
-            self.hpo_plots / "hpo_combined.png" if not include_nas else self.hpo_plots / f"hpo_nas_combined.{self.format}",
+            self.hpo_plots / f"hpo_combined.{self.format}" if not (include_nas or include_hnas) else self.hpo_plots / f"hpo_nas_combined.{self.format}",
             format=self.format,
             dpi=self.dpi
         )
         plt.clf()
 
+    def _plot_nas_combined(
+            self,
+            dataset: str,
+        ) -> None:
+
+        fig, ax = plt.subplots(1, 1, figsize=(self.figwidth / 2, self.figwidth / 2))
+
+        baseline_data = self.get_baseline_data(dataset)
+        n_baseline_approaches = 0
+
+        for baseline_approach in baseline_data.metrics_foreground_mean["Approach"].unique():
+            metrics = baseline_data.metrics_foreground_mean
+            metrics = metrics[metrics["Approach"] == baseline_approach]
+            baseline_dice = metrics["Dice"].mean()
+
+            baseline_progress = baseline_data.progress
+            baseline_progress = baseline_progress[baseline_progress["Approach"] == baseline_approach]
+            baseline_time = baseline_progress.groupby("Fold")["Runtime"].sum().mean() / 3600
+
+            color = self.color_palette[n_baseline_approaches]
+
+            sns.scatterplot(
+                x=[1 - baseline_dice],
+                y=[baseline_time],
+                color=color,
+                label=baseline_approach,
+                marker="x",
+                ax=ax,
+                linewidth=2,
+                zorder=4
+            )
+
+            n_baseline_approaches += 1
+
+        # get mean of last 5 entries in incumbent
+        hpo_data = self.get_hpo_data(dataset)
+        hpo_dice = hpo_data.incumbent["1 - Dice"].iloc[-5:].mean()
+        hpo_time = hpo_data.incumbent_progress.groupby("Fold")["Runtime"].sum().mean() / 3600
+
+        color = self.color_palette[n_baseline_approaches]
+
+        sns.scatterplot(
+            x=[hpo_dice],
+            y=[hpo_time],
+            color=color,
+            label="HPO (ours)",
+            marker="x",
+            ax=ax,
+            linewidth=2,
+            zorder=4
+        )
+
+        nas_data = self.get_nas_data(dataset)
+        if len(nas_data.history) > 0:
+            nas_history = nas_data.history
+            nas_pareto_front = nas_history.sort_values(by="1 - Dice")
+            nas_pareto_front = nas_pareto_front[nas_pareto_front["Runtime"] == nas_pareto_front["Runtime"].cummin()]
+
+            sns.lineplot(
+                data=nas_pareto_front,
+                x="1 - Dice",
+                y="Runtime",
+                color=self.color_palette[n_baseline_approaches + 1],
+                label="HPO + NAS (ours)",
+                ax=ax,
+                drawstyle="steps-post"
+            )
+
+        hnas_data = self.get_hnas_data(dataset)
+        if len(hnas_data.history) > 0:
+            hnas_history = hnas_data.history
+            hnas_pareto_front = hnas_history.sort_values(by="1 - Dice")
+            hnas_pareto_front = hnas_pareto_front[hnas_pareto_front["Runtime"] == hnas_pareto_front["Runtime"].cummin()]
+
+            sns.lineplot(
+                data=hnas_pareto_front,
+                x="1 - Dice",
+                y="Runtime",
+                color=self.color_palette[9],
+                label="HPO + HNAS (ours)",
+                ax=ax,
+                drawstyle="steps-post"
+            )
+        ax.set_title(f"Pareto Fronts for\n{format_dataset_name(dataset)}")
+        ax.set_xlabel("1 - Dice [%]")
+        ax.set_ylabel("Training Runtime [h]")
+
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+
+        self._format_axis(ax=ax, grid=True)
+
+        fig.subplots_adjust(
+            top=0.89,
+            bottom=0.31,
+            left=0.17,
+            right=0.94,
+        )
+
+        ax.legend(
+            loc="upper center",
+            bbox_to_anchor=(0.5, -0.23),
+            ncol=2,
+            fancybox=False,
+            shadow=False,
+            frameon=False
+        )
+
+        plt.savefig(
+            self.nas_plots / f"{dataset}_nas_combined.{self.format}",
+            format=self.format,
+            dpi=self.dpi
+        )
+        plt.clf()
+
+    def plot_nas_combined(self, **kwargs) -> None:
+        for dataset in self.datasets:
+            self._plot_nas_combined(dataset, **kwargs)
+
     def _plot_nas_budgets(
             self,
             dataset: str,
             approach_key: str,
-            show_configs: bool = True,
         ) -> None:
         if approach_key == "hpo_nas":
             nas_data = self.get_nas_data(dataset)
@@ -1276,7 +1475,7 @@ class Plotter:
         for baseline_approach in baseline_data.metrics_foreground_mean["Approach"].unique():
             metrics = baseline_data.metrics_foreground_mean
             metrics = metrics[metrics["Approach"] == baseline_approach]
-            baseline_dice = metrics["Dice"].mean() * 100
+            baseline_dice = metrics["Dice"].mean()
 
             baseline_progress = baseline_data.progress
             baseline_progress = baseline_progress[baseline_progress["Approach"] == baseline_approach]
@@ -1285,7 +1484,7 @@ class Plotter:
             color = self.color_palette[n_baseline_approaches]
 
             sns.scatterplot(
-                x=[100 - baseline_dice],
+                x=[1 - baseline_dice],
                 y=[baseline_time],
                 color=color,
                 label=baseline_approach,
@@ -1300,7 +1499,7 @@ class Plotter:
         hpo_data = self.get_hpo_data(dataset)
 
         # get mean of last 5 entries in incumbent
-        hpo_dice = hpo_data.incumbent["1 - Dice"].iloc[-5:].mean() * 100
+        hpo_dice = hpo_data.incumbent["1 - Dice"].iloc[-5:].mean()
         hpo_time = hpo_data.incumbent_progress.groupby("Fold")["Runtime"].sum().mean() / 3600
 
         color = self.color_palette[n_baseline_approaches]
@@ -1317,8 +1516,6 @@ class Plotter:
         )
 
         history = nas_data.history
-        history.loc[:, "1 - Dice"] *= 100
-
         pareto_front = history.sort_values(by="1 - Dice")
         pareto_front = pareto_front[pareto_front["Runtime"] == pareto_front["Runtime"].cummin()]
 
@@ -1333,26 +1530,26 @@ class Plotter:
             zorder=3
         )
 
-        if show_configs:
-            # Round budget column
-            history.loc[:, "Budget"] = history["Budget"].round()
-            g = sns.scatterplot(
-                data=history,
-                x="1 - Dice",
-                y="Runtime",
-                # label="Configurations",
-                color=self.color_palette[n_baseline_approaches + 1],
-                size="Budget",
-                s=10,
-                alpha=0.5,
-                ax=ax,
-            )
+        # Round budget column
+        history.loc[:, "Budget"] = history["Budget"].round()
+        g = sns.scatterplot(
+            data=history,
+            x="1 - Dice",
+            y="Runtime",
+            # label="Configurations",
+            color=self.color_palette[n_baseline_approaches + 1],
+            size="Budget",
+            s=10,
+            alpha=0.5,
+            ax=ax,
+        )
 
-        g.set_title(format_dataset_name(dataset))
+        approach = APPROACH_REPLACE_MAP[approach_key].replace(" (ours)", "")
+        g.set_title(f"{approach} Budgets for\n{format_dataset_name(dataset)}")
         g.set_xlabel("1 - Dice")
         g.set_ylabel("Training Runtime [h]")
 
-        self._enable_grid(g)
+        self._format_axis(ax=g, grid=True)
 
         g.set_xscale("log")
         g.set_yscale("log")
@@ -1367,10 +1564,10 @@ class Plotter:
         )
 
         fig.subplots_adjust(
-            top=0.94,
+            top=0.89,
             bottom=0.39,
-            left=0.18,
-            right=0.96,
+            left=0.17,
+            right=0.97,
         )
 
         if approach_key == "hpo_nas":
@@ -1378,11 +1575,15 @@ class Plotter:
         else:
             dir = self.hnas_plots
         plt.savefig(
-            dir / f"{dataset}_{f'nas' if show_configs else f'nas_no_configs'}.{self.format}",
+            dir / f"{dataset}_nas_budgets.{self.format}",
             format=self.format,
             dpi=self.dpi
         )
         plt.clf()
+
+    def plot_nas_budgets(self, approach_key: str, **kwargs) -> None:
+        for dataset in self.datasets:
+            self._plot_nas_budgets(dataset, approach_key=approach_key, **kwargs)
 
     def _plot_nas_origins(
             self,
@@ -1396,10 +1597,9 @@ class Plotter:
         else:
             raise ValueError(f"Unknown approach key {approach_key}.")
         
-        fig, ax = plt.subplots(1, 1, figsize=(self.figwidth / 2, 3))
+        fig, ax = plt.subplots(1, 1, figsize=(self.figwidth / 2, self.figwidth / 2))
 
         history = nas_data.history
-        history.loc[:, "1 - Dice"] *= 100
 
         pareto_front = history.sort_values(by="1 - Dice")
         pareto_front = pareto_front[pareto_front["Runtime"] == pareto_front["Runtime"].cummin()]
@@ -1409,7 +1609,7 @@ class Plotter:
             x="1 - Dice",
             y="Runtime",
             color=self.color_palette[0],
-            label="HPO + NAS (ours)",
+            label="Pareto Front",
             ax=ax,
             drawstyle="steps-post",
             zorder=3
@@ -1432,16 +1632,17 @@ class Plotter:
                 label=origin,
                 color=color,
                 marker=marker,
-                s=15,
                 ax=ax,
-                linewidth=1,
+                linewidth=1.25,
+                alpha=0.8,
             )
 
-        g.set_title(format_dataset_name(dataset))
+        approach = APPROACH_REPLACE_MAP[approach_key].replace(" (ours)", "")
+        g.set_title(f"{approach} Origins for\n{format_dataset_name(dataset)}")
         g.set_xlabel("1 - Dice")
         g.set_ylabel("Training Runtime [h]")
 
-        self._enable_grid(g)
+        self._format_axis(ax=g, grid=True)
 
         g.set_xscale("log")
         g.set_yscale("log")
@@ -1456,10 +1657,10 @@ class Plotter:
         )
 
         fig.subplots_adjust(
-            top=0.92,
-            bottom=0.3,
-            left=0.18,
-            right=0.96,
+            top=0.88,
+            bottom=0.25,
+            left=0.17,
+            right=0.97,
         )
 
         if approach_key == "hpo_nas":
@@ -1473,162 +1674,9 @@ class Plotter:
         )
         plt.clf()
 
-    def plot_nas_budgets(self, approach_key: str, **kwargs) -> None:
-        for dataset in self.datasets:
-            self._plot_nas_budgets(dataset, approach_key=approach_key, **kwargs)
-
     def plot_nas_origins(self, approach_key: str, **kwargs) -> None:
         for dataset in self.datasets:
             self._plot_nas_origins(dataset, approach_key=approach_key, **kwargs)
-
-    def plot_nas_combined(
-            self,
-            x_log_scale: bool = True,
-            y_log_scale: bool = True
-        ) -> None:
-
-        fig, axes = plt.subplots(
-            nrows=2,
-            ncols=5,
-            sharex=False,
-            sharey=True,
-            figsize=(12, 6)
-        )
-        axes = axes.flatten()
-
-        max_approaches_ax = axes[0]
-
-        for ax, dataset in zip(axes, self._hpo_datasets, strict=False):
-            nas_data = self.get_nas_data(dataset)
-            hnas_data = self.get_hnas_data(dataset)
-            baseline_data = self.get_baseline_data(dataset)
-
-            n_baseline_approaches = 0
-
-            for baseline_approach in baseline_data.metrics_foreground_mean["Approach"].unique():
-                metrics = baseline_data.metrics_foreground_mean
-                metrics = metrics[metrics["Approach"] == baseline_approach]
-                baseline_dice = metrics["Dice"].mean()
-
-                baseline_progress = baseline_data.progress
-                baseline_progress = baseline_progress[baseline_progress["Approach"] == baseline_approach]
-                baseline_time = baseline_progress.groupby("Fold")["Runtime"].sum().mean() / 3600
-
-                color = self.color_palette[n_baseline_approaches]
-
-                sns.scatterplot(
-                    x=[(1 - baseline_dice) * 100],
-                    y=[baseline_time],
-                    color=color,
-                    label=baseline_approach,
-                    ax=ax
-                )
-
-                n_baseline_approaches += 1
-
-            hpo_data = self.get_hpo_data(dataset)
-
-            # get mean of last 5 entries in incumbent
-            hpo_dice = hpo_data.incumbent["1 - Dice"].iloc[-5:].mean() * 100
-            hpo_time = hpo_data.incumbent_progress.groupby("Fold")["Runtime"].sum().mean() / 3600
-
-            color = self.color_palette[n_baseline_approaches]
-
-            sns.scatterplot(
-                x=[hpo_dice],
-                y=[hpo_time],
-                color=color,
-                label="HPO (ours)",
-                marker="x",
-                ax=ax
-            )
-
-            nas_history = nas_data.history
-            hnas_history = hnas_data.history
-
-            nas_pareto_front = nas_history.sort_values(by="1 - Dice")
-            nas_pareto_front = nas_pareto_front[nas_pareto_front["Runtime"] == nas_pareto_front["Runtime"].cummin()]
-
-            hnas_pareto_front = hnas_history.sort_values(by="1 - Dice")
-            hnas_pareto_front = hnas_pareto_front[hnas_pareto_front["Runtime"] == hnas_pareto_front["Runtime"].cummin()]
-
-            nas_pareto_front.loc[:, "1 - Dice"] *= 100
-            hnas_pareto_front.loc[:, "1 - Dice"] *= 100
-
-            sns.lineplot(
-                data=nas_pareto_front,
-                x="1 - Dice",
-                y="Runtime",
-                color=self.color_palette[n_baseline_approaches + 1],
-                label="HPO + NAS (ours)",
-                ax=ax,
-                drawstyle="steps-post"
-            )
-
-            sns.lineplot(
-                data=hnas_pareto_front,
-                x="1 - Dice",
-                y="Runtime",
-                color=self.color_palette[n_baseline_approaches + 2],
-                label="HPO + HNAS (ours)",
-                ax=ax,
-                drawstyle="steps-post"
-            )
-
-            ax.set_title(format_dataset_name(dataset).replace(" ", "\n"))
-            ax.set_xlabel("1 - Dice [%]")
-            ax.set_ylabel("Training Runtime [h]")
-
-            ax.set_xscale("log")
-            ax.set_yscale("log")
-
-            self._enable_grid(ax)
-
-            # xticks = ax.get_xticks()
-            # xticklabels = [f"{int(x)}" for x in xticks]
-            # if len(xticklabels) > 2:
-            #     xticklabels = [xticklabels[0]] + ["" for _ in range(len(xticklabels) - 2)]+ [xticklabels[-1]]
-
-            # ax.set_xticks(xticks)
-            # ax.set_xticklabels(xticklabels)
-
-            if ax != axes[0] and ax != axes[5]:
-                ax.set_ylabel("")
-
-            ax.get_legend().remove()
-
-        # We use the axis with most approaches to get the legend
-        handles, labels = max_approaches_ax.get_legend_handles_labels()
-
-        zipped_handles = [val for pair in zip(handles[:n_baseline_approaches], handles[-3:]) for val in pair]
-        zipped_labels = [val for pair in zip(labels[:n_baseline_approaches], labels[-3:]) for val in pair]
-
-        fig.subplots_adjust(
-            top=0.91,
-            bottom=0.15,
-            left=0.07,
-            right=0.98,
-            hspace=0.54,
-            wspace=0.15
-        )
-
-        axes[-3].legend(
-            zipped_handles,
-            zipped_labels,
-            loc="upper center",
-            bbox_to_anchor=(0.5, -0.23),
-            ncol=3,
-            fancybox=False,
-            shadow=False,
-            frameon=False
-        )
-
-        plt.savefig(
-            self.nas_plots / f"nas_combined.{self.format}",
-            format=self.format,
-            dpi=self.dpi
-        )
-        plt.clf()
 
     @staticmethod
     def _get_budget(budget: int, deepcave_run: DeepCAVERun) -> float | int:
@@ -1719,6 +1767,8 @@ class Plotter:
             hspace=0.3,
             wspace=0.2
         )
+
+        self._format_axis(ax=g)
 
         # Create a single legend
         axes[-3].legend(
@@ -1842,6 +1892,8 @@ class Plotter:
             ax.set_xlabel("Weight of 1 - Dice")
             ax.set_ylabel("Importance")
 
+            self._format_axis(ax=ax)
+
         axs[0].set_title("HPO Hyperparameters")
         axs[1].set_title(f"{nas_approach} Hyperparameters")
 
@@ -1949,6 +2001,7 @@ class Plotter:
         # rotate x-axis labels
         for ax in axs:
             ax.set_xticklabels(ax.get_xticklabels(), rotation=45, horizontalalignment="right")
+            self._format_axis(ax=ax)
 
         axs[0].set_title("Performance")
         axs[1].set_title("Improvement")
@@ -2029,6 +2082,8 @@ class Plotter:
         xticklabels[-2] = f"1.0\n1 - Dice"
         ax.set_xticks(xticks[1:-1])
         ax.set_xticklabels(xticklabels[1:-1])
+
+        self._format_axis(ax=ax)
 
         fig.subplots_adjust(
             top=0.86,
@@ -2194,6 +2249,8 @@ class Plotter:
         ax.set_xlabel(HYPERPARAMETER_REPLACEMENT_MAP[hp_name])
         ax.set_ylabel("1 - Dice")
 
+        self._format_axis(ax=ax)
+
         fig.subplots_adjust(
             top=0.91,
             bottom=0.15,
@@ -2240,6 +2297,8 @@ class Plotter:
         ax.set_yticklabels(yticktext[:-1])
         ax.set_xlabel(HYPERPARAMETER_REPLACEMENT_MAP[hp_name_1])
         ax.set_ylabel(HYPERPARAMETER_REPLACEMENT_MAP[hp_name_2])
+
+        self._format_axis(ax=ax)
 
         fig.subplots_adjust(
             top=0.89,
@@ -2451,6 +2510,8 @@ class Plotter:
             shadow=False,
             frameon=False
         )
+
+        self._format_axis(ax=ax)
 
         plt.xticks([])
         plt.yticks([])
@@ -2683,6 +2744,8 @@ class Plotter:
             shadow=False,
             frameon=False
         )
+
+        self._format_axis(ax=ax)
 
         # Customize the plot
         plt.xlabel("Budget")
