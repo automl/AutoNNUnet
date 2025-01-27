@@ -81,3 +81,13 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+
+## Common Issues
+
+### TorchInductor fails when loading JSON, found extra data
+Possible fixes:
+```bash
+rm -rf ~/.cache/torch
+rm -rf ~/.cache/triton/
+rm -rf ~/.nv/ComputeCache
+```
