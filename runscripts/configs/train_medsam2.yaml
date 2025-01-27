@@ -1,0 +1,53 @@
+# @package _global_
+defaults:
+  - base
+  - _self_
+  - cluster: kisski_gpu
+  - dataset: Dataset001_BrainTumour
+
+seed: 0
+fold: 0
+
+n_epochs: 100
+mode: finetune
+
+sam_checkpoint: sam2_hiera_small.pt
+sam_config: sam2_hiera_s
+
+prompt: bbox # or click
+
+n_train_workers: 32
+n_test_workers: 8
+
+command:
+  target: train_3d.py
+  net: sam2
+  prompt: ${prompt}
+  exp_name: ${dataset.name}_${fold}
+  vis: 1    # don't generate visualizations during validation
+  sam_ckpt: ${sam_checkpoint}
+  sam_config: ${sam_config}
+  image_size: 1024
+  out_size: 1024
+  batch_size: 4   # for the dataloader
+  val_freq: 1
+  dataset: ${dataset.name}
+  fold: ${fold}
+  seed: ${seed}
+  n_train_workers: ${n_train_workers}
+  n_test_workers: ${n_test_workers}
+  n_epochs: ${n_epochs}
+  mode: ${mode}
+
+hydra:
+  output_subdir: "."
+  run: 
+    dir: output/baseline_${sam_config}/${prompt}/${mode}/${dataset.name}
+  sweep:
+    dir: output/baseline_${sam_config}/${prompt}/${mode}/${dataset.name}
+    subdir: fold_${fold}     
+  job:
+    chdir: true
+
+    
+  
