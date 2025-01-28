@@ -1,5 +1,6 @@
 _target_: automis.datasets.msd_dataset.MSDDataset
 name: Dataset007_Pancreas
+modality: CT
 runtime_min: 345
 runtime_min_nas: 1119
 default_n_stages: 6

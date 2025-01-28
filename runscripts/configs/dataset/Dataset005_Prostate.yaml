@@ -1,5 +1,6 @@
 _target_: automis.datasets.msd_dataset.MSDDataset
 name: Dataset005_Prostate
+modality: MR
 runtime_min: 314
 runtime_min_nas: 1369
 default_n_stages: 7

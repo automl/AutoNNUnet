@@ -1,5 +1,6 @@
 _target_: automis.datasets.msd_dataset.MSDDataset
 name: Dataset009_Spleen
+modality: CT
 runtime_min: 347
 runtime_min_nas: 1220
 default_n_stages: 6

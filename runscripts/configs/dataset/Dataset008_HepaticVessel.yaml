@@ -1,5 +1,6 @@
 _target_: automis.datasets.msd_dataset.MSDDataset
 name: Dataset008_HepaticVessel
+modality: CT
 runtime_min: 445
 runtime_min_nas: 1241
 default_n_stages: 6

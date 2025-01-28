@@ -1,0 +1,29 @@
+defaults:
+  - _self_
+  - /cluster: kisski_cpu
+  - dataset: Dataset002_Heart
+
+fold: 0
+
+modality: CT
+img_name_suffix: .nii.gz
+gt_name_suffix: .nii.gz
+img_path: data/FLARE22Train/images
+gt_path: data/FLARE22Train/labels
+output_path: data/npz/Flare22Train
+num_workers: 4
+window_level: 40
+window_width: 400
+save_nii: false
+
+voxel_num_thre2d: 100
+voxel_num_thre3d: 1000
+
+hydra:
+  run:
+    dir: output/prepare_medsam2/${dataset.name}/
+  sweep:
+    dir: output/prepare_medsam2/${dataset.name}/
+    subdir: ""   
+  # job:
+  #   chdir: true

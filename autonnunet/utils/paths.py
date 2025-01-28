@@ -8,6 +8,7 @@ DEFAULT_DATA_DIR = {
     "nnUNet_raw": Path("./data/nnUNet_raw").resolve(),
     "nnUNet_preprocessed": Path("./data/nnUNet_preprocessed").resolve(),
     "nnUNet_results": Path("./data/nnUNet_results").resolve(),
+    "MedSAM2_preprocessed": Path("./data/MedSAM2_preprocessed").resolve(),
 }
 
 for k, v in DEFAULT_DATA_DIR.items():
@@ -28,4 +29,6 @@ NNUNET_DATASETS = Path(os.environ["nnUNet_datasets"]).resolve()    # noqa: SIM11
 NNUNET_RAW =  Path(os.environ["nnUNet_raw"]).resolve()              # noqa: SIM112
 NNUNET_PREPROCESSED =  Path(os.environ["nnUNet_preprocessed"]).resolve() # noqa: SIM112
 NNUNET_RESULTS =  Path(os.environ["nnUNet_results"]).resolve()           # noqa: SIM112
+
+MEDSAM2_PREPROCESSED = Path(os.environ["MedSAM2_preprocessed"]).resolve()    # noqa: SIM112
 

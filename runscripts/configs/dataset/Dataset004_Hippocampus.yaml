@@ -1,5 +1,6 @@
 _target_: automis.datasets.msd_dataset.MSDDataset
 name: Dataset004_Hippocampus
+modality: MR
 runtime_min: 101
 runtime_min_nas: 1515
 default_n_stages: 4

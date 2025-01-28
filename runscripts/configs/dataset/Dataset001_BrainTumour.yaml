@@ -1,5 +1,6 @@
 _target_: automis.datasets.msd_dataset.MSDDataset
 name: Dataset001_BrainTumour
+modality: MR
 runtime_min: 905
 runtime_min_nas: 4000
 default_n_stages: 6

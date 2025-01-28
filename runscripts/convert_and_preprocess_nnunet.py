@@ -1,4 +1,4 @@
-"""Conver and preprocess a dataset."""
+"""Convert and preprocess a dataset for nnU-Net."""
 from __future__ import annotations
 
 import warnings
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from omegaconf import DictConfig
 
 
-@hydra.main(version_base=None, config_path="configs", config_name="convert_and_preprocess")
+@hydra.main(version_base=None, config_path="configs", config_name="convert_and_preprocess_nnunet")
 def run(cfg: DictConfig):
     logging.basicConfig(format="%(asctime)s %(message)s")
     logger = logging.getLogger()

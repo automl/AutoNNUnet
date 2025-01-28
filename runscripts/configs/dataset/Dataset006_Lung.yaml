@@ -1,5 +1,6 @@
 _target_: automis.datasets.msd_dataset.MSDDataset
 name: Dataset006_Lung
+modality: CT
 runtime_min: 425
 runtime_min_nas: 1405
 default_n_stages: 6
