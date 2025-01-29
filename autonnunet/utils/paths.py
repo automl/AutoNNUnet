@@ -29,6 +29,5 @@ NNUNET_DATASETS = Path(os.environ["nnUNet_datasets"]).resolve()    # noqa: SIM11
 NNUNET_RAW =  Path(os.environ["nnUNet_raw"]).resolve()              # noqa: SIM112
 NNUNET_PREPROCESSED =  Path(os.environ["nnUNet_preprocessed"]).resolve() # noqa: SIM112
 NNUNET_RESULTS =  Path(os.environ["nnUNet_results"]).resolve()           # noqa: SIM112
-
 MEDSAM2_PREPROCESSED = Path(os.environ["MedSAM2_preprocessed"]).resolve()    # noqa: SIM112
 
