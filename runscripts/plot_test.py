@@ -14,4 +14,5 @@ if __name__  == "__main__":
         format="png",
     )
 
-    plotter.plot_nas_combined()             # NAS + HNAS Pareto front
+    # plotter._plot_baseline(dataset="Dataset001_BrainTumour", x_metric="Real Runtime Used")
+    plotter.plot_optimization()             # NAS + HNAS Pareto front

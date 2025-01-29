@@ -1,0 +1,353 @@
+"""
+finetune sam2 model on medical image data
+only finetune the image encoder and mask decoder
+freeze the prompt encoder
+"""
+from __future__ import annotations
+
+import warnings
+
+warnings.filterwarnings("ignore")
+
+import sys
+import os
+sys.path.append(os.path.abspath("submodules/MedSAM"))
+from sam2.build_sam import build_sam2 
+from sam2.utils.transforms import SAM2Transforms
+
+join = os.path.join
+from typing import TYPE_CHECKING
+from pathlib import Path
+import logging
+import glob
+import pandas as pd
+import numpy as np
+import random
+import torch
+import hydra
+from codecarbon import OfflineEmissionsTracker
+import shutil
+import datetime
+import os
+import sys
+from tqdm import tqdm
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader, Dataset
+import monai
+from datetime import datetime
+import shutil
+from autonnunet.utils.paths import MEDSAM2_PREPROCESSED
+
+
+if TYPE_CHECKING:
+    from omegaconf import DictConfig
+    
+os.environ["OMP_NUM_THREADS"] = "4"  # export OMP_NUM_THREADS=4
+os.environ["OPENBLAS_NUM_THREADS"] = "4"  # export OPENBLAS_NUM_THREADS=4
+os.environ["MKL_NUM_THREADS"] = "6"  # export MKL_NUM_THREADS=6
+os.environ["VECLIB_MAXIMUM_THREADS"] = "4"  # export VECLIB_MAXIMUM_THREADS=4
+os.environ["NUMEXPR_NUM_THREADS"] = "6"  # export NUMEXPR_NUM_THREADS=6
+
+
+@hydra.main(version_base=None, config_path="configs", config_name="finetune_medsam2")
+def run(cfg: DictConfig):
+    from autonnunet.utils import (
+        seed_everything,
+    )
+    logger = logging.getLogger()
+
+    seed_everything(cfg.seed)
+
+    logger.setLevel(logging.INFO)
+    logger.info("Starting training script")
+    logger.info(f"torch.cuda.is_available(): {torch.cuda.is_available()}")
+
+    # --------------------------------------------------------------------------------------------
+    # CODECARBON SETUP
+    # --------------------------------------------------------------------------------------------
+    logger.info("Setting up emissions tracker")
+    tracker = OfflineEmissionsTracker(
+        country_iso_code="DEU",
+        log_level="WARNING"
+    )
+
+    class NpyDataset(Dataset):
+        def __init__(self, data_root, bbox_shift=20):
+            self.data_root = data_root
+            self.gt_path = join(data_root, "gts")
+            self.img_path = join(data_root, "imgs")
+            self.gt_path_files = sorted(
+                glob.glob(join(self.gt_path, "*.npy"), recursive=True)
+            )
+            self.gt_path_files = self.gt_path_files
+            self.gt_path_files = [
+                file
+                for file in self.gt_path_files
+                if os.path.isfile(join(self.img_path, os.path.basename(file)))
+            ]
+            self.bbox_shift = bbox_shift
+            self._transform = SAM2Transforms(resolution=1024, mask_threshold=0)
+            logger.info(f"number of images: {len(self.gt_path_files)}")
+
+
+        def __len__(self):
+            return len(self.gt_path_files)
+
+        def __getitem__(self, index):
+            # load npy image (1024, 1024, 3), [0,1]
+            img_name = os.path.basename(self.gt_path_files[index])
+            img = np.load(
+                join(self.img_path, img_name), "r", allow_pickle=True
+            )  # (1024, 1024, 3)
+            # convert the shape to (3, H, W)
+            img_1024 = self._transform(img.copy())
+            gt = np.load(
+                self.gt_path_files[index], "r", allow_pickle=True
+            )  # multiple labels [0, 1,4,5...], (256,256)
+            assert img_name == os.path.basename(self.gt_path_files[index]), (
+                "img gt name error" + self.gt_path_files[index] + self.npy_files[index]
+            )
+            assert gt.shape == (256, 256), "ground truth should be 256x256"
+            label_ids = np.unique(gt)[1:]
+            gt2D = np.uint8(
+                gt == random.choice(label_ids.tolist())
+            )  # only one label, (256, 256)
+            assert np.max(gt2D) == 1 and np.min(gt2D) == 0.0, "ground truth should be 0, 1"
+            y_indices, x_indices = np.where(gt2D > 0)
+            x_min, x_max = np.min(x_indices), np.max(x_indices)
+            y_min, y_max = np.min(y_indices), np.max(y_indices)
+            # add perturbation to bounding box coordinates
+            H, W = gt2D.shape
+            x_min = max(0, x_min - random.randint(0, self.bbox_shift))
+            x_max = min(W, x_max + random.randint(0, self.bbox_shift))
+            y_min = max(0, y_min - random.randint(0, self.bbox_shift))
+            y_max = min(H, y_max + random.randint(0, self.bbox_shift))
+
+            bboxes = np.array([x_min, y_min, x_max, y_max])*4 ## scale bbox from 256 to 1024
+
+            return (
+                img_1024, ## [3, 1024, 1024]
+                torch.tensor(gt2D[None, :, :]).long(), ## [1, 256, 256]
+                torch.tensor(bboxes).float(), 
+                img_name,
+            )
+
+    class MedSAM2(nn.Module):
+        def __init__(
+            self,
+            model,
+        ):
+            super().__init__()
+            self.sam2_model = model
+            # freeze prompt encoder
+            for param in self.sam2_model.sam_prompt_encoder.parameters():
+                param.requires_grad = False
+            
+
+        def forward(self, image, box):
+            """
+            image: (B, 3, 1024, 1024)
+            box: (B, 2, 2)
+            """
+            _features = self._image_encoder(image)
+            img_embed, high_res_features = _features["image_embed"], _features["high_res_feats"]
+            # do not compute gradients for prompt encoder
+            with torch.no_grad():
+                box_torch = torch.as_tensor(box, dtype=torch.float32, device=image.device)
+                if len(box_torch.shape) == 2:
+                    box_coords = box_torch.reshape(-1, 2, 2) # (B, 4) to (B, 2, 2)
+                    box_labels = torch.tensor([[2, 3]], dtype=torch.int, device=image.device)
+                    box_labels = box_labels.repeat(box_torch.size(0), 1)
+                concat_points = (box_coords, box_labels)
+
+                sparse_embeddings, dense_embeddings = self.sam2_model.sam_prompt_encoder(
+                    points=concat_points,
+                    boxes=None,
+                    masks=None,
+                )
+            low_res_masks_logits, iou_predictions, sam_tokens_out, object_score_logits = self.sam2_model.sam_mask_decoder(
+                image_embeddings=img_embed, # (B, 256, 64, 64)
+                image_pe=self.sam2_model.sam_prompt_encoder.get_dense_pe(),
+                sparse_prompt_embeddings=sparse_embeddings,
+                dense_prompt_embeddings=dense_embeddings,
+                multimask_output=False,
+                repeat_image=False,
+                high_res_features=high_res_features,
+            )
+
+            return low_res_masks_logits
+        
+        def _image_encoder(self, input_image):
+            backbone_out = self.sam2_model.forward_image(input_image)
+            _, vision_feats, _, _ = self.sam2_model._prepare_backbone_features(backbone_out)
+            # Add no_mem_embed, which is added to the lowest rest feat. map during training on videos
+            if self.sam2_model.directly_add_no_mem_embed:
+                vision_feats[-1] = vision_feats[-1] + self.sam2_model.no_mem_embed
+            bb_feat_sizes = [(256, 256), (128, 128), (64, 64)]
+            feats = [
+                feat.permute(1, 2, 0).view(input_image.size(0), -1, *feat_size)
+                for feat, feat_size in zip(vision_feats[::-1], bb_feat_sizes[::-1])
+            ][::-1]
+            _features = {"image_embed": feats[-1], "high_res_feats": feats[:-1]}
+
+            return _features
+
+    device = torch.device(cfg.device)
+    # Get path of current file
+    file_path = Path(__file__).parent.parent.resolve()
+    sam2_checkpoint = file_path / "submodules" / "MedSAM" / "checkpoints" / cfg.pretrained_model
+    sam2_model = build_sam2(cfg.model, sam2_checkpoint, device=device)
+    medsam_model = MedSAM2(model=sam2_model)
+    medsam_model.train()
+
+    logger.info(
+        f"Number of total parameters: {sum(p.numel() for p in medsam_model.parameters())}"
+    ) 
+    logger.info(
+        f"Number of trainable parameters: {sum(p.numel() for p in medsam_model.parameters() if p.requires_grad)}"
+    )  
+
+    img_mask_encdec_params = list(medsam_model.sam2_model.image_encoder.parameters()) + list(
+        medsam_model.sam2_model.sam_mask_decoder.parameters()
+    )
+    optimizer = torch.optim.AdamW(
+        img_mask_encdec_params, lr=cfg.lr, weight_decay=cfg.weight_decay
+    )
+    logger.info(
+        f"Number of image encoder and mask decoder parameters: {sum(p.numel() for p in img_mask_encdec_params if p.requires_grad)}"
+    )  
+    seg_loss_func = monai.losses.DiceLoss(sigmoid=True, squared_pred=True, reduction="mean")
+    fg_seg_loss_func = monai.losses.DiceLoss(include_background=False, sigmoid=True, squared_pred=True, reduction="mean")
+    # cross entropy loss
+    ce_loss_func = nn.BCEWithLogitsLoss(reduction="mean")
+
+    tr_npy_path = MEDSAM2_PREPROCESSED / cfg.dataset.name / str(cfg.fold) / "npy_train"
+    val_npy_path = MEDSAM2_PREPROCESSED / cfg.dataset.name / str(cfg.fold) / "npy_val"
+
+    train_dataset = NpyDataset(str(tr_npy_path), bbox_shift=cfg.bbox_shift)
+    val_dataset = NpyDataset(str(val_npy_path), bbox_shift=cfg.bbox_shift)
+
+    logger.info(f"Number of training samples: {len(train_dataset)}")
+    train_dataloader = DataLoader(
+        train_dataset,
+        batch_size=cfg.batch_size,
+        shuffle=True,
+        num_workers=cfg.num_train_workers,
+        pin_memory=True,
+    )
+
+    logger.info(f"Number of validation samples: {len(val_dataset)}")
+    val_dataloader = DataLoader(
+        val_dataset,
+        batch_size=cfg.batch_size,
+        shuffle=False,
+        num_workers=cfg.num_val_workers,
+        pin_memory=True,
+    )
+
+    num_epochs = cfg.num_epochs
+    train_seg_losses = []
+    train_ce_losses = []
+    val_seg_losses = []
+    val_ce_losses = []
+    best_val_fg_seg_loss = 1e10
+    start_epoch = 0
+
+    tracker.start()
+    if cfg.resume:
+        if os.path.isfile("medsam_model_latest.pth"):
+            ## Map model to be loaded to specified single GPU
+            logger.info("=> loading checkpoint 'medsam_model_latest.pth'")
+            checkpoint = torch.load("medsam_model_latest.pth", map_location=device)
+            start_epoch = checkpoint["epoch"] + 1
+            medsam_model.load_state_dict(checkpoint["model"], strict=True)
+            optimizer.load_state_dict(checkpoint["optimizer"])
+
+    for epoch in range(start_epoch, num_epochs):
+        epoch_train_seg_loss = 0
+        epoch_train_ce_loss = 0
+        epoch_val_seg_loss = 0
+        epoch_val_ce_loss = 0
+
+        medsam_model.train()
+        for step, (image, gt2D, boxes, _) in enumerate(tqdm(train_dataloader)):
+            optimizer.zero_grad()
+            boxes_np = boxes.detach().cpu().numpy()
+            image, gt2D = image.to(device), gt2D.to(device)
+            
+            medsam_pred = medsam_model(image, boxes_np)
+            seg_loss = seg_loss_func(medsam_pred, gt2D)
+            ce_loss = ce_loss_func(medsam_pred, gt2D.float())
+            loss = seg_loss + ce_loss           
+            loss.backward()
+            optimizer.step()
+            optimizer.zero_grad()
+
+            epoch_train_seg_loss += seg_loss.item()
+            epoch_train_ce_loss += ce_loss.item()
+
+        epoch_train_seg_loss /= step
+        epoch_train_ce_loss /= step
+
+        train_seg_losses.append(epoch_train_seg_loss)
+        train_ce_losses.append(epoch_train_ce_loss)
+        
+        medsam_model.eval()
+        with torch.no_grad():
+            for step, (image, gt2D, boxes, _) in enumerate(tqdm(val_dataloader)):
+                boxes_np = boxes.detach().cpu().numpy()
+                image, gt2D = image.to(device), gt2D.to(device)
+                
+                medsam_pred = medsam_model(image, boxes_np)
+
+                # To compare to nnU-Net we use foreground dice loss
+                seg_loss = fg_seg_loss_func(medsam_pred, gt2D)
+
+                ce_loss = ce_loss_func(medsam_pred, gt2D.float())
+                loss = seg_loss + ce_loss      
+                
+                epoch_val_seg_loss += seg_loss.item()
+                epoch_val_ce_loss += ce_loss.item()
+
+        epoch_val_seg_loss /= step
+        epoch_val_ce_loss /= step
+
+        val_seg_losses.append(epoch_val_seg_loss)
+        val_ce_losses.append(epoch_val_ce_loss)
+
+        logger.info(
+            f'Time: {datetime.now().strftime("%Y%m%d-%H%M")}, Epoch: {epoch}, Train Seg. Loss: {epoch_train_seg_loss},Train CE Loss: {epoch_train_ce_loss}, Val Seg. Loss: {epoch_val_seg_loss}, Val CE Loss: {epoch_val_ce_loss}'
+        )
+
+        ## save the latest model
+        checkpoint = {
+            "model": medsam_model.state_dict(),
+            "optimizer": optimizer.state_dict(),
+            "epoch": epoch,
+        }
+        torch.save(checkpoint, "medsam_model_latest.pth")
+       
+        ## save the best model
+        if epoch_val_seg_loss < best_val_fg_seg_loss:
+            best_val_fg_seg_loss = epoch_val_seg_loss
+            checkpoint = {
+                "model": medsam_model.state_dict(),
+                "optimizer": optimizer.state_dict(),
+                "epoch": epoch,
+            }
+            torch.save(checkpoint, "medsam_model_best.pth")
+
+    tracker.stop()
+
+    progress = pd.DataFrame({
+        "Epoch": np.arange(len(train_seg_losses)),
+        "Training Segmentation Loss": train_seg_losses,
+        "Training CrossEntropy Loss": train_ce_losses,
+        "Validation Foreground Segmentation Loss": val_seg_losses,
+        "Validation": val_ce_losses,
+    })
+    progress.to_csv("progress.csv", index=False)
+
+if __name__  == "__main__":
+    sys.exit(run())

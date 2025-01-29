@@ -14,7 +14,7 @@ import cc3d
 import sys
 import multiprocessing as mp
 from functools import partial
-
+import cv2
 from typing import TYPE_CHECKING
 
 import hydra
@@ -113,6 +113,43 @@ def preprocess(name: str, npz_path: str, cfg: DictConfig):
                 join(npz_path, prefix + gt_name.split(cfg.gt_name_suffix)[0] + "_gt.nii.gz"),
             )
 
+def convert_npz_to_npy(npz_name: str, npz_dir: str, npy_dir: str):
+    """
+    Convert npz files to npy files for training
+
+    Parameters
+    ----------
+    npz_name : str
+        Name of the npz file to be converted
+    """
+    name = npz_name.split(".npz")[0]
+    npz_path = join(npz_dir, npz_name)
+    npz = np.load(npz_path, allow_pickle=True, mmap_mode="r")
+    imgs = npz["imgs"]
+    gts = npz["gts"]
+    if len(gts.shape) > 2: ## 3D image
+        for i in range(imgs.shape[0]):
+            img_i = imgs[i, :, :]
+            img_3c = np.repeat(img_i[:, :, None], 3, axis=-1)
+            gt_i = gts[i, :, :]
+            gt_i = np.uint8(gt_i)
+            gt_i = cv2.resize(gt_i, (256, 256), interpolation=cv2.INTER_NEAREST)
+            assert gt_i.shape == (256, 256)
+            np.save(join(npy_dir, "imgs", name + "-" + str(i).zfill(3) + ".npy"), img_3c)
+            np.save(join(npy_dir, "gts", name + "-" + str(i).zfill(3) + ".npy"), gt_i)
+    else: ## 2D image
+        if len(imgs.shape) < 3:
+            img_3c = np.repeat(imgs[:, :, None], 3, axis=-1)
+        else:
+            img_3c = imgs
+
+        gt_i = gts
+        gt_i = np.uint8(gt_i)
+        gt_i = cv2.resize(gt_i, (256, 256), interpolation=cv2.INTER_NEAREST)
+        assert gt_i.shape == (256, 256)
+        np.save(join(npy_dir, "imgs", name + ".npy"), img_3c)
+        np.save(join(npy_dir, "gts", name + ".npy"), gt_i)
+
 def get_train_val_names(cfg: DictConfig) -> tuple[list[str], list[str]]:
     preprocessed_folder = NNUNET_PREPROCESSED / cfg.dataset.name
     dataset_info = load_json(preprocessed_folder / "dataset.json")
@@ -157,6 +194,30 @@ def run(cfg: DictConfig):
             for i, _ in tqdm(enumerate(p.imap_unordered(preprocess_ts, ts_names))):
                 pbar.update()
 
+    npy_path_tr = output_path / "npy_train"
+    npy_path_val = output_path / "npy_val"
+    (npy_path_tr / "imgs").mkdir(parents=True, exist_ok=True)
+    (npy_path_tr / "gts").mkdir(parents=True, exist_ok=True)
+    (npy_path_val / "imgs").mkdir(parents=True, exist_ok=True)
+    (npy_path_val / "gts").mkdir(parents=True, exist_ok=True)
+                             
+    npz_names_tr = [f for f in os.listdir(npz_train_path) if f.endswith(".npz")]
+    npz_names_val = [f for f in os.listdir(npz_val_path) if f.endswith(".npz")]
+
+    convert_npz_to_npy_tr = partial(convert_npz_to_npy, npz_dir=str(npz_train_path), npy_dir=str(npy_path_tr))
+    convert_npz_to_npy_val = partial(convert_npz_to_npy, npz_dir=str(npz_val_path), npy_dir=str(npy_path_val))
+
+    with mp.Pool(cfg.num_workers) as pool:
+        with tqdm(total=len(npz_names_tr)) as pbar:
+            pbar.set_description("Converting npz to npy")
+            for i, _ in enumerate(pool.imap_unordered(convert_npz_to_npy_tr, npz_names_tr)):
+                pbar.update()
+
+    with mp.Pool(cfg.num_workers) as pool:
+        with tqdm(total=len(npz_names_tr)) as pbar:
+            pbar.set_description("Converting npz to npy")
+            for i, _ in enumerate(pool.imap_unordered(convert_npz_to_npy_val, npz_names_val)):
+                pbar.update()
 
 if __name__  == "__main__":
     test = "la_005_0000.nii.gz"

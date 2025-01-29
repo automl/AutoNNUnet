@@ -35,13 +35,13 @@ if __name__  == "__main__":
     # HPO 
     # --------------------------------------------------------------------------------------------
     # Results
-    plotter.plot_optimization()             # Single datasets HPO over time
+    # plotter.plot_optimization()             # Single datasets HPO over time
 
-    # Analysis
-    plotter.plot_footprints(approach_keys=["hpo"])    # Footprints of HPO
-    plotter.plot_budget_correlations(approach_keys=["hpo"])  # Budget Correlations of HPO
-    plotter.plot_hpis(approach_keys=["hpo"])          # HPIS of HPO
-    plotter.plot_ablation_paths(approach_keys=["hpo"])  # Ablation Paths of HPO
+    # # Analysis
+    # plotter.plot_footprints(approach_keys=["hpo"])    # Footprints of HPO
+    # plotter.plot_budget_correlations(approach_keys=["hpo"])  # Budget Correlations of HPO
+    # plotter.plot_hpis(approach_keys=["hpo"])          # HPIS of HPO
+    # plotter.plot_ablation_paths(approach_keys=["hpo"])  # Ablation Paths of HPO
 
     # --------------------------------------------------------------------------------------------
     # HPO + NAS

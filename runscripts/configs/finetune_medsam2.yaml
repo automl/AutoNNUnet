@@ -1,0 +1,35 @@
+# @package _global_
+defaults:
+  - base
+  - _self_
+  - cluster: kisski_gpu
+  - dataset: Dataset001_BrainTumour
+  - sam_config: sam2_hiera_t_post_processing
+
+seed: 0
+fold: 0
+
+num_epochs: 10
+pretrained_model: sam2_hiera_tiny.pt
+model_cfg: sam2_hiera_t.yaml
+batch_size: 16
+bbox_shift: 5
+num_workers: 0
+weight_decay: 0.01
+lr: 6e-5
+num_train_workers: 32
+num_val_workers: 8
+resume: false
+
+hydra:
+  output_subdir: "."
+  run: 
+    dir: output/baseline_medsam2/${dataset.name}
+  sweep:
+    dir: output/baseline_medsam2/${dataset.name}
+    subdir: fold_${fold}     
+  job:
+    chdir: true
+
+    
+  

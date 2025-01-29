@@ -1,0 +1,22 @@
+# @package _global_
+defaults:
+  - override /hydra/launcher: submitit_slurm
+
+device: cuda
+
+hydra:
+  launcher:
+    name: ${dataset.name}
+    partition: kisski-inference
+    cpus_per_task: 48
+    mem_gb: 80
+    timeout_min: 4320  # 3 days
+    # additional_parameters:
+    #   reservation: test9
+    # exclude: gpu002.kisski, gpu006.kisski
+    # exclude: gpu007.kisski
+    setup:
+      - module load Miniforge3
+      - module load CUDA
+      - conda activate /mnt/home/jbecktep/.conda/envs/automis
+      - export nnUNet_n_proc_DA=30
