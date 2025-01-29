@@ -65,13 +65,21 @@ def _get_image_and_label_features(dataset: str) -> pd.DataFrame:
             class_mask = (label == float(class_idx))
 
             class_volume = class_mask.sum()
-            compactness = compute_compactness(class_mask)
-            std = compute_std_per_axis(class_mask)
+            if class_volume > 0:
+                compactness = compute_compactness(class_mask)
+                std = compute_std_per_axis(class_mask)
 
-            mean_intensity = img[class_mask].mean()
-            std_intensity = img[class_mask].std()
-            min_intensity = img[class_mask].min()
-            max_intensity = img[class_mask].max()
+                mean_intensity = img[class_mask].mean()
+                std_intensity = img[class_mask].std()
+                min_intensity = img[class_mask].min()
+                max_intensity = img[class_mask].max()
+            else:
+                compactness = np.nan
+                std = [np.nan, np.nan, np.nan]
+                mean_intensity = np.nan
+                std_intensity = np.nan
+                min_intensity = np.nan
+                max_intensity = np.nan
             
             rows.append({
                 "instance": instance,
