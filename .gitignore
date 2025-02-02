@@ -140,6 +140,7 @@ output/baseline_ConvolutionalEncoder
 output/baseline_ResidualEncoderM
 output/baseline_ResidualEncoderL
 output/baseline_ResidualEncoderXL
+output/baseline_medsam2
 
 
 output_bkp/
