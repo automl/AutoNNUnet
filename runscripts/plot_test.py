@@ -14,5 +14,6 @@ if __name__  == "__main__":
         format="png",
     )
 
-    # plotter._plot_baseline(dataset="Dataset001_BrainTumour", x_metric="Real Runtime Used")
-    plotter._plot_baseline_vs_dataset_metric(dataset_metric="Test")            
+    plotter._plot_baseline(dataset="Dataset002_Heart")
+    plotter._plot_baseline(dataset="Dataset004_Hippocampus")
+    # plotter.plot_baselines(x_metric="Real Runtime Used")    

@@ -10,7 +10,7 @@ hydra:
     partition: kisski-inference
     cpus_per_task: 48
     mem_gb: 80
-    timeout_min: 4320  # 3 days
+    timeout_min: 720  # 3 days
     # additional_parameters:
     #   reservation: test9
     # exclude: gpu002.kisski, gpu006.kisski

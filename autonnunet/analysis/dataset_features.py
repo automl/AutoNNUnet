@@ -17,7 +17,7 @@ SOURCES = {
     "Dataset005_Prostate": "mp-MRI",
     "Dataset006_Lung": "CT",
     "Dataset007_Pancreas": "CT",
-    "Dataset008_Spleen": "CT",
+    "Dataset008_HepaticVessel": "CT",
     "Dataset009_Spleen": "CT",
     "Dataset010_Colon": "CT",
 }

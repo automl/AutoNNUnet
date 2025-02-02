@@ -8,6 +8,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import torch
+from omegaconf import DictConfig
+from autonnunet.utils.paths import NNUNET_PREPROCESSED, NNUNET_RAW
 
 
 def seed_everything(seed: int) -> None:
@@ -71,3 +73,26 @@ def format_dataset_name(dataset_name: str) -> str:
 def load_json(file: Path) -> dict:
     with open(file) as f:
         return json.load(f)
+
+def get_train_val_test_names(cfg: DictConfig) -> tuple[list[str], list[str], list[str]]:
+    raw_folder = NNUNET_RAW / cfg.dataset.name
+    preprocessed_folder = NNUNET_PREPROCESSED / cfg.dataset.name
+    dataset_info = load_json(preprocessed_folder / "dataset.json")
+    n_channels = len(dataset_info["channel_names"])
+    splits = load_json(preprocessed_folder / "splits_final.json")
+
+    train_imgs = []
+    val_imgs = []
+    for name in splits[cfg.fold]["train"]:
+        for i in range(n_channels):
+            train_imgs += [f"{name}_{'%04d' % i}.nii.gz"]
+        
+    for name in splits[cfg.fold]["val"]:
+        for i in range(n_channels):
+            val_imgs += [f"{name}_{'%04d' % i}.nii.gz"]
+
+    test_imgs = []
+    for name in raw_folder.glob("imagesTs/*.nii.gz"):
+        test_imgs.append(name.name)
+
+    return train_imgs, val_imgs, test_imgs

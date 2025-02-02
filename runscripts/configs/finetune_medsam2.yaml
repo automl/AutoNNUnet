@@ -9,7 +9,11 @@ defaults:
 seed: 0
 fold: 0
 
-num_epochs: 10
+img_name_suffix: .nii.gz
+gt_name_suffix: .nii.gz
+
+# We use the default settings from the MedSAM repo / MedSAM2 branch
+num_epochs: 100
 pretrained_model: sam2_hiera_tiny.pt
 model_cfg: sam2_hiera_t.yaml
 batch_size: 16
@@ -17,9 +21,9 @@ bbox_shift: 5
 num_workers: 0
 weight_decay: 0.01
 lr: 6e-5
-num_train_workers: 32
-num_val_workers: 8
-resume: false
+num_train_workers: 2
+num_val_workers: 2
+resume: true
 
 hydra:
   output_subdir: "."
@@ -30,6 +34,5 @@ hydra:
     subdir: fold_${fold}     
   job:
     chdir: true
-
     
   

@@ -1,17 +1,15 @@
 defaults:
   - _self_
-  - /cluster: kisski_cpu
   - dataset: Dataset002_Heart
 
+# We need to specify the fold to obtain all images
+# but it does not affect the pre-processing
 fold: 0
 
-modality: CT
+modality: ${dataset.modality}
 img_name_suffix: .nii.gz
 gt_name_suffix: .nii.gz
-img_path: data/FLARE22Train/images
-gt_path: data/FLARE22Train/labels
-output_path: data/npz/Flare22Train
-num_workers: 4
+num_workers: 48
 window_level: 40
 window_width: 400
 save_nii: false
@@ -25,5 +23,3 @@ hydra:
   sweep:
     dir: output/prepare_medsam2/${dataset.name}/
     subdir: ""   
-  # job:
-  #   chdir: true

@@ -30,6 +30,7 @@ from deepcave.plugins.hyperparameter.pdp import PartialDependencies
 from deepcave.utils.styled_plotty import get_hyperparameter_ticks
 
 from autonnunet.analysis.deepcave_utils import runhistory_to_deepcave
+from autonnunet.analysis.dataset_features import extract_dataset_features
 from autonnunet.utils import (compute_hyperband_budgets,
                               dataset_name_to_msd_task, format_dataset_name,
                               get_budget_per_config, load_json)
@@ -51,12 +52,13 @@ APPROACH_REPLACE_MAP = {
     "baseline_ConvolutionalEncoder": "nnU-Net (Conv)",
     "baseline_ResidualEncoderM": "nnU-Net (ResM)",
     "baseline_ResidualEncoderL": "nnU-Net (ResL)",
+    "baseline_medsam2": "MedSAM2",
     "hpo": "HPO (ours)",
     "hpo_nas": "HPO + NAS (ours)",
     "hpo_hnas": "HPO + HNAS (ours)"
 }
 
-PROGRESS_REPLACEMENT_MAP = {
+NNUNET_PROGRESS_REPLACEMENT_MAP = {
     "mean_fg_dice": "Mean Foreground Dice",
     "ema_fg_dice": "EMA Foreground Dice",
     "train_losses": "Training Loss",
@@ -140,6 +142,27 @@ HISTORY_REPLACEMENT_MAP = {
     "o1_runtime": "Runtime",
 }
 
+DATASET_FEATURES_REPLACEMENT_MAP = {
+    "Dataset": "Dataset",     # This is only here for the filtering based on keys()
+    "instance": "Instance",
+    "class_idx": "Class Index",
+    "volume": "Volume",
+    "class_volume": "Class Volume",
+    "class_volume_ratio": "Class Volume Ratio",
+    "compactness": "Compactness",
+    "std": "Standard Deviation",
+    "mean_intensity": "Mean Intensity Mean",
+    "std_intensity": "Intensity Std.",
+    "min_intensity": "Intensity Min.",
+    "max_intensity": "Intensity Max.",
+    "modality": "Modality",
+    "n_training_samples": "#Training Samples",
+    "n_test_samples": "#Test Samples",
+    "n_channels": "#Channels",
+    "n_classes": "#Classes",
+    "source": "Source",
+}
+
 STYLES_TYPE = Literal["white", "dark", "whitegrid", "darkgrid", "ticks"]
 
 OBJECTIVES_MAPPING = {
@@ -157,7 +180,8 @@ PROGRESS_FILENAME = "progress.csv"
 HISTORY_FILENAME = "runhistory.csv"
 SAMPLING_POLICY_LOGS = "sampling_policy.log"
 INCUMBENT_FILENAME = "incumbent_loss.csv"
-VALIDATION_METRICS_FILENAME = "summary.json"
+NNUNET_VALIDATION_METRICS_FILENAME = "summary.json"
+MEDSAM2_VALIDATION_METRICS_FILENAME = "validation_results.csv"
 EMISSIONS_FILENAME = "emissions.csv"
 DATASET_JSON_FILENAME = "dataset.json"
 
@@ -179,11 +203,9 @@ WONG_PALETTE = [
 pd.set_option("display.max_rows", None)
 
 @dataclass
-class BaselineResult:
+class BaselineResults:
     progress: pd.DataFrame
-    metrics_foreground_mean: pd.DataFrame
-    metrics_mean: pd.DataFrame
-    metrics_per_case: pd.DataFrame
+    metrics: pd.DataFrame
     emissions: pd.DataFrame
 
 @dataclass
@@ -257,11 +279,9 @@ class Plotter:
             self.load_all_data()
 
     def _init_data(self):
-        self._baseline_data = BaselineResult(
+        self._baseline_data = BaselineResults(
             progress=pd.DataFrame(),
-            metrics_foreground_mean=pd.DataFrame(),
-            metrics_mean=pd.DataFrame(),
-            metrics_per_case=pd.DataFrame(),
+            metrics=pd.DataFrame(),
             emissions=pd.DataFrame()
         )
         self._baseline_datasets = []
@@ -325,6 +345,7 @@ class Plotter:
         self.baseline_conv =  AUTONNUNET_OUTPUT / "baseline_ConvolutionalEncoder"
         self.baseline_resenc_m =  AUTONNUNET_OUTPUT / "baseline_ResidualEncoderM"
         self.baseline_resenc_l =  AUTONNUNET_OUTPUT / "baseline_ResidualEncoderL"
+        self.baseline_medsam2 =  AUTONNUNET_OUTPUT / "baseline_medsam2"
         self.hpo_dir = AUTONNUNET_OUTPUT / "hpo"
         self.nas_dir = AUTONNUNET_OUTPUT / "hpo_nas"
         self.hnas_dir = AUTONNUNET_OUTPUT / "hpo_hnas"
@@ -340,6 +361,8 @@ class Plotter:
         self.baseline_plots = AUTONNUNET_PLOTS / "baseline"
         self.baseline_plots.mkdir(parents=True, exist_ok=True)
 
+        self.dataset_analysis_plots = AUTONNUNET_PLOTS / "analysis" / "datasets"
+        self.dataset_analysis_plots.mkdir(parents=True, exist_ok=True)
         self.combined_analysis_plots = AUTONNUNET_PLOTS / "analysis" / "combined"
         self.combined_analysis_plots.mkdir(parents=True, exist_ok=True)
         self.hpo_analysis_plots = AUTONNUNET_PLOTS / "analysis" / "hpo"
@@ -363,9 +386,7 @@ class Plotter:
         baseline_data = self._load_baseline_data(datasets=[dataset])
         self._baseline_data.progress = pd.concat([self._baseline_data.progress, baseline_data.progress])
         self._baseline_data.emissions = pd.concat([self._baseline_data.emissions, baseline_data.emissions])
-        self._baseline_data.metrics_foreground_mean = pd.concat([self._baseline_data.metrics_foreground_mean, baseline_data.metrics_foreground_mean])
-        self._baseline_data.metrics_mean = pd.concat([self._baseline_data.metrics_mean, baseline_data.metrics_mean])
-        self._baseline_data.metrics_per_case = pd.concat([self._baseline_data.metrics_per_case, baseline_data.metrics_per_case])
+        self._baseline_data.metrics = pd.concat([self._baseline_data.metrics, baseline_data.metrics])
 
     def _load_hpo_data_lazy(self, dataset: str):
         if dataset in self._hpo_datasets:
@@ -432,19 +453,13 @@ class Plotter:
             self._baseline_data.progress["Dataset"] == dataset]
         emissions = self._baseline_data.emissions[
             self._baseline_data.emissions["Dataset"] == dataset]
-        metrics_foreground_mean = self._baseline_data.metrics_foreground_mean[
-            self._baseline_data.metrics_foreground_mean["Dataset"] == dataset]
-        metrics_mean = self._baseline_data.metrics_mean[
-            self._baseline_data.metrics_mean["Dataset"] == dataset]
-        metrics_per_case = self._baseline_data.metrics_per_case[
-            self._baseline_data.metrics_per_case["Dataset"] == dataset]
+        metrics = self._baseline_data.metrics[
+            self._baseline_data.metrics["Dataset"] == dataset]
 
-        return BaselineResult(
+        return BaselineResults(
             progress=progress,
             emissions=emissions,
-            metrics_foreground_mean=metrics_foreground_mean,
-            metrics_mean=metrics_mean,
-            metrics_per_case=metrics_per_case
+            metrics=metrics,
         )
 
     def get_hpo_data(self, dataset: str):
@@ -555,45 +570,40 @@ class Plotter:
         
         return deepcave_run, history, incumbent
 
-    def _load_metrics(self, fold_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-        metrics_path = fold_dir / "validation" / VALIDATION_METRICS_FILENAME
+    def _load_nnunet_metrics(self, fold_dir: Path) -> pd.DataFrame:
+        metrics_path = fold_dir / "validation" / NNUNET_VALIDATION_METRICS_FILENAME
         dataset_info_path = fold_dir / DATASET_JSON_FILENAME
 
         validation_metrics = load_json(metrics_path)
         dataset_info = load_json(dataset_info_path)
-        labels = list(dataset_info["labels"].keys())
+        labels = {str(v): k for k, v in dataset_info["labels"].items()}
 
-        foreground_mean = pd.DataFrame(validation_metrics["foreground_mean"], index=[0])
+        metrics_df = pd.DataFrame({
+            labels[k]: [v["Dice"]] for k, v in validation_metrics["mean"].items()
+        })
+        metrics_df["Mean"] = [validation_metrics["foreground_mean"]["Dice"]] 
 
-        mean = []
-        for class_id, metrics in validation_metrics["mean"].items():
-            row = {
-                "class_id": class_id,
-                "label": labels[int(class_id)],
-                **metrics
-            }
-            mean.append(row)
-        mean = pd.DataFrame(mean)
+        return metrics_df
+    
+    def _load_mesam2_metrics(self, fold_dir: Path) -> pd.DataFrame:
+        metrics_path = fold_dir / MEDSAM2_VALIDATION_METRICS_FILENAME
+        if not metrics_path.exists():
+            return pd.DataFrame()
 
-        metrics_per_case = []
-        for case in validation_metrics["metric_per_case"]:
-            prediction_file = Path(case["prediction_file"]).name
-            reference_file = Path(case["reference_file"]).name
+        validation_metrics = pd.read_csv(metrics_path)
+        dataset_info_path = self.baseline_conv / fold_dir.parts[-2] / self.configuration / fold_dir.parts[-1] / DATASET_JSON_FILENAME
 
-            for class_id, metrics in case["metrics"].items():
-                row = {
-                    "class_id": class_id,
-                    "label": labels[int(class_id)],
-                    **metrics,
-                    "prediction_file": prediction_file,
-                    "reference_file": reference_file
-                }
-                metrics_per_case.append(row)
-        metrics_per_case = pd.DataFrame(metrics_per_case)
+        dataset_info = load_json(dataset_info_path)
+        labels = {str(v): k for k, v in dataset_info["labels"].items()}
 
-        return foreground_mean, mean, metrics_per_case
+        validation_metrics = validation_metrics.drop(columns=["case"]).mean().to_frame().T
+        validation_metrics = validation_metrics.rename(columns=labels)
 
-    def _load_progress(self, fold_dir: Path) -> pd.DataFrame:
+        validation_metrics["Mean"] = validation_metrics.mean(axis=1)
+
+        return validation_metrics
+
+    def _load_nnunet_progress(self, fold_dir: Path) -> pd.DataFrame:
         dataset_info = load_json(fold_dir / DATASET_JSON_FILENAME)
 
         labels = list(dataset_info["labels"].keys())
@@ -605,85 +615,112 @@ class Plotter:
         progress = pd.read_csv(path)
         progress["Epoch"] = np.arange(len(progress))
 
-        progress["dice_per_class_or_region"] = progress[
-            "dice_per_class_or_region"].apply(
-                ast.literal_eval)
-        labels_df = pd.DataFrame(
-            progress["dice_per_class_or_region"].tolist(),
-            columns=labels
-            )
-
         # Use epoch_start_timestamps and epoch_end_timestamps
         progress["Runtime"] = progress["epoch_end_timestamps"] - progress["epoch_start_timestamps"]
-        progress = progress.drop(columns=["epoch_start_timestamps", "epoch_end_timestamps"])
+        progress = progress[["Epoch", "mean_fg_dice", "ema_fg_dice", "train_losses", "val_losses", "Runtime"]]
 
-        return pd.concat(
-            [progress, labels_df],
-            axis=1
-        ).drop(columns=["dice_per_class_or_region"])
+        progress = progress.rename(columns={
+            "mean_fg_dice": "Mean Foreground Dice",
+            "ema_fg_dice": "EMA Foreground Dice",
+            "train_losses": "Training Loss",
+            "val_losses": "Validation Loss",
+        })
 
+        return progress
+    
+    def _load_medsam2_progress(self, fold_dir: Path) -> pd.DataFrame:
+        path = fold_dir / PROGRESS_FILENAME
+        if not path.exists():
+            return pd.DataFrame()
+        
+        progress = pd.read_csv(path)
 
-    def _load_baseline_data(self, datasets: list[str]) -> BaselineResult:
+        progress = progress.rename(columns={
+            "Epoch Runtime": "Runtime"
+        })
+
+        progress["Mean Foreground Dice"] = 1 - progress["Validation Segmentation Loss"]
+        progress["EMA Foreground Dice"] = 1 - progress["Validation Segmentation Loss"]
+        for i in range(1, len(progress)):
+            progress.loc[i, "EMA Foreground Dice"] = progress.loc[i - 1, "EMA Foreground Dice"] * 0.9 + progress.loc[i, "Mean Foreground Dice"] * 0.1
+
+        progress["Training Loss"] = progress["Training Segmentation Loss"] + (progress["Training CrossEntropy Loss"] - 1) 
+        progress["Validation Loss"] = progress["Validation Segmentation Loss"] + (progress["Validation CrossEntropy Loss"] - 1)
+        
+        progress = progress[["Epoch", "Mean Foreground Dice", "EMA Foreground Dice", "Training Loss", "Validation Loss", "Runtime"]]
+
+        return progress
+
+    def _load_baseline_data(self, datasets: list[str]) -> BaselineResults:
         all_progress  = []
         all_emissions = []
-        all_metrics_foreground_mean = []
-        all_metrics_mean = []
-        all_metrics_per_case = []
+        all_metrics = []
 
         for approach, baseline_dir in zip(
-            list(APPROACH_REPLACE_MAP.values())[:3],
-            [self.baseline_conv, self.baseline_resenc_m, self.baseline_resenc_l], strict=False
+            list(APPROACH_REPLACE_MAP.values())[:4],
+            [self.baseline_conv, self.baseline_resenc_m, self.baseline_resenc_l, self.baseline_medsam2], strict=False
         ):
             for dataset in datasets:
                 if dataset in self._baseline_datasets:
                     continue
 
+                dataset_progress = []
                 dataset_dir = baseline_dir / dataset
                 if not dataset_dir.exists():
                     self.logger.info(f"{approach}: Skipping {dataset}.")
                     continue
 
                 for fold in range(self.n_folds):
-                    fold_dir = dataset_dir \
-                        / self.configuration / f"fold_{fold}"
-                    if not (fold_dir / "validation" / "summary.json").exists():
-                        self.logger.info(f"{approach}: Skipping {fold} of dataset {dataset}.")
-                        continue
+                    if approach == "MedSAM2":
+                        fold_dir = dataset_dir / f"fold_{fold}"
+                    else:
+                        fold_dir = dataset_dir / self.configuration / f"fold_{fold}"
 
-                    progress = self._load_progress(fold_dir=fold_dir)
+                        if not (fold_dir / "validation" / NNUNET_VALIDATION_METRICS_FILENAME).exists():
+                            self.logger.info(f"{approach}: Skipping {fold} of dataset {dataset}.")
+                            continue
+                    
+                    if approach == "MedSAM2":
+                        progress = self._load_medsam2_progress(fold_dir=fold_dir)
+                    else:   
+                        progress = self._load_nnunet_progress(fold_dir=fold_dir)
 
                     if (fold_dir / EMISSIONS_FILENAME).is_file():
                         emissions = pd.read_csv(fold_dir / EMISSIONS_FILENAME)
                     else:
                         emissions = pd.DataFrame()
-                    (
-                        metrics_foreground_mean,
-                        metrics_mean,
-                        metrics_per_case
-                    ) = self._load_metrics(fold_dir)
+                    
+                    if approach == "MedSAM2":
+                        metrics = self._load_mesam2_metrics(fold_dir=fold_dir)
+                    else:
+                        metrics = self._load_nnunet_metrics(fold_dir=fold_dir)
 
-                    for df in [progress, emissions, metrics_foreground_mean, metrics_mean, metrics_per_case]:
+                    for df in [progress, emissions, metrics]:
                         df["Approach"] = approach
                         df["Fold"] = fold
                         df["Dataset"] = dataset
 
-                    all_progress.append(progress)
                     all_emissions.append(emissions)
-                    all_metrics_foreground_mean.append(metrics_foreground_mean)
-                    all_metrics_mean.append(metrics_mean)
-                    all_metrics_per_case.append(metrics_per_case)
+                    all_metrics.append(metrics)
+                    dataset_progress.append(progress)
+                
+                # We want to calculate the real runtime used by averaging
+                # across folds and then summing up the averages
+                dataset_progress = pd.concat(dataset_progress) if dataset_progress else pd.DataFrame()
+                if len(dataset_progress) > 0:
+                    average_runtime = dataset_progress.groupby(["Epoch"])["Runtime"].transform("mean")
+                    dataset_progress.loc[:, "Average Runtime"] = average_runtime
+                    dataset_progress.loc[:, "Real Runtime Used"] = dataset_progress.groupby(["Fold"])["Average Runtime"].cumsum() / 3600
+
+                all_progress.append(dataset_progress)
 
         all_progress = pd.concat(all_progress)
         all_emissions = pd.concat(all_emissions)
-        all_metrics_foreground_mean = pd.concat(all_metrics_foreground_mean)
-        all_metrics_mean = pd.concat(all_metrics_mean)
-        all_metrics_per_case = pd.concat(all_metrics_per_case)
+        all_metrics = pd.concat(all_metrics)
 
-        return BaselineResult(
+        return BaselineResults(
             progress=all_progress,
-            metrics_foreground_mean=all_metrics_foreground_mean,
-            metrics_mean=all_metrics_mean,
-            metrics_per_case=all_metrics_per_case,
+            metrics=all_metrics,
             emissions=all_emissions
         )
 
@@ -698,13 +735,28 @@ class Plotter:
 
         # Since we run succesive halving, we have to insert the real
         # budget of a run by subtracting the budget of the previous run
-        # in the runhistory
+        # in the runhistory (because we use checkpoints)
         history.loc[:, "real_budget"] = 0.
         for run_id, real_budget in self.real_budgets_per_config.items():
             history.loc[history["run_id"] == run_id, "real_budget"] = real_budget
 
+        # For the runtime, we have to add up all indivual runtimes
+        # (assuming that we can run 5 folds in parallel)
+        history.loc[:, "real_runtime"] = 0.
+        for run_id in history["run_id"].unique():
+            runtimes = []
+            for fold in range(self.n_folds):
+                slurm_run_id = run_id * self.n_folds + fold
+                progress = self._load_nnunet_progress(run_path / str(slurm_run_id))
+                runtimes.append(progress["Runtime"].sum())
+
+            history.loc[history["run_id"] == run_id, "real_runtime"] = float(np.mean(runtimes)) / 3600
+
         # The real used budget is the sum of all additional budgets
         incumbent["real_budget_used"] = history["real_budget"].cumsum()
+        
+        # Similarly for the runtime
+        incumbent["real_runtime_used"] = history["real_runtime"].cumsum()
 
         assert len(incumbent) == len(history)
 
@@ -726,6 +778,7 @@ class Plotter:
                     "Fold": fold,
                     "Budget Used": row["budget_used"],
                     "Real Budget Used": row["real_budget_used"],
+                    "Real Runtime Used": row["real_runtime_used"],
                 }
 
                 incumbent_expanded.append(row_data)
@@ -839,7 +892,7 @@ class Plotter:
                         all_emissions.append(emissions)
 
                     if run_id == incumbent_run_id:
-                        progress = self._load_progress(run_dir)
+                        progress = self._load_nnunet_progress(run_dir)
                         progress["Dataset"] = dataset
                         progress["Approach"] = approach
                         progress["Fold"] = fold
@@ -989,40 +1042,55 @@ class Plotter:
 
         ax.xaxis.set_major_formatter(CustomLogFormatter())
 
-    def _plot_baseline(self, dataset: str, log_x: bool = True) -> None:
+    def _plot_baseline(self, dataset: str, x_metric: str = "Real Runtime Used") -> None:
         baseline_progress = self.get_baseline_data(dataset).progress
 
-        # smoothing the curves for each approach
-        baseline_progress.loc[:, "mean_fg_dice"] = baseline_progress.groupby(
-            ["Approach", "Fold"])["mean_fg_dice"].transform(
-                lambda x: x.ewm(span=10).mean()
-            )
         fig, ax = plt.subplots(1, 1, figsize=(self.figwidth / 2, self.figwidth / 2))
 
-        baseline_progress.loc[:, "Approach"] = baseline_progress["Approach"].replace({
-            "nnU-Net (Conv)": "Conv",
-            "nnU-Net (ResM)": "ResM",
-            "nnU-Net (ResL)": "ResL"
-        })
-
         g = sns.lineplot(
-            x="Epoch",
-            y="mean_fg_dice",
+            x=x_metric,
+            y="EMA Foreground Dice",
             data=baseline_progress,
             hue="Approach",
-            errorbar=("sd")
+            errorbar=("sd"),
         )
 
-        g.set_title(f"nnU-Net Training Progress on\n{format_dataset_name(dataset)}")
-        g.set_xlabel("Epoch")
-        g.set_ylabel("Mean Foreground Dice (Proxy)")
+        # We add markers to highlight the best values
+        # baseline_approaches = list(APPROACH_REPLACE_MAP.values())[:4]
+        # for i in range(len(baseline_approaches)):
+        #     approach = baseline_approaches[i]
+        #     approach_progress = baseline_progress[baseline_progress["Approach"] == approach][["EMA Foreground Dice", x_metric]]
+        #     grouped_approach = approach_progress.groupby(x_metric).mean().reset_index()
+         
+        #     best_score = grouped_approach["EMA Foreground Dice"].max()
+        #     best_x_idx = grouped_approach["EMA Foreground Dice"].idxmax()
+        #     best_x = grouped_approach.loc[best_x_idx, x_metric]  
 
+        #     color = self.color_palette[i]
+        #     ax.scatter(
+        #         best_x,
+        #         best_score,
+        #         color=color,
+        #         zorder=5,
+        #         linewidth=1,
+        #         s=100,
+        #         marker="*",
+        #         edgecolor="black"
+        #     )
+
+        g.set_title(f"Training Progress on\n{format_dataset_name(dataset)}")
+        if x_metric == "Epoch":
+            g.set_xlabel("Epoch")
+        elif x_metric == "Real Runtime Used":
+            g.set_xlabel("Wallclock Time [h]")
+            
+        g.set_ylabel("EMA Mean Foreground DSC (Proxy)")
         g.set_xscale("log")
 
         g.legend(
             loc="upper center",
             bbox_to_anchor=(0.5, -0.17),
-            ncol=3,
+            ncol=2,
             fancybox=False,
             shadow=False,
             frameon=False
@@ -1031,7 +1099,7 @@ class Plotter:
 
         fig.subplots_adjust(
             top=0.88,
-            bottom=0.2,
+            bottom=0.23,
             left=0.18,
             right=0.96,
         )
@@ -1044,9 +1112,10 @@ class Plotter:
 
     def plot_baselines(
             self,
+            x_metric: str = "Real Runtime Used"
         ):
         for dataset in self.datasets:
-            self._plot_baseline(dataset)
+            self._plot_baseline(dataset=dataset, x_metric=x_metric)
 
     def _plot_optimization(
             self,
@@ -1055,7 +1124,8 @@ class Plotter:
             y_log_scale: bool = False,
             include_nas: bool = True,
             include_hnas: bool = True,
-            show_error: bool = False
+            show_error: bool = False,
+            x_metric: str = "Full Model Trainings"
         ) -> None:
         color_palette = self.color_palette[:5] + [self.color_palette[9]]
 
@@ -1073,14 +1143,14 @@ class Plotter:
 
         baseline_data = self.get_baseline_data(dataset)
 
-        metrics = baseline_data.metrics_foreground_mean
+        metrics = baseline_data.metrics
 
         metrics_expanded = pd.DataFrame(
             np.repeat(metrics.values, 2, axis=0),
             columns=metrics.columns
         )
-        metrics_expanded["Full Model Trainings"] = np.tile(
-            [0, self.show_n_full_trainings],
+        metrics_expanded[x_metric] = np.tile(
+            [0, incumbent[x_metric].max()],
             len(metrics)
         )
         metrics_expanded.loc[:, "1 - Dice"] = (1 - metrics_expanded["Dice"])
@@ -1090,22 +1160,22 @@ class Plotter:
 
         g = sns.lineplot(
             data=metrics_expanded,
-            x="Full Model Trainings",
+            x=x_metric,
             y="1 - Dice",
             hue="Approach",
-            palette=self.color_palette[:min(3, n_baseline_approaches)],
+            palette=self.color_palette[:3],
             linestyle="--",
             errorbar=("sd") if show_error else None,
         )
 
         sns.lineplot(
-            x="Full Model Trainings",
+            x=x_metric,
             y="1 - Dice",
             data=incumbent,
             drawstyle="steps-post",
             hue="Approach",
             errorbar=("sd") if show_error else None,
-            palette=self.color_palette[3: n_hpo_approaches + 3],
+            palette=color_palette[3: n_hpo_approaches + 3],
             ax=g
         )
 
@@ -1113,9 +1183,9 @@ class Plotter:
         hpo_approaches = incumbent["Approach"].unique()
         for i in range(n_hpo_approaches):
             approach = hpo_approaches[i]
-            grouped_approach = incumbent[incumbent["Approach"] == approach].groupby("Full Model Trainings")
+            grouped_approach = incumbent[incumbent["Approach"] == approach].groupby(x_metric)
             last_value = grouped_approach["1 - Dice"].mean().iloc[-1]
-            last_x = grouped_approach["Full Model Trainings"].mean().iloc[-1]
+            last_x = grouped_approach[x_metric].mean().iloc[-1]
 
             color = color_palette[3 + i]
             ax.scatter(
@@ -1130,14 +1200,19 @@ class Plotter:
             )
 
         g.set_title(format_dataset_name(dataset))
-        g.set_xlabel("Full Model Trainings")
+        if x_metric == "Full Model Trainings":
+            g.set_xlabel(x_metric)
+        elif x_metric == "Real Runtime Used":
+            g.set_xlabel("Wallclock Time [h]")
         g.set_ylabel("1 - Dice")
 
         if x_log_scale:
             g.set_xscale("log")
-            g.set_xlim(0.1, self.show_n_full_trainings)
+            if x_metric == "Full Model Trainings":
+                g.set_xlim(0.1, self.show_n_full_trainings)
         else:
-            g.set_xlim(0, self.show_n_full_trainings)
+            if x_metric == "Full Model Trainings":
+                g.set_xlim(0, self.show_n_full_trainings)
 
         if y_log_scale:
             g.set_ylim(1e-2, 1)
@@ -1164,7 +1239,7 @@ class Plotter:
         )
 
         plt.savefig(
-            self.hpo_plots / f"{dataset}_{'hpo_nas' if include_nas or include_hnas else 'hpo'}.{self.format}",
+            self.combined_plots / f"performance_over_time_{dataset}.{self.format}",
             format=self.format,
             dpi=self.dpi
         )
@@ -1185,7 +1260,8 @@ class Plotter:
             y_log_scale: bool = False,
             include_nas: bool = True,
             include_hnas: bool = True,
-            show_error: bool = False
+            show_error: bool = False,
+            x_metric: str = "Real Runtime Used"
         ) -> None:
         color_palette = self.color_palette[:5] + [self.color_palette[9]]
 
@@ -1219,14 +1295,14 @@ class Plotter:
 
             baseline_data = self.get_baseline_data(dataset)
 
-            metrics = baseline_data.metrics_foreground_mean
+            metrics = baseline_data.metrics
 
             metrics_expanded = pd.DataFrame(
                 np.repeat(metrics.values, 2, axis=0),
                 columns=metrics.columns
             )
-            metrics_expanded["Full Model Trainings"] = np.tile(
-                [0, self.show_n_full_trainings],
+            metrics_expanded[x_metric] = np.tile(
+                [0, incumbent[x_metric].max()],
                 len(metrics)
             )
             metrics_expanded.loc[:, "1 - Dice"] = (1 - metrics_expanded["Dice"]) * 100
@@ -1245,7 +1321,7 @@ class Plotter:
             # Plot baselines
             g = sns.lineplot(
                 data=metrics_expanded,
-                x="Full Model Trainings",
+                x=x_metric,
                 y="1 - Dice",
                 hue="Approach",
                 palette=color_palette[:min(3, n_baseline_approaches)],
@@ -1256,7 +1332,7 @@ class Plotter:
 
             # Plot our approaches
             sns.lineplot(
-                x="Full Model Trainings",
+                x=x_metric,
                 y="1 - Dice",
                 data=incumbent,
                 drawstyle="steps-post",
@@ -1349,8 +1425,8 @@ class Plotter:
         baseline_data = self.get_baseline_data(dataset)
         n_baseline_approaches = 0
 
-        for baseline_approach in baseline_data.metrics_foreground_mean["Approach"].unique():
-            metrics = baseline_data.metrics_foreground_mean
+        for baseline_approach in baseline_data.metrics["Approach"].unique():
+            metrics = baseline_data.metrics
             metrics = metrics[metrics["Approach"] == baseline_approach]
             baseline_dice = metrics["Dice"].mean()
 
@@ -1487,8 +1563,8 @@ class Plotter:
 
         n_baseline_approaches = 0
 
-        for baseline_approach in baseline_data.metrics_foreground_mean["Approach"].unique():
-            metrics = baseline_data.metrics_foreground_mean
+        for baseline_approach in baseline_data.metrics["Approach"].unique():
+            metrics = baseline_data.metrics
             metrics = metrics[metrics["Approach"] == baseline_approach]
             baseline_dice = metrics["Dice"].mean()
 
@@ -2791,6 +2867,78 @@ class Plotter:
             for dataset in self.datasets:
                 self._plot_budget_correlations(dataset=dataset, approach_key=approach_key)
 
+    def _get_joint_dataset_features(
+            self,
+        ):
+        all_baseline_metrics = []
+        all_dataset_features = []
+
+        for dataset in self.datasets:
+            baseline_metrics = self.get_baseline_data(dataset=dataset).metrics_per_case
+            baseline_metrics = baseline_metrics.rename(columns={
+                "reference_file": "Instance",
+                "class_id": "Class Index",
+            })
+            baseline_metrics.loc[:, "Instance"] = baseline_metrics["Instance"].apply(lambda x: x.split(".")[0])
+            baseline_metrics = baseline_metrics[["Dataset", "Approach", "Instance", "Dice", "Class Index"]]
+
+            all_baseline_metrics += [baseline_metrics]
+
+            dataset_features = extract_dataset_features(dataset=dataset)
+            dataset_features = dataset_features[dataset_features["class_idx"] != 0]
+            dataset_features.loc[:, "Dataset"] = dataset
+            all_dataset_features += [dataset_features]
+
+        all_baseline_metrics = pd.concat(all_baseline_metrics)
+        all_dataset_features = pd.concat(all_dataset_features)
+        
+        # numerical_cols = all_dataset_features.select_dtypes(include=["number"]).columns
+        # numerical_cols = numerical_cols.drop("Class Index")
+        # non_numerical_cols = all_dataset_features.select_dtypes(exclude=["number"]).columns.difference(["Category"])
+        # non_numerical_cols = non_numerical_cols.drop("Dataset")
+        # non_numerical_cols = non_numerical_cols.drop("Instance")
+
+        # # Group by "category" and apply aggregation functions
+        # all_dataset_features = all_dataset_features.groupby("Dataset").agg({
+        #     **{col: "mean" for col in numerical_cols},   
+        #     **{col: "first" for col in non_numerical_cols} 
+        # }).reset_index()
+
+        all_dataset_features = all_dataset_features[DATASET_FEATURES_REPLACEMENT_MAP.keys()]
+        all_dataset_features = all_dataset_features.rename(columns=DATASET_FEATURES_REPLACEMENT_MAP)
+
+        all_baseline_metrics["Class Index"] = all_baseline_metrics["Class Index"].astype(int)
+        all_dataset_features["Class Index"] = all_dataset_features["Class Index"].astype(int)
+
+        joint_data = all_baseline_metrics.merge(all_dataset_features, on=["Dataset", "Instance", "Class Index"], how="inner")
+
+        return joint_data
+    
+    def plot_joint_dataset_features(
+            self,
+    ):
+        joint_data = self._get_joint_dataset_features()
+        numerical_cols = joint_data.select_dtypes(include=["number"]).columns
+        numerical_cols = numerical_cols.drop("Class Index")
+        joint_data = joint_data[numerical_cols]
+
+        fig, ax = plt.subplots(1, 1, figsize=(self.figwidth, self.figwidth))
+
+        corr = joint_data.corr(method="spearman")
+        sns.heatmap(
+            corr,
+            cmap="coolwarm",
+            annot=True,
+            ax=ax,
+            cbar=False,
+            fmt=".2f",
+        )
+        plt.tight_layout()
+        plt.savefig("test.png", dpi=self.dpi)
+
+
+  
+
     def create_emissions_table(self):
         self.load_all_data()
         baseline_emissions = self._baseline_data.emissions[["run_id", "Approach", "Fold", "Dataset", "emissions"]]
@@ -2933,7 +3081,7 @@ class Plotter:
         )
 
         # Plot performances
-        baseline_metrics = self._baseline_data.metrics_foreground_mean
+        baseline_metrics = self._baseline_data.metrics
         baseline_metrics["Dataset"] = baseline_metrics["Dataset"].apply(lambda s: format_dataset_name(s).replace(" ", "\n"))
 
         g = sns.barplot(

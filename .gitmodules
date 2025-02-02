@@ -7,3 +7,9 @@
 [submodule "submodules/MedSAM"]
 	path = submodules/MedSAM
 	url = https://github.com/becktepe/MedSAM
+[submodule "submodules/hypersweeper"]
+	path = submodules/hypersweeper
+	url = https://github.com/becktepe/hypersweeper
+[submodule "submodules/neps"]
+	path = submodules/neps
+	url = https://github.com/becktepe/neps
