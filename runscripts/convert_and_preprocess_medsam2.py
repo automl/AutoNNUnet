@@ -138,9 +138,6 @@ def run(cfg: DictConfig):
     (npy_path_tr / "imgs").mkdir(parents=True, exist_ok=True)
     (npy_path_tr / "gts").mkdir(parents=True, exist_ok=True)
 
-    npz_path_val = MEDSAM2_PREPROCESSED / cfg.dataset.name / "imagesVal" / "npz"
-    npz_path_val.mkdir(parents=True, exist_ok=True)
-
     preprocess_tr = partial(preprocess, npy_path=str(npy_path_tr), npz_path=str(npz_path_tr), cfg=cfg)
 
     with mp.Pool(cfg.num_workers) as p:
@@ -148,6 +145,7 @@ def run(cfg: DictConfig):
             pbar.set_description("Preprocessing training images")
             for i, _ in tqdm(enumerate(p.imap_unordered(preprocess_tr, names_train_val))):
                 pbar.update()
+
 
 if __name__  == "__main__":
     sys.exit(run())

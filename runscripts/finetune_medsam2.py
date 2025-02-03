@@ -152,6 +152,9 @@ def validate(name: str, medsam_model, device, npz_path_tr, cfg) -> dict:
 
     _name = name.split(cfg.img_name_suffix)[0] + ".npz"
 
+    if not os.path.exists(join(npz_path_tr, _name)):
+        return {}
+
     npz = np.load(join(npz_path_tr, _name), allow_pickle=True)
     img_3D = npz['imgs']
 
@@ -593,7 +596,8 @@ def run(cfg: DictConfig):
     results = []
     for name in tqdm(val_names):
         result = validate(name, medsam_model, device, npz_path_tr, cfg)
-        results.append(result)
+        if len(result) > 0:
+            results.append(result)
 
     result_df = pd.DataFrame(results)
     result_df.to_csv("validation_results.csv", index=False)

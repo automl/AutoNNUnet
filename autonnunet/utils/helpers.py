@@ -82,14 +82,18 @@ def get_train_val_test_names(cfg: DictConfig) -> tuple[list[str], list[str], lis
     splits = load_json(preprocessed_folder / "splits_final.json")
 
     train_imgs = []
-    val_imgs = []
     for name in splits[cfg.fold]["train"]:
         for i in range(n_channels):
-            train_imgs += [f"{name}_{'%04d' % i}.nii.gz"]
+            name = f"{name}_{'%04d' % i}.nii.gz"
+            if (NNUNET_RAW / cfg.dataset.name / "imagesTr" / name).exists():
+                train_imgs += [name]
         
+    val_imgs = []
     for name in splits[cfg.fold]["val"]:
         for i in range(n_channels):
-            val_imgs += [f"{name}_{'%04d' % i}.nii.gz"]
+            name = f"{name}_{'%04d' % i}.nii.gz"
+            if (NNUNET_RAW / cfg.dataset.name / "imagesTr" / name).exists():
+                val_imgs += [name]
 
     test_imgs = []
     for name in raw_folder.glob("imagesTs/*.nii.gz"):
