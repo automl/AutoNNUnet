@@ -46,9 +46,9 @@ def _cache_dataset_features(dataset: str, df: pd.DataFrame) -> None:
 def _get_image_and_label_features(dataset: str) -> pd.DataFrame:
     dataset_info = _load_original_dataset_info(dataset)
 
-    class_idxs = list(dataset_info["labels"].keys())
-    train_samples = dataset_info["training"]
+    labels = {int(k): v for k, v in dataset_info["labels"].items()}
 
+    train_samples = dataset_info["training"]
     rows = []
 
     base_path = NNUNET_DATASETS / dataset_name_to_msd_task(dataset_name=dataset)
@@ -61,7 +61,7 @@ def _get_image_and_label_features(dataset: str) -> pd.DataFrame:
         shape = label.shape
         volume = np.prod(shape)
 
-        for class_idx in class_idxs:
+        for class_idx, class_label in labels.items():
             class_mask = (label == float(class_idx))
 
             class_volume = class_mask.sum()
@@ -86,6 +86,7 @@ def _get_image_and_label_features(dataset: str) -> pd.DataFrame:
                 **{f"shape_{i}": shape[i] for i in range(3)},
                 "volume": volume,
                 "class_idx": class_idx,
+                "class_label": class_label,
                 "class_volume": class_volume,
                 "class_volume_ratio": class_volume / volume,
                 "compactness": compactness,

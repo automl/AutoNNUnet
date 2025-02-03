@@ -86,11 +86,10 @@ def extract_incumbent(
         configuration: str,
         hpo_seed: int,
     ) -> None:
-    output_dir = AUTONNUNET_OUTPUT / "hpo" / dataset_name / configuration / str(hpo_seed)
+    output_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration / str(hpo_seed)
     target_dir = AUTONNUNET_CONFIGS / "incumbent"
 
     target_dir.mkdir(exist_ok=True, parents=True)
-
 
     incumbent_df = pd.read_csv(output_dir / "incumbent_loss.csv")
     incumbent_config_id = int(incumbent_df["run_id"].values[-1])

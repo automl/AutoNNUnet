@@ -146,12 +146,13 @@ DATASET_FEATURES_REPLACEMENT_MAP = {
     "Dataset": "Dataset",     # This is only here for the filtering based on keys()
     "instance": "Instance",
     "class_idx": "Class Index",
+    "class_label": "Class Label",
     "volume": "Volume",
     "class_volume": "Class Volume",
     "class_volume_ratio": "Class Volume Ratio",
     "compactness": "Compactness",
     "std": "Standard Deviation",
-    "mean_intensity": "Mean Intensity Mean",
+    "mean_intensity": "Intensity Mean",
     "std_intensity": "Intensity Std.",
     "min_intensity": "Intensity Min.",
     "max_intensity": "Intensity Max.",
@@ -1145,6 +1146,9 @@ class Plotter:
 
         metrics = baseline_data.metrics
 
+        # We remove the MedSAM2 approach from the baseline
+        metrics = metrics[~metrics["Approach"].isin(["MedSAM2"])]
+
         metrics_expanded = pd.DataFrame(
             np.repeat(metrics.values, 2, axis=0),
             columns=metrics.columns
@@ -1153,7 +1157,7 @@ class Plotter:
             [0, incumbent[x_metric].max()],
             len(metrics)
         )
-        metrics_expanded.loc[:, "1 - Dice"] = (1 - metrics_expanded["Dice"])
+        metrics_expanded.loc[:, "1 - Dice"] = (1 - metrics_expanded["Mean"])
 
         n_hpo_approaches = len(incumbent["Approach"].unique())
         n_baseline_approaches = len(metrics_expanded["Approach"].unique())
@@ -2874,52 +2878,49 @@ class Plotter:
         all_dataset_features = []
 
         for dataset in self.datasets:
-            baseline_metrics = self.get_baseline_data(dataset=dataset).metrics_per_case
-            baseline_metrics = baseline_metrics.rename(columns={
-                "reference_file": "Instance",
-                "class_id": "Class Index",
-            })
-            baseline_metrics.loc[:, "Instance"] = baseline_metrics["Instance"].apply(lambda x: x.split(".")[0])
-            baseline_metrics = baseline_metrics[["Dataset", "Approach", "Instance", "Dice", "Class Index"]]
+            baseline_metrics = self.get_baseline_data(dataset=dataset).metrics
+            baseline_metrics = baseline_metrics.drop(columns=["Approach", "Fold", "Dataset", "Mean"])
+
+            # We need to extract class labels and mean DSC
+            baseline_metrics = baseline_metrics.mean().reset_index()
+            baseline_metrics.columns = ["Class Label", "DSC"]    
+            baseline_metrics["Dataset"] = dataset
 
             all_baseline_metrics += [baseline_metrics]
 
             dataset_features = extract_dataset_features(dataset=dataset)
             dataset_features = dataset_features[dataset_features["class_idx"] != 0]
-            dataset_features.loc[:, "Dataset"] = dataset
+            dataset_features["Dataset"] = dataset
             all_dataset_features += [dataset_features]
 
         all_baseline_metrics = pd.concat(all_baseline_metrics)
         all_dataset_features = pd.concat(all_dataset_features)
-        
-        # numerical_cols = all_dataset_features.select_dtypes(include=["number"]).columns
-        # numerical_cols = numerical_cols.drop("Class Index")
-        # non_numerical_cols = all_dataset_features.select_dtypes(exclude=["number"]).columns.difference(["Category"])
-        # non_numerical_cols = non_numerical_cols.drop("Dataset")
-        # non_numerical_cols = non_numerical_cols.drop("Instance")
-
-        # # Group by "category" and apply aggregation functions
-        # all_dataset_features = all_dataset_features.groupby("Dataset").agg({
-        #     **{col: "mean" for col in numerical_cols},   
-        #     **{col: "first" for col in non_numerical_cols} 
-        # }).reset_index()
 
         all_dataset_features = all_dataset_features[DATASET_FEATURES_REPLACEMENT_MAP.keys()]
         all_dataset_features = all_dataset_features.rename(columns=DATASET_FEATURES_REPLACEMENT_MAP)
 
-        all_baseline_metrics["Class Index"] = all_baseline_metrics["Class Index"].astype(int)
-        all_dataset_features["Class Index"] = all_dataset_features["Class Index"].astype(int)
+        numerical_cols = all_dataset_features.select_dtypes(include=["number"]).columns
+        numerical_cols = numerical_cols.drop("Class Index")
+        non_numerical_cols = all_dataset_features.select_dtypes(exclude=["number"]).columns.difference(["Category"])
+        non_numerical_cols = non_numerical_cols.drop("Dataset")
+        non_numerical_cols = non_numerical_cols.drop("Class Label")
+        non_numerical_cols = non_numerical_cols.drop("Instance")
 
-        joint_data = all_baseline_metrics.merge(all_dataset_features, on=["Dataset", "Instance", "Class Index"], how="inner")
+        # Group by "category" and apply aggregation functions
+        all_dataset_features = all_dataset_features.groupby(["Dataset", "Class Label"]).agg({
+            **{col: "mean" for col in numerical_cols},   
+            **{col: "first" for col in non_numerical_cols} 
+        }).reset_index()
+
+        joint_data = all_baseline_metrics.merge(all_dataset_features, on=["Dataset", "Class Label"], how="inner")
 
         return joint_data
     
-    def plot_joint_dataset_features(
+    def plot_joint_dataset_features_heatmap(
             self,
     ):
         joint_data = self._get_joint_dataset_features()
         numerical_cols = joint_data.select_dtypes(include=["number"]).columns
-        numerical_cols = numerical_cols.drop("Class Index")
         joint_data = joint_data[numerical_cols]
 
         fig, ax = plt.subplots(1, 1, figsize=(self.figwidth, self.figwidth))
@@ -2936,7 +2937,25 @@ class Plotter:
         plt.tight_layout()
         plt.savefig("test.png", dpi=self.dpi)
 
+    def plot_joint_dataset_features(
+            self,
+            feature_x: str,
+            feature_y: str,
+    ):
+        joint_data = self._get_joint_dataset_features()
+        joint_data.sort_values(by=[feature_x], inplace=True)
 
+        fig, ax = plt.subplots(1, 1, figsize=(self.figwidth, self.figwidth))
+
+        sns.scatterplot(
+            x=feature_x,
+            y=feature_y,
+            data=joint_data,
+            hue="Dataset",
+            ax=ax
+        )
+        plt.tight_layout()
+        plt.savefig("test.png", dpi=self.dpi)
   
 
     def create_emissions_table(self):
