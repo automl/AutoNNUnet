@@ -11,6 +11,8 @@ from typing import TYPE_CHECKING, Literal, Any
 import matplotlib.axis
 import matplotlib.figure
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+import matplotlib.patches as mpatches
 import matplotlib
 import nibabel as nib
 import numpy as np
@@ -54,8 +56,8 @@ APPROACH_REPLACE_MAP = {
     "baseline_ResidualEncoderL": "nnU-Net (ResL)",
     "baseline_medsam2": "MedSAM2",
     "hpo": "HPO (ours)",
-    "hpo_nas": "HPO + NAS (ours)",
-    "hpo_hnas": "HPO + HNAS (ours)"
+    "hpo_nas": "HPO+NAS (ours)",
+    "hpo_hnas": "HPO+HNAS (ours)"
 }
 
 NNUNET_PROGRESS_REPLACEMENT_MAP = {
@@ -138,7 +140,7 @@ HISTORY_REPLACEMENT_MAP = {
     "config_id": "Configuration ID",
     "run_id": "Run ID",
     "budget": "Budget",
-    "o0_loss": "1 - Dice",
+    "o0_loss": "1 - DSC",
     "o1_runtime": "Runtime",
 }
 
@@ -167,7 +169,7 @@ DATASET_FEATURES_REPLACEMENT_MAP = {
 STYLES_TYPE = Literal["white", "dark", "whitegrid", "darkgrid", "ticks"]
 
 OBJECTIVES_MAPPING = {
-    "1 - Dice": "loss",
+    "1 - DSC": "loss",
     "Runtime": "runtime"
 }
 
@@ -214,6 +216,7 @@ class HPOResult:
     history: pd.DataFrame
     incumbent: pd.DataFrame
     incumbent_progress: pd.DataFrame
+    incumbent_metrics: pd.DataFrame
     emissions: pd.DataFrame
     deepcave_runs: dict[str, DeepCAVERun]
 
@@ -221,6 +224,7 @@ class HPOResult:
 class NASResult:
     history: pd.DataFrame
     incumbents: dict[str, pd.DataFrame]
+    incumbent_metrics: pd.DataFrame
     emissions: pd.DataFrame
     deepcave_runs: dict[str, DeepCAVERun]
 
@@ -245,7 +249,7 @@ class Plotter:
         self.logger = logging.getLogger("Plotter")
 
         if objectives is None:
-            objectives = ["1 - Dice", "Runtime"]
+            objectives = ["1 - DSC", "Runtime"]
         self.datasets = datasets
         self.objectives = objectives
 
@@ -291,6 +295,7 @@ class Plotter:
             history=pd.DataFrame(),
             incumbent=pd.DataFrame(),
             incumbent_progress=pd.DataFrame(),
+            incumbent_metrics=pd.DataFrame(),
             emissions=pd.DataFrame(),
             deepcave_runs={}
         )
@@ -299,6 +304,7 @@ class Plotter:
         self._nas_data = NASResult(
             history=pd.DataFrame(),
             incumbents={k: pd.DataFrame() for k in self.objectives},
+            incumbent_metrics=pd.DataFrame(),
             emissions=pd.DataFrame(),
             deepcave_runs={}
         )
@@ -307,6 +313,7 @@ class Plotter:
         self._hnas_data = NASResult(
             history=pd.DataFrame(),
             incumbents={k: pd.DataFrame() for k in self.objectives},
+            incumbent_metrics=pd.DataFrame(),
             emissions=pd.DataFrame(),
             deepcave_runs={}
         )
@@ -397,6 +404,7 @@ class Plotter:
         self._hpo_data.history = pd.concat([self._hpo_data.history, hpo_data.history])
         self._hpo_data.incumbent = pd.concat([self._hpo_data.incumbent, hpo_data.incumbent])
         self._hpo_data.incumbent_progress = pd.concat([self._hpo_data.incumbent_progress, hpo_data.incumbent_progress])
+        self._hpo_data.incumbent_metrics = pd.concat([self._hpo_data.incumbent_metrics, hpo_data.incumbent_metrics])
         self._hpo_data.emissions = pd.concat([self._hpo_data.emissions, hpo_data.emissions])
         self._hpo_data.deepcave_runs.update(hpo_data.deepcave_runs)
         self._hpo_datasets = [] if len(self._hpo_data.history) == 0 else self._hpo_data.history["Dataset"].unique().tolist()
@@ -417,6 +425,7 @@ class Plotter:
         nas_data = self._load_nas_data(datasets=[dataset], approach_key=approach_key)
         data.history = pd.concat([data.history, nas_data.history])
         data.incumbents = {k: pd.concat([v, nas_data.incumbents[k]]) for k, v in data.incumbents.items()}
+        data.incumbent_metrics = pd.concat([data.incumbent_metrics, nas_data.incumbent_metrics])
         data.emissions = pd.concat([data.emissions, nas_data.emissions])
         data.deepcave_runs.update(nas_data.deepcave_runs)
 
@@ -473,12 +482,15 @@ class Plotter:
                 history=pd.DataFrame(),
                 incumbent=pd.DataFrame(),
                 incumbent_progress=pd.DataFrame(),
+                incumbent_metrics=pd.DataFrame(),
                 emissions=pd.DataFrame(),
                 deepcave_runs={}
             )
-
+        
         incumbent_progress = self._hpo_data.incumbent_progress[
             self._hpo_data.incumbent_progress["Dataset"] == dataset]
+        incumbent_metrics = self._hpo_data.incumbent_metrics[
+            self._hpo_data.incumbent_metrics["Dataset"] == dataset]
         emissions = self._hpo_data.emissions[
             self._hpo_data.emissions["Dataset"] == dataset]
         history = self._hpo_data.history[
@@ -488,6 +500,7 @@ class Plotter:
 
         return HPOResult(
             incumbent_progress=incumbent_progress,
+            incumbent_metrics=incumbent_metrics,
             emissions=emissions,
             history=history,
             incumbent=incumbent,
@@ -504,6 +517,7 @@ class Plotter:
                 emissions=pd.DataFrame(),
                 history=pd.DataFrame(),
                 incumbents={k: pd.DataFrame() for k in self.objectives},
+                incumbent_metrics=pd.DataFrame(),
                 deepcave_runs={}
             )
 
@@ -515,11 +529,14 @@ class Plotter:
         for objective in self.objectives:
             incumbents[objective] = self._nas_data.incumbents[objective][
                 self._nas_data.incumbents[objective]["Dataset"] == dataset]
+        incumbent_metrics = self._nas_data.incumbent_metrics[
+            self._nas_data.incumbent_metrics["Dataset"] == dataset]
 
         return NASResult(
             emissions=emissions,
             history=history,
             incumbents=incumbents,
+            incumbent_metrics=incumbent_metrics,
             deepcave_runs={dataset: self._nas_data.deepcave_runs[dataset]}
         )
     
@@ -533,6 +550,7 @@ class Plotter:
                 emissions=pd.DataFrame(),
                 history=pd.DataFrame(),
                 incumbents={k: pd.DataFrame() for k in self.objectives},
+                incumbent_metrics=pd.DataFrame(),
                 deepcave_runs={}
             )
         
@@ -545,15 +563,18 @@ class Plotter:
             incumbents[objective] = self._hnas_data.incumbents[objective][
                 self._hnas_data.incumbents[objective]["Dataset"] == dataset]
         deepcave_runs = {dataset: self._hnas_data.deepcave_runs[dataset]}
-
+        incumbent_metrics = self._hnas_data.incumbent_metrics[
+            self._hnas_data.incumbent_metrics["Dataset"] == dataset]
+        
         return NASResult(
             emissions=emissions,
             history=history,
             incumbents=incumbents,
+            incumbent_metrics=incumbent_metrics,
             deepcave_runs=deepcave_runs
         )
 
-    def get_deepcave_data(self, dataset: str, approach_key: str, objective: str = "1 - Dice") -> tuple[DeepCAVERun, pd.DataFrame, pd.DataFrame]:
+    def get_deepcave_data(self, dataset: str, approach_key: str, objective: str = "1 - DSC") -> tuple[DeepCAVERun, pd.DataFrame, pd.DataFrame]:
         if approach_key == "hpo":
             deepcave_run = self._hpo_data.deepcave_runs[dataset]
             history = self.get_hpo_data(dataset).history
@@ -774,7 +795,7 @@ class Plotter:
                 row_data = {
                     "Run ID": row["run_id"],
                     "Configuration ID": row["config_id"],
-                    "1 - Dice": performance,
+                    "1 - DSC": performance,
                     "Budget": row["budget"],
                     "Fold": fold,
                     "Budget Used": row["budget_used"],
@@ -831,6 +852,7 @@ class Plotter:
 
     def _load_hpo_data(self, datasets: list[str]) -> HPOResult:
         all_progress  = []
+        all_metrics = []
         all_emissions = []
         all_history = []
         all_incumbent = []
@@ -898,10 +920,16 @@ class Plotter:
                         progress["Approach"] = approach
                         progress["Fold"] = fold
                         progress["Run ID"] = run_id
-
                         all_progress.append(progress)
 
+                        metrics = self._load_nnunet_metrics(run_dir)
+                        metrics["Dataset"] = dataset
+                        metrics["Approach"] = approach
+                        metrics["Fold"] = fold
+                        all_metrics.append(metrics)
+
         all_progress = pd.concat(all_progress)
+        all_metrics = pd.concat(all_metrics)
         all_emissions = pd.concat(all_emissions)
         all_history = pd.concat(all_history)
         all_incumbent = pd.concat(all_incumbent)
@@ -910,6 +938,7 @@ class Plotter:
             history=all_history,
             incumbent=all_incumbent,
             incumbent_progress=all_progress,
+            incumbent_metrics=all_metrics,
             emissions=all_emissions,
             deepcave_runs=deepcave_runs
         )
@@ -918,6 +947,7 @@ class Plotter:
         all_emissions = []
         all_history = []
         all_incumbent = defaultdict(list)
+        all_metrics = []
         deepcave_runs = {}
         
         if approach_key == "hpo_nas":
@@ -964,6 +994,15 @@ class Plotter:
 
                 all_incumbent[objective].append(incumbent)
 
+                if i == 0:
+                    incumbent_run_id = incumbent["Run ID"].to_numpy()[-1]
+                    for fold in range(self.n_folds):
+                        metrics = self._load_nnunet_metrics(nas_run_dir / str(incumbent_run_id * self.n_folds + fold))
+                        metrics["Dataset"] = dataset
+                        metrics["Approach"] = approach
+                        metrics["Fold"] = fold
+                        all_metrics.append(metrics)
+
             all_history.append(history)
 
             deepcave_runs[dataset] = runhistory_to_deepcave(
@@ -992,9 +1031,11 @@ class Plotter:
         if len(all_emissions) > 0:
             all_emissions = pd.concat(all_emissions)
             all_history = pd.concat(all_history)
+            all_metrics = pd.concat(all_metrics)
         else:
             all_emissions = pd.DataFrame()
             all_history = pd.DataFrame()
+            all_metrics = pd.DataFrame()
 
         all_incumbent_df = {}
         for objective in self.objectives:
@@ -1006,6 +1047,7 @@ class Plotter:
         return NASResult(
             history=all_history,
             incumbents=all_incumbent_df,
+            incumbent_metrics=all_metrics,
             emissions=all_emissions,
             deepcave_runs=deepcave_runs
         )
@@ -1126,7 +1168,7 @@ class Plotter:
             include_nas: bool = True,
             include_hnas: bool = True,
             show_error: bool = False,
-            x_metric: str = "Full Model Trainings"
+            x_metric: str = "Real Runtime Used"
         ) -> None:
         color_palette = self.color_palette[:5] + [self.color_palette[9]]
 
@@ -1137,10 +1179,10 @@ class Plotter:
 
         if include_nas:
             nas_data = self.get_nas_data(dataset)
-            incumbent = pd.concat([incumbent, nas_data.incumbents["1 - Dice"]])
+            incumbent = pd.concat([incumbent, nas_data.incumbents["1 - DSC"]])
         if include_hnas:
             hnas_data = self.get_hnas_data(dataset)
-            incumbent = pd.concat([incumbent, hnas_data.incumbents["1 - Dice"]])
+            incumbent = pd.concat([incumbent, hnas_data.incumbents["1 - DSC"]])
 
         baseline_data = self.get_baseline_data(dataset)
 
@@ -1157,7 +1199,7 @@ class Plotter:
             [0, incumbent[x_metric].max()],
             len(metrics)
         )
-        metrics_expanded.loc[:, "1 - Dice"] = (1 - metrics_expanded["Mean"])
+        metrics_expanded.loc[:, "1 - DSC"] = (1 - metrics_expanded["Mean"])
 
         n_hpo_approaches = len(incumbent["Approach"].unique())
         n_baseline_approaches = len(metrics_expanded["Approach"].unique())
@@ -1165,7 +1207,7 @@ class Plotter:
         g = sns.lineplot(
             data=metrics_expanded,
             x=x_metric,
-            y="1 - Dice",
+            y="1 - DSC",
             hue="Approach",
             palette=self.color_palette[:3],
             linestyle="--",
@@ -1174,7 +1216,7 @@ class Plotter:
 
         sns.lineplot(
             x=x_metric,
-            y="1 - Dice",
+            y="1 - DSC",
             data=incumbent,
             drawstyle="steps-post",
             hue="Approach",
@@ -1188,7 +1230,7 @@ class Plotter:
         for i in range(n_hpo_approaches):
             approach = hpo_approaches[i]
             grouped_approach = incumbent[incumbent["Approach"] == approach].groupby(x_metric)
-            last_value = grouped_approach["1 - Dice"].mean().iloc[-1]
+            last_value = grouped_approach["1 - DSC"].mean().iloc[-1]
             last_x = grouped_approach[x_metric].mean().iloc[-1]
 
             color = color_palette[3 + i]
@@ -1208,7 +1250,7 @@ class Plotter:
             g.set_xlabel(x_metric)
         elif x_metric == "Real Runtime Used":
             g.set_xlabel("Wallclock Time [h]")
-        g.set_ylabel("1 - Dice")
+        g.set_ylabel("1 - DSC")
 
         if x_log_scale:
             g.set_xscale("log")
@@ -1289,13 +1331,13 @@ class Plotter:
             if include_nas and dataset in self.datasets:
                 nas_data = self.get_nas_data(dataset)
                 if len(nas_data.history) > 0:
-                    incumbent = pd.concat([incumbent, nas_data.incumbents["1 - Dice"]])
+                    incumbent = pd.concat([incumbent, nas_data.incumbents["1 - DSC"]])
             if include_hnas and dataset in self.datasets:
                 hnas_data = self.get_hnas_data(dataset)
                 if len(hnas_data.history) > 0:
-                    incumbent = pd.concat([incumbent, hnas_data.incumbents["1 - Dice"]])
+                    incumbent = pd.concat([incumbent, hnas_data.incumbents["1 - DSC"]])
 
-            incumbent.loc[:, "1 - Dice"] *= 100
+            incumbent.loc[:, "1 - DSC"] *= 100
 
             baseline_data = self.get_baseline_data(dataset)
 
@@ -1309,7 +1351,7 @@ class Plotter:
                 [0, incumbent[x_metric].max()],
                 len(metrics)
             )
-            metrics_expanded.loc[:, "1 - Dice"] = (1 - metrics_expanded["Dice"]) * 100
+            metrics_expanded.loc[:, "1 - DSC"] = (1 - metrics_expanded["Dice"]) * 100
 
             n_hpo_approaches = len(incumbent["Approach"].unique())
             n_baseline_approaches = len(metrics_expanded["Approach"].unique())
@@ -1326,7 +1368,7 @@ class Plotter:
             g = sns.lineplot(
                 data=metrics_expanded,
                 x=x_metric,
-                y="1 - Dice",
+                y="1 - DSC",
                 hue="Approach",
                 palette=color_palette[:min(3, n_baseline_approaches)],
                 linestyle="--",
@@ -1337,7 +1379,7 @@ class Plotter:
             # Plot our approaches
             sns.lineplot(
                 x=x_metric,
-                y="1 - Dice",
+                y="1 - DSC",
                 data=incumbent,
                 drawstyle="steps-post",
                 hue="Approach",
@@ -1351,7 +1393,7 @@ class Plotter:
             for i in range(n_hpo_approaches):
                 approach = hpo_approaches[i]
                 grouped_approach = incumbent[incumbent["Approach"] == approach].groupby("Full Model Trainings")
-                last_value = grouped_approach["1 - Dice"].mean().iloc[-1]
+                last_value = grouped_approach["1 - DSC"].mean().iloc[-1]
                 last_x = grouped_approach["Full Model Trainings"].mean().iloc[-1]
 
                 color = color_palette[3 + i]
@@ -1368,7 +1410,7 @@ class Plotter:
 
             g.set_title(format_dataset_name(dataset).replace(" ", "\n"))
             g.set_xlabel("Full Model Trainings")
-            g.set_ylabel("1 - Dice [%]")
+            g.set_ylabel("1 - DSC [%]")
 
             if x_log_scale:
                 g.set_xscale("log")
@@ -1455,7 +1497,7 @@ class Plotter:
 
         # get mean of last 5 entries in incumbent
         hpo_data = self.get_hpo_data(dataset)
-        hpo_dice = hpo_data.incumbent["1 - Dice"].iloc[-5:].mean()
+        hpo_dice = hpo_data.incumbent["1 - DSC"].iloc[-5:].mean()
         hpo_time = hpo_data.incumbent_progress.groupby("Fold")["Runtime"].sum().mean() / 3600
 
         color = self.color_palette[n_baseline_approaches]
@@ -1474,12 +1516,12 @@ class Plotter:
         nas_data = self.get_nas_data(dataset)
         if len(nas_data.history) > 0:
             nas_history = nas_data.history
-            nas_pareto_front = nas_history.sort_values(by="1 - Dice")
+            nas_pareto_front = nas_history.sort_values(by="1 - DSC")
             nas_pareto_front = nas_pareto_front[nas_pareto_front["Runtime"] == nas_pareto_front["Runtime"].cummin()]
 
             sns.lineplot(
                 data=nas_pareto_front,
-                x="1 - Dice",
+                x="1 - DSC",
                 y="Runtime",
                 color=self.color_palette[n_baseline_approaches + 1],
                 label="HPO + NAS (ours)",
@@ -1490,12 +1532,12 @@ class Plotter:
         hnas_data = self.get_hnas_data(dataset)
         if len(hnas_data.history) > 0:
             hnas_history = hnas_data.history
-            hnas_pareto_front = hnas_history.sort_values(by="1 - Dice")
+            hnas_pareto_front = hnas_history.sort_values(by="1 - DSC")
             hnas_pareto_front = hnas_pareto_front[hnas_pareto_front["Runtime"] == hnas_pareto_front["Runtime"].cummin()]
 
             sns.lineplot(
                 data=hnas_pareto_front,
-                x="1 - Dice",
+                x="1 - DSC",
                 y="Runtime",
                 color=self.color_palette[9],
                 label="HPO + HNAS (ours)",
@@ -1503,7 +1545,7 @@ class Plotter:
                 drawstyle="steps-post"
             )
         ax.set_title(f"Pareto Fronts for\n{format_dataset_name(dataset)}")
-        ax.set_xlabel("1 - Dice [%]")
+        ax.set_xlabel("1 - DSC [%]")
         ax.set_ylabel("Training Runtime [h]")
 
         ax.set_xscale("log")
@@ -1594,7 +1636,7 @@ class Plotter:
         hpo_data = self.get_hpo_data(dataset)
 
         # get mean of last 5 entries in incumbent
-        hpo_dice = hpo_data.incumbent["1 - Dice"].iloc[-5:].mean()
+        hpo_dice = hpo_data.incumbent["1 - DSC"].iloc[-5:].mean()
         hpo_time = hpo_data.incumbent_progress.groupby("Fold")["Runtime"].sum().mean() / 3600
 
         color = self.color_palette[n_baseline_approaches]
@@ -1611,12 +1653,12 @@ class Plotter:
         )
 
         history = nas_data.history
-        pareto_front = history.sort_values(by="1 - Dice")
+        pareto_front = history.sort_values(by="1 - DSC")
         pareto_front = pareto_front[pareto_front["Runtime"] == pareto_front["Runtime"].cummin()]
 
         g = sns.lineplot(
             data=pareto_front,
-            x="1 - Dice",
+            x="1 - DSC",
             y="Runtime",
             color=self.color_palette[9],
             label="HPO + NAS (ours)",
@@ -1629,7 +1671,7 @@ class Plotter:
         history.loc[:, "Budget"] = history["Budget"].round()
         g = sns.scatterplot(
             data=history,
-            x="1 - Dice",
+            x="1 - DSC",
             y="Runtime",
             # label="Configurations",
             color=self.color_palette[n_baseline_approaches + 1],
@@ -1641,7 +1683,7 @@ class Plotter:
 
         approach = APPROACH_REPLACE_MAP[approach_key].replace(" (ours)", "")
         g.set_title(f"{approach} Budgets for\n{format_dataset_name(dataset)}")
-        g.set_xlabel("1 - Dice")
+        g.set_xlabel("1 - DSC")
         g.set_ylabel("Training Runtime [h]")
 
         self._format_axis(ax=g, grid=True)
@@ -1696,12 +1738,12 @@ class Plotter:
 
         history = nas_data.history
 
-        pareto_front = history.sort_values(by="1 - Dice")
+        pareto_front = history.sort_values(by="1 - DSC")
         pareto_front = pareto_front[pareto_front["Runtime"] == pareto_front["Runtime"].cummin()]
 
         g = sns.lineplot(
             data=pareto_front,
-            x="1 - Dice",
+            x="1 - DSC",
             y="Runtime",
             color=self.color_palette[0],
             label="Pareto Front",
@@ -1722,7 +1764,7 @@ class Plotter:
             color = origin_colors[origin]
             g = sns.scatterplot(
                 data=subset,
-                x="1 - Dice",
+                x="1 - DSC",
                 y="Runtime",
                 label=origin,
                 color=color,
@@ -1734,7 +1776,7 @@ class Plotter:
 
         approach = APPROACH_REPLACE_MAP[approach_key].replace(" (ours)", "")
         g.set_title(f"{approach} Origins for\n{format_dataset_name(dataset)}")
-        g.set_xlabel("1 - Dice")
+        g.set_xlabel("1 - DSC")
         g.set_ylabel("Training Runtime [h]")
 
         self._format_axis(ax=g, grid=True)
@@ -1984,7 +2026,7 @@ class Plotter:
                 shadow=False,
                 frameon=False
             )
-            ax.set_xlabel("Weight of 1 - Dice")
+            ax.set_xlabel("Weight of 1 - DSC")
             ax.set_ylabel("Importance")
 
             self._format_axis(ax=ax)
@@ -1996,7 +2038,7 @@ class Plotter:
         xticks = ax.get_xticks() 
         xticklabels = ax.get_xticklabels()  
         xticklabels[1] = f"0.0\nRuntime"
-        xticklabels[-2] = f"1.0\n1 - Dice"
+        xticklabels[-2] = f"1.0\n1 - DSC"
         ax.set_xticks(xticks[1:-1])
         ax.set_xticklabels(xticklabels[1:-1])
 
@@ -2100,7 +2142,7 @@ class Plotter:
         axs[0].set_title("Performance")
         axs[1].set_title("Improvement")
 
-        axs[0].set_ylabel("1 - Dice")
+        axs[0].set_ylabel("1 - DSC")
         axs[1].set_ylabel("Improvement")
 
         axs[0].set_xlabel("Hyperparameter")
@@ -2166,14 +2208,14 @@ class Plotter:
             frameon=False
         )
 
-        ax.set_xlabel("Weight of 1 - Dice")
+        ax.set_xlabel("Weight of 1 - DSC")
         ax.set_ylabel("Sum of weighted\nnormalized performance")
 
         # To imitate DeepCAVE, we add the objectives to the xticks
         xticks = ax.get_xticks() 
         xticklabels = ax.get_xticklabels()  
         xticklabels[1] = f"0.0\nRuntime"
-        xticklabels[-2] = f"1.0\n1 - Dice"
+        xticklabels[-2] = f"1.0\n1 - DSC"
         ax.set_xticks(xticks[1:-1])
         ax.set_xticklabels(xticklabels[1:-1])
 
@@ -2341,7 +2383,7 @@ class Plotter:
         ax.set_xticks(tickvals[:-1])
         ax.set_xticklabels(ticktext[:-1])
         ax.set_xlabel(HYPERPARAMETER_REPLACEMENT_MAP[hp_name])
-        ax.set_ylabel("1 - Dice")
+        ax.set_ylabel("1 - DSC")
 
         self._format_axis(ax=ax)
 
@@ -2381,7 +2423,7 @@ class Plotter:
 
         contour = plt.tricontourf(x_hp1, x_hp2, y, levels=15, cmap="plasma", alpha=1)  # Create filled contours
         cbar = plt.colorbar(contour)
-        cbar.set_label("1 - Dice")
+        cbar.set_label("1 - DSC")
 
         xtickvals, xticktext = get_hyperparameter_ticks(hp1)
         ytickvals, yticktext = get_hyperparameter_ticks(hp2)
@@ -2471,7 +2513,7 @@ class Plotter:
             self,
             dataset: str,
             approach_key: str,
-            objective: str = "1 - Dice",
+            objective: str = "1 - DSC",
             budget: int = COMBINED_BUDGET
         ):
         try:
@@ -2676,7 +2718,7 @@ class Plotter:
             self,
             dataset: str,
             approach_key: str,
-            objective: str = "1 - Dice",
+            objective: str = "1 - DSC",
         ):
         def round_dict_keys(d: dict) -> dict:
             """Helper for rounding budget  keys."""
@@ -2943,7 +2985,8 @@ class Plotter:
             feature_y: str,
     ):
         joint_data = self._get_joint_dataset_features()
-        joint_data.sort_values(by=[feature_x], inplace=True)
+        joint_data = joint_data[[feature_x, feature_y, "Dataset"]]
+        joint_data = joint_data.groupby("Dataset").mean().reset_index()
 
         fig, ax = plt.subplots(1, 1, figsize=(self.figwidth, self.figwidth))
 
@@ -3004,53 +3047,97 @@ class Plotter:
         )
 
 
-    def create_table(self, datasets: list[str]):
-        baseline = self._load_baseline_data(datasets=datasets)
-        hpo = self._load_hpo_data(datasets=datasets)
+    def create_dataset_result_table(self, dataset: str):
+        def format_approach(a: str) -> str:
+            return a.replace(" (ours)", "").replace("nnU-Net (", "").replace(")", "")
+        
+        all_results = []
+        baseline_metrics = self.get_baseline_data(dataset=dataset).metrics
+        hpo_data = self.get_hpo_data(dataset=dataset).incumbent_metrics
+        nas_data = self.get_nas_data(dataset=dataset).incumbent_metrics
+        hnas_data = self.get_hnas_data(dataset=dataset).incumbent_metrics
 
-        sys.exit()
+        dataset_results = pd.concat([baseline_metrics, hpo_data, nas_data, hnas_data])
 
-        # We remove all background classes, since we compute the mean foreground Dice
-        baseline.metrics = baseline.metrics[baseline.metrics["class_id"] != 0]
-        hpo.metrics = hpo.metrics[hpo.metrics["class_id"] != 0]
+        # We compute the mean over all folds
+        for approach in (APPROACH_REPLACE_MAP.values()):
+            _data = dataset_results[dataset_results["Approach"] == approach]
+            _data = _data.drop(columns=["Approach", "Fold", "Dataset", "Mean"])
+            _data = _data.mean().to_frame().T
+            _data["Approach"] = format_approach(approach)
+            all_results.append(_data)
 
-        # We can drop all other metrics
-        baseline.metrics = baseline.metrics[["Dataset", "Fold", "Approach", "Dice"]]
-        hpo.metrics = hpo.metrics[["Dataset", "Fold", "Approach", "Dice"]]
-
-        # Then, we average over all prediction files
-        baseline.metrics = baseline.metrics.groupby(
-            ["Dataset", "Fold", "Approach"]).mean().reset_index()
-        hpo.metrics = hpo.metrics.groupby(
-            ["Dataset", "Fold", "Approach"]).mean().reset_index()
-
-        metrics = pd.concat([baseline.metrics, hpo.metrics])
-        metrics["Dataset"] = metrics["Dataset"].apply(format_dataset_name)
-
-        grouped_metrics = metrics.groupby(["Dataset", "Approach"])["Dice"].agg(
-            ["mean", "std"]).reset_index()
-
-        # First, we add the mean and standard deviation
-        grouped_metrics["mean"] = grouped_metrics["mean"].round(2)
-        grouped_metrics["std"] = grouped_metrics["std"].round(2)
-        grouped_metrics["mean_std"] = grouped_metrics["mean"].astype(str) \
-            + " $\\pm$ " + grouped_metrics["std"].astype(str)
-
-        # We highlight the best approach per dataset
-        max_vals = grouped_metrics.groupby("Dataset")["mean"].transform("max")
-        max_mean = max_vals == grouped_metrics["mean"]
-        grouped_metrics["mean_std"] = grouped_metrics.apply(
-            lambda row: "\\textbf{" + row["mean_std"] + "}"
-            if max_mean.loc[row.name]
-            else row["mean_std"], axis=1
+        all_results = pd.concat(all_results)
+        class_labels = [c for c in all_results.columns if c not in ["Approach", "Mean"]]
+        for c in class_labels:
+            all_results.loc[:, c] = (all_results[c] * 100).round(2).astype(float)
+        
+        melted_results = all_results.melt(
+            id_vars=["Approach"],
+            value_vars=class_labels, 
+            var_name="Class Label",
+            value_name="Mean"
         )
 
-        table = grouped_metrics.pivot_table(
-            index="Dataset",
-            columns="Approach",
-            values="mean_std"
+        pivot_table = melted_results.pivot(index="Class Label", columns="Approach", values="Mean")
+        pivot_table = pivot_table[[format_approach(a) for a in APPROACH_REPLACE_MAP.values()]]
+
+        def highlight_max(row):
+            max_val = row.max()  # Find max value in the row
+            return pd.Series([f"\\textbf{{{val:.2f}}}" if val == max_val else f"{val:.2f}" for val in row], index=row.index)
+
+        pivot_table = pivot_table.apply(highlight_max, axis=1)
+
+        pivot_table.to_latex(
+            AUTONNUNET_TABLES / f"results_{dataset}.tex",
+            float_format="%.2f",
+            caption="Performance Comparison",
+            label="tab:results"
         )
-        table.to_latex(AUTONNUNET_TABLES / f"{self.configuration}_table.tex")
+
+    def create_result_table(self):
+        def format_approach(a: str) -> str:
+            return a.replace(" (ours)", "").replace("nnU-Net (", "").replace(")", "")
+        
+        all_results = []
+        for dataset in self.datasets:
+            baseline_metrics = self.get_baseline_data(dataset=dataset).metrics
+            hpo_data = self.get_hpo_data(dataset=dataset).incumbent_metrics
+            nas_data = self.get_nas_data(dataset=dataset).incumbent_metrics
+            hnas_data = self.get_hnas_data(dataset=dataset).incumbent_metrics
+
+            dataset_results = pd.concat([baseline_metrics, hpo_data, nas_data, hnas_data])
+
+            # We compute the mean over all folds
+            for approach in (APPROACH_REPLACE_MAP.values()):
+                _data = dataset_results[dataset_results["Approach"] == approach]
+                _data = _data.drop(columns=["Approach", "Fold", "Dataset"])
+                _data = _data[["Mean"]]
+                _data = _data.mean().to_frame().T
+                _data["Approach"] = format_approach(approach)
+                _data["Dataset"] = format_dataset_name(dataset)[:3]
+                all_results.append(_data)
+
+        all_results = pd.concat(all_results)
+        all_results.loc[:, "Mean"] = (all_results["Mean"] * 100).round(2).astype(float)
+
+        pivot_table = all_results.pivot(index="Dataset", columns="Approach", values="Mean")
+        pivot_table = pivot_table[[format_approach(a) for a in APPROACH_REPLACE_MAP.values()]]
+        
+
+        def highlight_max(row):
+            max_val = row.max()  # Find max value in the row
+            return pd.Series([f"\\textbf{{{val:.2f}}}" if val == max_val else f"{val:.2f}" for val in row], index=row.index)
+
+        pivot_table = pivot_table.apply(highlight_max, axis=1)
+
+        pivot_table.to_latex(
+            AUTONNUNET_TABLES / "results.tex",
+            float_format="%.2f",
+            caption="Performance Comparison",
+            label="tab:results"
+        )
+
 
     def plot_baseline_runtimes(self):
         baseline_runtimes = self._baseline_data.progress[["Approach", "Dataset", "Fold", "Runtime"]]
@@ -3260,7 +3347,7 @@ class Plotter:
             ax.axis("off")
 
         plt.tight_layout()
-        plt.savefig(output_dir / "msd_overview.png", dpi=500)
+        plt.savefig(output_dir / f"msd_overview.{self.format}", dpi=self.dpi, format=self.format)
         plt.clf()
 
         for dataset, img, label in zip(self.datasets, images, labels, strict=False):
@@ -3272,7 +3359,7 @@ class Plotter:
             ax.axis("off")
 
             plt.tight_layout()
-            plt.savefig(output_dir / f"{dataset}_img.png", dpi=500)
+            plt.savefig(output_dir / f"{dataset}_img.{self.format}", dpi=self.dpi, format=self.format)
             plt.clf()
 
             fig, ax = plt.subplots(1, 1, figsize=(4, 4))
@@ -3284,5 +3371,88 @@ class Plotter:
             ax.axis("off")
 
             plt.tight_layout()
-            plt.savefig(output_dir / f"{dataset}_label.png", dpi=500)
+            plt.savefig(output_dir / f"{dataset}_label.{self.format}", dpi=self.dpi, format=self.format)
             plt.close()
+
+    def plot_dsc_exmaple(self):
+        legend_labels = {
+            0: "Background",
+            1: "X (Ground Truth)",
+            2: "Y (Prediction)",
+            3: "X ∩ Y (Intersection)"
+        }
+
+        viridis = plt.get_cmap("viridis")
+
+        colors = [[234 / 255, 234 / 255, 241 / 255, 1]] + list(viridis(np.linspace(0, 1, 3)))
+
+        custom_cmap = mcolors.ListedColormap(colors)
+
+        patches = [mpatches.Patch(color=colors[val], label=legend_labels[val]) for val in legend_labels]
+
+        def create_circle_image(size, radius, center):
+            x, y = np.meshgrid(np.arange(size), np.arange(size))
+            return ((x - center[0])**2 + (y - center[1])**2) <= radius**2
+
+        def dice_coefficient(gt, pred):
+            intersection = np.logical_and(gt, pred).sum()
+            return (2. * intersection) / (gt.sum() + pred.sum())
+
+        size = 128
+        radius = 0.25 * size
+        center = (size // 2, size // 2)
+
+        large_gt = create_circle_image(size, radius=radius, center=center)
+        small_gt = create_circle_image(size, radius=radius, center=center)
+
+        pred_center = (size // 2 + 15 // 2, size // 2 + 2)
+        large_pred_good = create_circle_image(size, radius=radius * 1.1, center=center) 
+        large_pred_bad = create_circle_image(size, radius=radius * 1.5, center=(size // 2 + radius // 3, size // 2 + radius // 3)) 
+
+        small_pred_good = create_circle_image(size, radius=radius * 0.9, center=(size // 2 + radius // 2, size // 2 + radius // 2))  
+        small_pred_bad = create_circle_image(size, radius=radius * 0.5, center=(size // 2 + radius // 3, size // 2 + radius // 3))   
+
+        dsc_scores = [
+            dice_coefficient(large_gt, large_pred_good),
+            dice_coefficient(large_gt, large_pred_bad),
+            dice_coefficient(small_gt, small_pred_good),
+            dice_coefficient(small_gt, small_pred_bad)
+        ]
+
+        titles = [
+            f"DSC(X,Y) = {dsc_scores[0]:.2f}",
+            f"DSC(X,Y) = {dsc_scores[1]:.2f}",
+            f"DSC(X,Y) = {dsc_scores[2]:.2f}",
+            f"DSC(X,Y) = {dsc_scores[3]:.2f}"
+        ]
+
+        fig, axes = plt.subplots(1, 4, figsize=(8, 2.5))
+
+        for i, (ax, pred, title) in enumerate(zip(axes, 
+                                                [large_pred_good, large_pred_bad, small_pred_good, small_pred_bad], 
+                                                titles)):
+            gt = large_gt if i < 2 else small_gt
+            
+            combined = gt.astype(int) + pred.astype(int) * 2
+
+            ax.imshow(combined, cmap=custom_cmap)
+
+            ax.set_title(title)
+            ax.set_xticks([])
+            ax.set_yticks([])
+            # ax.axis('off')
+
+        fig.legend(
+            handles=patches,
+            loc='upper center',
+            bbox_to_anchor=(0.5, 0.12),
+            ncol=4,
+            fancybox=False,
+            shadow=False,
+            frameon=False
+        )
+        output_dir = AUTONNUNET_PLOTS / "related_work"
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        plt.tight_layout()
+        plt.savefig(output_dir / f"dsc.{self.format}", dpi=self.dpi, format=self.format)

@@ -1,0 +1,30 @@
+# @package _global_
+hp_config:
+  activation: LeakyReLU
+  aug_factor: 1.176627868681526
+  base_num_features: 37
+  dropout_rate: 0.26119841392362697
+  encoder_type: ResidualEncoderM
+  initial_lr: 0.01
+  loss_function: TopKLoss
+  lr_scheduler: PolyLRScheduler
+  max_features: 252
+  model_scale: 1
+  momentum: 0.99
+  normalization: InstanceNorm
+  num_epochs: 1000.0
+  optimizer: SGD
+  oversample_foreground_percent: 0.33
+  weight_decay: 3.0e-05
+hydra:
+  job:
+    chdir: true
+  job_logging:
+    stderr: true
+    stdout: true
+  output_subdir: "."
+  run:
+    dir: output/hpo_nas/Dataset010_Colon/3d_fullres/0/incumbent
+  sweep:
+    dir: output/hpo_nas/Dataset010_Colon/3d_fullres/0/incumbent
+    subdir: fold_${fold}

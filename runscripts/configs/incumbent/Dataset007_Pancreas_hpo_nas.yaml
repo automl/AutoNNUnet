@@ -1,0 +1,30 @@
+# @package _global_
+hp_config:
+  activation: LeakyReLU
+  aug_factor: 2.029606058986785
+  base_num_features: 41
+  dropout_rate: 0.005873200412271855
+  encoder_type: ConvolutionalEncoder
+  initial_lr: 0.0049755958093954805
+  loss_function: DiceAndCrossEntropyLoss
+  lr_scheduler: CosineAnnealingLR
+  max_features: 348
+  model_scale: 2
+  momentum: 0.9178404931421472
+  normalization: InstanceNorm
+  num_epochs: 1000.0
+  optimizer: SGD
+  oversample_foreground_percent: 0.520784049168904
+  weight_decay: 3.438863916542318e-05
+hydra:
+  job:
+    chdir: true
+  job_logging:
+    stderr: true
+    stdout: true
+  output_subdir: "."
+  run:
+    dir: output/hpo_nas/Dataset007_Pancreas/3d_fullres/0/incumbent
+  sweep:
+    dir: output/hpo_nas/Dataset007_Pancreas/3d_fullres/0/incumbent
+    subdir: fold_${fold}

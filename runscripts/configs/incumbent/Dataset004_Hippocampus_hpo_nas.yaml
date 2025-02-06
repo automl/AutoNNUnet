@@ -1,0 +1,30 @@
+# @package _global_
+hp_config:
+  activation: LeakyReLU
+  aug_factor: 0.33625555196395995
+  base_num_features: 33
+  dropout_rate: 0.09695315668385822
+  encoder_type: ConvolutionalEncoder
+  initial_lr: 0.008122412236182654
+  loss_function: CrossEntropyLoss
+  lr_scheduler: PolyLRScheduler
+  max_features: 166
+  model_scale: 2
+  momentum: 0.964236097266808
+  normalization: InstanceNorm
+  num_epochs: 1000.0
+  optimizer: AdamW
+  oversample_foreground_percent: 0.5785459501815431
+  weight_decay: 1.3402098385989768e-05
+hydra:
+  job:
+    chdir: true
+  job_logging:
+    stderr: true
+    stdout: true
+  output_subdir: "."
+  run:
+    dir: output/hpo_nas/Dataset004_Hippocampus/3d_fullres/0/incumbent
+  sweep:
+    dir: output/hpo_nas/Dataset004_Hippocampus/3d_fullres/0/incumbent
+    subdir: fold_${fold}

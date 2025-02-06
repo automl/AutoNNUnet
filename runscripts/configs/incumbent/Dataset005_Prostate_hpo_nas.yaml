@@ -1,0 +1,30 @@
+# @package _global_
+hp_config:
+  activation: ReLU
+  aug_factor: 0.6529885303732154
+  base_num_features: 63
+  dropout_rate: 0.08117897395633339
+  encoder_type: ConvolutionalEncoder
+  initial_lr: 0.006363737458666078
+  loss_function: TopKLoss
+  lr_scheduler: None
+  max_features: 390
+  model_scale: 2
+  momentum: 0.9027346774483933
+  normalization: InstanceNorm
+  num_epochs: 1000.0
+  optimizer: SGD
+  oversample_foreground_percent: 0.11804156469474747
+  weight_decay: 0.0013769630216590968
+hydra:
+  job:
+    chdir: true
+  job_logging:
+    stderr: true
+    stdout: true
+  output_subdir: "."
+  run:
+    dir: output/hpo_nas/Dataset005_Prostate/3d_fullres/0/incumbent
+  sweep:
+    dir: output/hpo_nas/Dataset005_Prostate/3d_fullres/0/incumbent
+    subdir: fold_${fold}

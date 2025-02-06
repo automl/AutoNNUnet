@@ -1,0 +1,30 @@
+# @package _global_
+hp_config:
+  activation: LeakyReLU
+  aug_factor: 1.3820499698879107
+  base_num_features: 43
+  dropout_rate: 0.13616729668492777
+  encoder_type: ConvolutionalEncoder
+  initial_lr: 0.012287626376503005
+  loss_function: CrossEntropyLoss
+  lr_scheduler: None
+  max_features: 481
+  model_scale: 1
+  momentum: 0.9926910487184398
+  normalization: BatchNorm
+  num_epochs: 1000.0
+  optimizer: SGD
+  oversample_foreground_percent: 0.3554589194919524
+  weight_decay: 7.994054376700659e-06
+hydra:
+  job:
+    chdir: true
+  job_logging:
+    stderr: true
+    stdout: true
+  output_subdir: "."
+  run:
+    dir: output/hpo_nas/Dataset002_Heart/3d_fullres/0/incumbent
+  sweep:
+    dir: output/hpo_nas/Dataset002_Heart/3d_fullres/0/incumbent
+    subdir: fold_${fold}

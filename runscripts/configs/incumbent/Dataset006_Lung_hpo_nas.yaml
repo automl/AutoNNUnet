@@ -1,0 +1,30 @@
+# @package _global_
+hp_config:
+  activation: LeakyReLU
+  aug_factor: 1.0765448432980504
+  base_num_features: 32
+  dropout_rate: 0.06735573213612875
+  encoder_type: ConvolutionalEncoder
+  initial_lr: 0.024260757026342065
+  loss_function: DiceLoss
+  lr_scheduler: CosineAnnealingLR
+  max_features: 320
+  model_scale: 1
+  momentum: 0.99
+  normalization: BatchNorm
+  num_epochs: 1000.0
+  optimizer: SGD
+  oversample_foreground_percent: 0.6732135199253289
+  weight_decay: 2.0881479898615188e-06
+hydra:
+  job:
+    chdir: true
+  job_logging:
+    stderr: true
+    stdout: true
+  output_subdir: "."
+  run:
+    dir: output/hpo_nas/Dataset006_Lung/3d_fullres/0/incumbent
+  sweep:
+    dir: output/hpo_nas/Dataset006_Lung/3d_fullres/0/incumbent
+    subdir: fold_${fold}
