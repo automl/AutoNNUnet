@@ -1,3 +1,4 @@
+"""Contains the default paths for the data directories and the nnUNet directories."""
 from __future__ import annotations
 
 import os

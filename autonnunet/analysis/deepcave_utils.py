@@ -1,29 +1,72 @@
+"""Utility functions for converting between HyperSweeper and DeepCAVE formats."""
 from __future__ import annotations
 
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import numpy as np
 import yaml
-from ConfigSpace import CategoricalHyperparameter as Categorical
-from ConfigSpace import Configuration, ConfigurationSpace, EqualsCondition, OrConjunction
-from ConfigSpace import UniformFloatHyperparameter as Float
-from ConfigSpace import UniformIntegerHyperparameter as Integer
+from autonnunet.hnas.cfg_unet import CFGUNet
+from ConfigSpace import (
+    CategoricalHyperparameter as Categorical,
+    Configuration,
+    ConfigurationSpace,
+    EqualsCondition,
+    OrConjunction,
+    UniformFloatHyperparameter as Float,
+    UniformIntegerHyperparameter as Integer,
+)
 from deepcave.runs.converters.deepcave import DeepCAVERun
 from deepcave.runs.objective import Objective
 from deepcave.runs.recorder import Recorder
 
-from autonnunet.hnas.unet import CFGUNet
-
 if TYPE_CHECKING:
     import pandas as pd
 
-MAX_BLOCKS_PER_STAGE_ENCODER = 12
-MAX_BLOCKS_PER_STAGE_DECODER = 4
+# nnunetv2.experiment_planning.experiment_planners.default_experiment_planner.py#L61
+# nnunetv2.experiment_planning.experiment_planners.resencUNet_planner.py#L27
+
+# For the encoder, we take the maximum of the two presets
+MAX_BLOCKS_PER_STAGE_ENCODER =  np.array([2, 3, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6]) * 2
+# For the decoder, we use the convolutional preset since it has more blocks
+MAX_BLOCKS_PER_STAGE_DECODER = np.array([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]) * 2
+
+O_DSC = "1 - DSC [%]"
+O_RUNTIME = "Runtime [h]"
 
 def format_hp_name(name: str) -> str:
+    """Formats the hyperparameter name be removing the prefix.
+
+    Parameters
+    ----------
+    name : str
+        The hyperparameter name.
+
+    Returns:
+    -------
+    str
+        The formatted hyperparameter name.
+    """
     return name.split(".")[-1]
 
 def yaml_to_configspace(yaml_path: Path) -> ConfigurationSpace:
+    """Converts a yaml file to a ConfigSpace object.
+
+    Parameters
+    ----------
+    yaml_path : Path
+        The path to the yaml file.
+
+    Returns:
+    -------
+    ConfigurationSpace
+        The ConfigSpace object.
+
+    Raises:
+    ------
+    ValueError
+        If the hyperparameter type is unknown.
+    """
     with open(yaml_path) as file:
         config_space_dict = yaml.safe_load(file)
 
@@ -78,6 +121,18 @@ def yaml_to_configspace(yaml_path: Path) -> ConfigurationSpace:
     return config_space
 
 def extract_architecture_features(string_tree: str) -> dict:
+    """Extracts the architecture features from a hierarchical architecture string.
+
+    Parameters
+    ----------
+    string_tree : str
+        The hierarchical architecture string.
+
+    Returns:
+    -------
+    dict
+        The architecture features.
+    """
     string_tree = str(string_tree).replace('"', "")
 
     parsed_tree = CFGUNet.parse_nested_brackets(string_tree)
@@ -102,6 +157,21 @@ def extract_architecture_features(string_tree: str) -> dict:
 
 
 def row_to_config(row: pd.Series, config_space: ConfigurationSpace) -> Configuration:
+    """Extracts a hyperparameter configuration from a row in the runhistory.
+
+    Parameters
+    ----------
+    row : pd.Series
+        The row in the runhistory.
+
+    config_space : ConfigurationSpace
+        The configuration space object.
+
+    Returns:
+    -------
+    Configuration
+        The hyperparameter configuration.
+    """
     values = {}
 
     # We need to manually collect the hyperparameter configuraiton
@@ -125,7 +195,7 @@ def row_to_config(row: pd.Series, config_space: ConfigurationSpace) -> Configura
         if values["encoder_dropout"] != "dropout" and values["decoder_dropout"] != "dropout":
             values.pop("dropout_rate")
 
-    origin = row["Config Origin"] if "Config Origin" in row else None
+    origin = row.get("Config Origin", None)
 
     return Configuration(
         configuration_space=config_space,
@@ -136,8 +206,23 @@ def row_to_config(row: pd.Series, config_space: ConfigurationSpace) -> Configura
 
 def get_extended_hnas_config_space(
         config_space: ConfigurationSpace,
-        default_string_tree: str    
+        default_string_tree: str
     ) -> ConfigurationSpace:
+    """Extends the given configuration space with the hierarchical architecture features.
+
+    Parameters
+    ----------
+    config_space : ConfigurationSpace
+        The configuration space object.
+
+    default_string_tree : str
+        The default hierarchical architecture string.
+
+    Returns:
+    -------
+    ConfigurationSpace
+        The extended configuration space object.
+    """
     default_features = extract_architecture_features(default_string_tree)
 
     config_space.add([
@@ -159,8 +244,8 @@ def get_extended_hnas_config_space(
         ),
         Categorical(
             name="encoder_nonlin",
-            choices=["relu", "leaky_relu", "elu", "gelu", "prelu"],
-            default_value=default_features["encoder_nonlin"],
+            choices=["leaky_relu", "relu", "elu", "gelu", "prelu"],
+            default_value="leaky_relu",
         ),
         Categorical(
             name="encoder_dropout",
@@ -169,8 +254,8 @@ def get_extended_hnas_config_space(
         ),
         Integer(
             name="encoder_depth",
-            lower=1,
-            upper=MAX_BLOCKS_PER_STAGE_ENCODER * (default_features["n_stages"] - 1),
+            lower=default_features["n_stages"] // 2 - 1,
+            upper=sum(MAX_BLOCKS_PER_STAGE_ENCODER[:default_features["n_stages"] - 1]),
             default_value=default_features["encoder_depth"],
         ),
         Categorical(
@@ -180,8 +265,8 @@ def get_extended_hnas_config_space(
         ),
         Categorical(
             name="decoder_nonlin",
-            choices=["relu", "leaky_relu", "elu", "gelu", "prelu"],
-            default_value=default_features["decoder_nonlin"],
+            choices=["leaky_relu", "relu", "elu", "gelu", "prelu"],
+            default_value="leaky_relu",
         ),
         Categorical(
             name="decoder_dropout",
@@ -190,14 +275,14 @@ def get_extended_hnas_config_space(
         ),
         Integer(
             name="decoder_depth",
-            lower=1,
-            upper=MAX_BLOCKS_PER_STAGE_DECODER * (default_features["n_stages"] - 1),
+            lower=default_features["n_stages"] // 2 - 1,
+            upper=sum(MAX_BLOCKS_PER_STAGE_DECODER[:default_features["n_stages"] - 1]),
             default_value=default_features["decoder_depth"],
         ),
         Integer(
             name="bottleneck_depth",
             lower=1,
-            upper=MAX_BLOCKS_PER_STAGE_ENCODER,
+            upper=int(MAX_BLOCKS_PER_STAGE_ENCODER[default_features["n_stages"] - 1]),
             default_value=default_features["bottleneck_depth"],
         ),
     ])
@@ -217,11 +302,34 @@ def get_extended_hnas_config_space(
             )
         ),
     )
-        
+
     return config_space
 
 
 def runhistory_to_deepcave(dataset: str, history: pd.DataFrame, approach_key: str) -> DeepCAVERun:
+    """Converts a hypersweeper runhistory to a DeepCAVE run.
+
+    Parameters
+    ----------
+    dataset : str
+        The dataset name.
+
+    history : pd.DataFrame
+        The hypersweeper runhistory.
+
+    approach_key : str
+        The approach key (hpo, hpo_nas, hpo_hnas).
+
+    Returns:
+    -------
+    DeepCAVERun
+        The DeepCAVE run.
+
+    Raises:
+    ------
+    ValueError
+        If the hyperparameter type is unknown.
+    """
     save_path = Path("./output/deepcave_logs").resolve()
     prefix = f"{dataset}_{approach_key}"
 
@@ -231,6 +339,7 @@ def runhistory_to_deepcave(dataset: str, history: pd.DataFrame, approach_key: st
     config_space_path = Path(f"./runscripts/configs/search_space/{approach_key}.yaml").resolve()
     config_space = yaml_to_configspace(config_space_path)
 
+    # In HNAS, we need to extend the config space with the architecture features
     if "architecture" in history.columns:
         default_string_tree = str(history["architecture"].values[0])
         config_space = get_extended_hnas_config_space(
@@ -254,9 +363,9 @@ def runhistory_to_deepcave(dataset: str, history: pd.DataFrame, approach_key: st
         else:
             raise ValueError(f"Unknown hyperparameter type: {config_space[name]}")
 
-    dice_objective = Objective("1 - Dice", lower=0, upper=1, optimize="lower")
-    if "Runtime" in history.columns:
-        runtime_objective = Objective("Runtime", lower=0, optimize="lower")
+    dice_objective = Objective(O_DSC, lower=0, upper=100, optimize="lower")
+    if O_RUNTIME in history.columns:
+        runtime_objective = Objective(O_RUNTIME, lower=0, optimize="lower")
         objectives = [dice_objective, runtime_objective]
     else:
         objectives = [dice_objective]
@@ -270,17 +379,13 @@ def runhistory_to_deepcave(dataset: str, history: pd.DataFrame, approach_key: st
     ) as r:
         for _, run in history.iterrows():
             config = row_to_config(run, config_space)
-
-            # for fold in range(5):
-            #     r.start(config=config, budget=run["Budget"], seed=fold, origin=config.origin)
-            #     costs = [run[f"o0_loss_fold_{fold}"]]
-            #     if len(objectives) > 1:
-            #         costs.append(run[f"o1_runtime_fold_{fold}"])
-            #     r.end(config=config, costs=costs, budget=run["Budget"], seed=fold)      # type: ignore
             r.start(config=config, budget=run["Budget"], origin=config.origin)
-            costs = [run[f"1 - Dice"]]
+            costs = [run[O_DSC]]
             if len(objectives) > 1:
-                costs.append(run[f"Runtime"])
+                # For DeepCAVE, we need to normalize to the maximum budget
+                # to ensure that the runtime is comparable across different budgets
+                runtime = run[O_RUNTIME] / int(run["Budget"]) * 1000
+                costs.append(runtime)
             r.end(config=config, costs=costs, budget=run["Budget"])      # type: ignore
 
     return DeepCAVERun.from_path(save_path / prefix)

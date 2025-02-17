@@ -1,3 +1,4 @@
+"""Evaluation utilities for AutoNNUNet."""
 from __future__ import annotations
 
 import ast
@@ -7,13 +8,16 @@ import zipfile
 import pandas as pd
 import torch
 import yaml
-from omegaconf import OmegaConf
+from omegaconf import DictConfig, OmegaConf
 
 from autonnunet.utils import dataset_name_to_msd_task, load_json
-from autonnunet.utils.paths import (AUTONNUNET_CONFIGS,
-                                    AUTONNUNET_MSD_SUBMISSIONS,
-                                    AUTONNUNET_OUTPUT, AUTONNUNET_PREDICTIONS,
-                                    NNUNET_RAW)
+from autonnunet.utils.paths import (
+    AUTONNUNET_CONFIGS,
+    AUTONNUNET_MSD_SUBMISSIONS,
+    AUTONNUNET_OUTPUT,
+    AUTONNUNET_PREDICTIONS,
+    NNUNET_RAW,
+)
 
 # According to the MSD, these predictions should not be included in the submission
 IGNORE_PREDICTIONS = [
@@ -36,16 +40,48 @@ def run_prediction(
         approach: str,
         configuration: str,
         use_folds: tuple[int]
-    ):
+    ) -> None:
+    """Run the prediction using AutoNNUNet.
+
+    Parameters
+    ----------
+    dataset_name : str
+        The dataset name.
+
+    approach : str
+        The approach name (hpo, hpo_nas, hpo_hnas).
+
+    configuration : str
+        The configuration name.
+
+    use_folds : tuple[int]
+        The folds to use for the prediction.
+
+    Raises:
+    ------
+    ImportError
+        If the AutoNNUNet package is not installed.
+    """
     from autonnunet.inference import AutoNNUNetPredictor
+    from autonnunet.training import AutoNNUNetTrainer
 
     os.environ["nnUNet_results"] = "."      # noqa: SIM112
     os.environ["nnUNet_n_proc_DA"] = "20"   # noqa: SIM112
 
     if "baseline" in approach:
-        model_base_output_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration
+        model_base_output_dir = AUTONNUNET_OUTPUT / approach / dataset_name /\
+              configuration
     else:
-        model_base_output_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration / "0" / "incumbent"
+        model_base_output_dir = AUTONNUNET_OUTPUT / approach / dataset_name /\
+              configuration / "0" / "incumbent"
+
+    # We read the configuration that was used for training
+    cfg = OmegaConf.load(model_base_output_dir / "fold_0" / "config.yaml")
+    cfg = DictConfig(cfg)
+    cfg.device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    # We create the trainer as it allows us to load the model
+    trainer = AutoNNUNetTrainer.from_config(cfg)
 
     predictor = AutoNNUNetPredictor(
         tile_step_size=0.5,
@@ -58,14 +94,19 @@ def run_prediction(
         allow_tqdm=False
     )
 
+    # This is especially important for HNAS as we need to initialize
+    # the CFGUNet with the correct configuration
     predictor.initialize_from_config(
         model_training_output_dir=str(model_base_output_dir),
         use_folds=use_folds,
         checkpoint_name="checkpoint_best.pth",
+        trainer=trainer
     )
 
     source_folder = str(NNUNET_RAW / dataset_name / "imagesTs")
-    target_folder = str(AUTONNUNET_PREDICTIONS / approach / dataset_name / configuration)
+    target_folder = str(
+        AUTONNUNET_PREDICTIONS / approach /\
+            dataset_name / configuration)
 
     predictor.predict_from_files(
         source_folder,
@@ -79,20 +120,42 @@ def run_prediction(
         part_id=0
     )
 
-
 def extract_incumbent(
         dataset_name: str,
         approach: str,
         configuration: str,
         hpo_seed: int,
     ) -> None:
-    output_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration / str(hpo_seed)
+    """Extract the incumbent configuration from the AutoNNUNet output
+    and saves it as a YAML file.
+
+    Parameters
+    ----------
+    dataset_name : str
+        The dataset name.
+
+    approach : str
+        The approach name (hpo, hpo_nas, hpo_hnas).
+
+    configuration : str
+        The configuration name.
+
+    hpo_seed : int
+        The HPO seed.
+
+    Raises:
+    ------
+    FileNotFoundError
+        If the incumbent configuration file is not found.
+    """
+    output_dir = AUTONNUNET_OUTPUT / approach / dataset_name /\
+        configuration / str(hpo_seed)
     target_dir = AUTONNUNET_CONFIGS / "incumbent"
 
     target_dir.mkdir(exist_ok=True, parents=True)
 
     incumbent_df = pd.read_csv(output_dir / "incumbent_loss.csv")
-    incumbent_config_id = int(incumbent_df["run_id"].values[-1])
+    incumbent_config_id = int(incumbent_df["run_id"].to_numpy()[-1])
 
     run_id = incumbent_config_id * 5
     debug_info_path = output_dir / str(run_id) / "debug.json"
@@ -101,7 +164,9 @@ def extract_incumbent(
     hp_config = ast.literal_eval(debug_info["hp_config"])
     actual_hp_config = {}
 
-    search_space = OmegaConf.load(AUTONNUNET_CONFIGS / "search_space" / f"{approach}.yaml")
+    search_space = OmegaConf.load(
+        AUTONNUNET_CONFIGS / "search_space" / f"{approach}.yaml"
+    )
     search_space = dict(search_space.hyperparameters)
 
     for hp in hp_config:
@@ -112,7 +177,8 @@ def extract_incumbent(
         "hp_config": actual_hp_config,
     }
 
-    hydra_outpur_dir = f"output/{approach}/{dataset_name}/{configuration}/{hpo_seed}/incumbent"
+    hydra_outpur_dir = f"output/{approach}/{dataset_name}"\
+                       f"/{configuration}/{hpo_seed}/incumbent"
     yaml_dict["hydra"] = {}
     yaml_dict["hydra"]["output_subdir"] = "'.'"
     yaml_dict["hydra"]["job_logging"] = {}
@@ -140,32 +206,22 @@ def extract_incumbent(
     with open(output_path, "w") as f:
         f.write(content)
 
+def compress_msd_submission(approach: str, configuration: str) -> None:
+    """Combines predictions into a MSD submission file.
 
-def extract_incumbent_directories(dataset_name: str, approach: str, configuration: str, hpo_seed: int) -> None:
-    output_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration / str(hpo_seed)
-    target_dir = AUTONNUNET_OUTPUT / approach / dataset_name / configuration / str(hpo_seed) / "incumbent"
+    Parameters
+    ----------
+    approach : str
+        The approach name (hpo, hpo_nas, hpo_hnas).
 
-    if target_dir.exists():
-        return
+    configuration : str
+        The configuration name.
 
-    incumbent_df = pd.read_csv(output_dir / "incumbent_loss.csv")
-    incumbent_run_id = int(incumbent_df["run_id"].values[-1])
-
-    for fold in range(5):
-        run_id = incumbent_run_id * 5 + fold
-        source_dir_fold_dir = output_dir / str(run_id)
-        target_fold_dir = target_dir / f"fold_{fold}"
-
-        if target_fold_dir.exists():
-            continue
-
-        target_fold_dir.mkdir(exist_ok=True, parents=True)
-
-        # Copy the run to the incumbent directory
-        os.system(f"cp -r {source_dir_fold_dir}/* {target_fold_dir}/")
-
-
-def compress_msd_submission(approach: str, configuration: str):
+    Raises:
+    ------
+    FileNotFoundError
+        If the predictions directory is not found.
+    """
     predictions_dir = AUTONNUNET_PREDICTIONS / approach
     target_path = AUTONNUNET_MSD_SUBMISSIONS / f"{approach}_{configuration}.zip"
     AUTONNUNET_MSD_SUBMISSIONS.mkdir(exist_ok=True)

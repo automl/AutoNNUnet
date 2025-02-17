@@ -1,13 +1,20 @@
-from autonnunet.utils.helpers import load_json, dataset_name_to_msd_task
-from autonnunet.utils.paths import NNUNET_DATASETS, NNUNET_PREPROCESSED, AUTONNUNET_OUTPUT
-from autonnunet.analysis.dataset_metrics import compute_compactness, compute_std_per_axis
-from dataclasses import dataclass
-from typing import Literal
+"""Utilities to extract features from the datasets used in nnUNet."""
+from __future__ import annotations
+
 import nibabel as nib
-from collections import defaultdict
-from tqdm import tqdm
-import pandas as pd
 import numpy as np
+import pandas as pd
+from autonnunet.analysis.dataset_metrics import (
+    compute_compactness,
+    compute_std_per_axis,
+)
+from autonnunet.utils.helpers import dataset_name_to_msd_task, load_json
+from autonnunet.utils.paths import (
+    AUTONNUNET_OUTPUT,
+    NNUNET_DATASETS,
+    NNUNET_PREPROCESSED,
+)
+from tqdm import tqdm
 
 SOURCES = {
     "Dataset001_BrainTumour": "mp-MRI",
@@ -23,27 +30,69 @@ SOURCES = {
 }
 
 def _load_original_dataset_info(dataset: str) -> dict:
+    """Reads the original dataset.json file from nnUNet.
+
+    Parameters
+    ----------
+    dataset : str
+        The dataset name.
+
+    Returns:
+    -------
+    dict
+        The dataset information.
+    """
     return load_json(NNUNET_DATASETS / dataset_name_to_msd_task(dataset_name=dataset) / "dataset.json")
 
-def _load_nnunet_dataset_fingerprint(dataset: str) -> dict:
-    return load_json(NNUNET_PREPROCESSED / dataset / "dataset_fingerprint.json")
-
 def _load_cached_dataset_features(dataset: str) -> pd.DataFrame | None:
+    """Loads cached datasets features from disk in case they were already computed.
+
+    Parameters
+    ----------
+    dataset : str
+        The dataset name.
+
+    Returns:
+    -------
+    pd.DataFrame
+        The dataset features, if they were already computed, else None.
+    """
     path = AUTONNUNET_OUTPUT / "nnunet_dataset_features" / f"{dataset}.csv"
     if path.exists():
         return pd.read_csv(path)
-    else:
-        return None
-    
+    return None
+
 def _cache_dataset_features(dataset: str, df: pd.DataFrame) -> None:
+    """Stores the dataset features in a CSV file.
+
+    Parameters
+    ----------
+    dataset : str
+        The dataset name.
+
+    df : pd.DataFrame
+        The dataset features.
+    """
     path = AUTONNUNET_OUTPUT / "nnunet_dataset_features" / f"{dataset}.csv"
     if path.exists():
         return
-    
+
     path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(path, index=False)
 
 def _get_image_and_label_features(dataset: str) -> pd.DataFrame:
+    """Extracts features from the images and labels of the dataset.
+
+    Parameters
+    ----------
+    dataset : str
+        The dataset name.
+
+    Returns:
+    -------
+    pd.DataFrame
+        The dataset features.
+    """
     dataset_info = _load_original_dataset_info(dataset)
 
     labels = {int(k): v for k, v in dataset_info["labels"].items()}
@@ -56,8 +105,8 @@ def _get_image_and_label_features(dataset: str) -> pd.DataFrame:
         img_path, label_path = sample["image"], sample["label"]
         instance = img_path.split("/")[-1].replace(".nii.gz", "")
 
-        img = nib.load(base_path / img_path).get_fdata()
-        label = nib.load(base_path / label_path).get_fdata()
+        img = nib.load(base_path / img_path).get_fdata()        # type: ignore
+        label = nib.load(base_path / label_path).get_fdata()    # type: ignore
         shape = label.shape
         volume = np.prod(shape)
 
@@ -80,7 +129,7 @@ def _get_image_and_label_features(dataset: str) -> pd.DataFrame:
                 std_intensity = np.nan
                 min_intensity = np.nan
                 max_intensity = np.nan
-            
+
             rows.append({
                 "instance": instance,
                 **{f"shape_{i}": shape[i] for i in range(3)},
@@ -101,6 +150,18 @@ def _get_image_and_label_features(dataset: str) -> pd.DataFrame:
 
 
 def _get_dataset_features(dataset: str) -> dict:
+    """Extracts the dataset features from the dataset.json file.
+
+    Parameters
+    ----------
+    dataset : str
+        The dataset name.
+
+    Returns:
+    -------
+    dict
+        The dataset features.
+    """
     info = load_json(NNUNET_PREPROCESSED / dataset / "dataset.json")
 
     modality = int(info["tensorImageSize"][0])
@@ -121,19 +182,31 @@ def _get_dataset_features(dataset: str) -> dict:
 
 
 def extract_dataset_features(dataset: str, recompute: bool = False) -> pd.DataFrame:
+    """Extracts the dataset features from the dataset.
+
+    Parameters
+    ----------
+
+    dataset : str
+        The dataset name.
+
+    recompute : bool
+        Whether to recompute the dataset features. Defaults to False.
+
+    Returns:
+    -------
+    pd.DataFrame
+        The dataset features.
+    """
     if not recompute and (dataset_features := _load_cached_dataset_features(dataset)) is not None:
         return dataset_features
-    
+
     nnunet_dataset_features = _get_dataset_features(dataset)
     dataset_features = _get_image_and_label_features(dataset)
     for k, v in nnunet_dataset_features.items():
         dataset_features[k] = v
-    
+
     _cache_dataset_features(dataset, dataset_features)
 
     return dataset_features
 
-
-if __name__ == "__main__":
-    nnunet_dataset_features = extract_dataset_features("Dataset004_Hippocampus", recompute=True)
-    print(nnunet_dataset_features)

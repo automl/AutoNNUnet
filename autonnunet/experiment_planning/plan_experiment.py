@@ -1,15 +1,24 @@
+"""Functions to plan an experiment based on a given configuration."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from nnunetv2.utilities.json_export import recursive_fix_for_json_export
-
 from autonnunet.experiment_planning.auto_experiment_planners import (
-    AutoExperimentPlanner, nnUNetPlannerResEncL, nnUNetPlannerResEncM,
-    nnUNetPlannerResEncXL)
+        AutoExperimentPlanner,
+        nnUNetPlannerResEncL,
+        nnUNetPlannerResEncM,
+        nnUNetPlannerResEncXL,
+)
 
 if TYPE_CHECKING:
         from omegaconf import DictConfig
+
+PLANNER_CLASSES = {
+    "ConvolutionalEncoder": AutoExperimentPlanner,
+    "ResidualEncoderM": nnUNetPlannerResEncM,
+    "ResidualEncoderL": nnUNetPlannerResEncL,
+    "ResidualEncoderXL": nnUNetPlannerResEncXL
+}
 
 
 def plan_experiment(
@@ -17,49 +26,33 @@ def plan_experiment(
         plans_name: str,
         hp_config: DictConfig
     ) -> dict:
-        if hp_config.encoder_type == "ConvolutionalEncoder":
-            planner = AutoExperimentPlanner(
-                dataset_name_or_id=dataset_name,
-                plans_name=plans_name
-            )
+    """Plans an experiment based on the given configuration.
 
-        elif hp_config.encoder_type == "ResidualEncoderM":
-            planner = nnUNetPlannerResEncM(
-                dataset_name_or_id=dataset_name,
-                plans_name=plans_name
-            )
+    Parameters
+    ----------
+    dataset_name : str
+        The dataset name.
 
-        elif hp_config.encoder_type == "ResidualEncoderL":
-            planner = nnUNetPlannerResEncL(
-                dataset_name_or_id=dataset_name,
-                plans_name=plans_name
-            )
+    plans_name : str
+        The plans name.
 
-        elif hp_config.encoder_type == "ResidualEncoderXL":
-            planner = nnUNetPlannerResEncXL(
-                dataset_name_or_id=dataset_name,
-                plans_name=plans_name
-            )
-        else:
-            raise ValueError(f"Invalid encoder type: {hp_config.encoder_type}")
+    hp_config : DictConfig
+        The hyperparameter configuration.
 
-        planner.UNet_base_num_features = hp_config.base_num_features
-        planner.UNet_max_features_3d = hp_config.max_features
+    Returns:
+    -------
+    dict
+        The experiment plan.
+    """
+    if hp_config.encoder_type in PLANNER_CLASSES:
+        planner_cls = PLANNER_CLASSES[hp_config.encoder_type]
+    else:
+        raise ValueError(f"Invalid encoder type: {hp_config.encoder_type}")
 
-        # planner.UNet_blocks_per_stage_encoder = (
-        #     hp_config.encoder_blocks_stage1,
-        #     hp_config.encoder_blocks_stage2,
-        #     hp_config.encoder_blocks_stage3,
-        #     *[hp_config.encoder_blocks_remaining_stages] * 11)
-        # planner.UNet_blocks_per_stage_encoder = (
-        #     hp_config.decoder_blocks_stage1,
-        #     hp_config.decoder_blocks_stage2,
-        #     hp_config.decoder_blocks_stage3,
-        #     *[hp_config.decoder_blocks_remaining_stages] * 10)
+    planner = planner_cls(
+            hp_config=hp_config,
+            dataset_name_or_id=dataset_name,
+            plans_name=plans_name
+        )
 
-        plans = planner.plan_experiment()
-
-        # We have to convert everything to pure python data types
-        recursive_fix_for_json_export(plans)
-
-        return plans
+    return planner.plan_experiment()

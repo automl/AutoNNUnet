@@ -1,10 +1,14 @@
+"""Functions to generated the architecture of the HNAS."""
 from __future__ import annotations
+
 from typing import Literal
-import numpy as np
-from scipy.stats import truncnorm
+
 import neps
-from autonnunet.hnas.utils import plot_norm_dist, plot_cat_dist
+import numpy as np
 from neps.search_spaces.hyperparameters import CategoricalParameter, IntegerParameter
+from scipy.stats import truncnorm
+
+from autonnunet.hnas.utils import plot_cat_dist, plot_norm_dist
 
 PRIMITIVES = [
     "unet",
@@ -46,7 +50,42 @@ CONV_BLOCKS_PER_STAGE_DECODER = (2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2)
 RES_BLOCKS_PER_STAGE_ENCODER = (1, 3, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6)
 
 
-def get_truncated_normal(lower: int, upper: int, default: int, confidence: str, title: str | None = None, plot: bool = False) -> np.ndarray:
+def get_truncated_normal(
+        lower: int,
+        upper: int,
+        default: int,
+        confidence: str,
+        title: str | None = None,
+        plot: bool = False      # noqa: FBT001, FBT002
+    ) -> np.ndarray:
+    """Returns a prior distribution for an integer hyperparameter.
+    Based on the implementation in NePS.
+
+    Parameters
+    ----------
+    lower : int
+        The lower bound.
+
+    upper : int
+        The upper bound.
+
+    default : int
+        The default value.
+
+    confidence : str
+        The confidence level.
+
+    title : str, optional
+        The title of the plot. Defaults to None.
+
+    plot : bool, optional
+        Whether to plot the distribution. Defaults to False.
+
+    Returns:
+    -------
+    np.ndarray
+        The prior distribution.
+    """
     # We do this to assign equal probabilities to all buckets,
     # see neps.search_spaces.hyperparameters.integer.py#L83
     adjusted_lower = lower - 0.499999
@@ -60,19 +99,24 @@ def get_truncated_normal(lower: int, upper: int, default: int, confidence: str, 
     x = np.linspace(adjusted_lower, adjusted_upper, 10000 * (upper - lower))
     pdf = truncnorm.pdf(x, a, b, loc=default, scale=std)
 
-    bucket_edges = np.arange(lower - (bucket_size / 2), upper + bucket_size, bucket_size)
+    bucket_edges = np.arange(
+        lower - (bucket_size / 2),
+        upper + bucket_size,
+        bucket_size
+    )
     bucket_centers = (bucket_edges[:-1] + bucket_edges[1:]) / 2
 
-    # We approximate the integral/probability of each bucket by summing the pdf values in the bucket,
-    # and multiplying by the width of the bucket
+    # We approximate the integral/probability of each bucket by
+    # summing the pdf values in the bucket, and multiplying by
+    # the width of the bucket
     bucket_probs = np.zeros(len(bucket_centers))
     for i in range(len(bucket_edges) - 1):
         mask = (x >= bucket_edges[i]) & (x < bucket_edges[i + 1])
-        bucket_probs[i] = np.sum(pdf[mask]) * (x[1] - x[0]) 
+        bucket_probs[i] = np.sum(pdf[mask]) * (x[1] - x[0])
 
     bucket_probs /= bucket_probs.sum()
 
-    if plot:        
+    if plot:
         assert title is not None, "Title must be provided for plotting"
         plot_norm_dist(
             x=x,
@@ -87,14 +131,38 @@ def get_truncated_normal(lower: int, upper: int, default: int, confidence: str, 
 
     return bucket_probs
 
-
 def get_cat_dist(
         num_categories: int,
         default: int,
         confidence: str,
-        plot: bool = False,
+        plot: bool = False,     # noqa: FBT001, FBT002
         title: str | None = None
 ) -> np.ndarray:
+    """Returns a prior distribution for a categorical hyperparameter.
+    This is based on the implementation in NePS.
+
+    Parameters
+    ----------
+    num_categories : int
+        The number of categories.
+
+    default : int
+        The default category.
+
+    confidence : str
+        The confidence level.
+
+    plot : bool, optional
+        Whether to plot the distribution. Defaults to False.
+
+    title : str, optional
+        The title of the plot. Defaults to None.
+
+    Returns:
+    -------
+    np.ndarray
+        The prior distribution.
+    """
     prior = np.ones(num_categories)
     prior[default] = CategoricalParameter.DEFAULT_CONFIDENCE_SCORES[confidence]
 
@@ -110,14 +178,35 @@ def get_cat_dist(
 
     return prior
 
-
 def get_structure(
-        n_stages: int, 
+        n_stages: int,
         s_max: int,
         prior_confidence: Literal["low", "medium", "high"],
-        plot: bool = False
+        plot: bool = False      # noqa: FBT001, FBT002
         ) -> tuple[dict, dict]:
-    # We want to keep at least half of the stages to ensure that the network is deep enough
+    """Returns the structure and prior distribution for the given number of stages.
+
+    Parameters
+    ----------
+    n_stages : int
+        The number of stages.
+
+    s_max : int
+        The maximum model scale.
+
+    prior_confidence : Literal["low", "medium", "high"]
+        The prior confidence.
+
+    plot : bool, optional
+        Whether to plot the distributions. Defaults to False.
+
+    Returns:
+    -------
+    tuple[dict, dict]
+        The structure and prior distribution.
+    """
+    # We want to keep at least half of the stages to ensure
+    # that the network is deep enough
     possible_n_stages = range(n_stages // 2, n_stages + 1)
     starting_rule = [f"unet {n}E {n}D" for n in possible_n_stages]
     starting_rule_dist = get_truncated_normal(
@@ -137,8 +226,10 @@ def get_structure(
 
         for n in _n_stages:
             result[f"{n}E"] = [
-                f"conv_encoder ENORM ENONLIN EDROPOUT {' '.join([f'{_n}CEB, down' for _n in range(1, n)])}, {n}CEB",
-                f"res_encoder ENORM ENONLIN EDROPOUT {' '.join([f'{_n}REB, down' for _n in range(1, n)])}, {n}REB"
+                f"conv_encoder ENORM ENONLIN EDROPOUT " \
+                f"{' '.join([f'{_n}CEB, down' for _n in range(1, n)])}, {n}CEB",
+                f"res_encoder ENORM ENONLIN EDROPOUT " \
+                f"{' '.join([f'{_n}REB, down' for _n in range(1, n)])}, {n}REB"
             ]
             prior[f"{n}E"] = get_cat_dist(
                 num_categories=2,
@@ -147,9 +238,10 @@ def get_structure(
                 plot=plot,
                 title=f"{n}E",
             )
-            
+
             result[f"{n}D"] = [
-                f"conv_decoder DNORM DNONLIN DDROPOUT {' '.join([f'up, {_n}DB' for _n in range(1, n)])}",
+                f"conv_decoder DNORM DNONLIN DDROPOUT " \
+                f"{' '.join([f'up, {_n}DB' for _n in range(1, n)])}",
             ]
             prior[f"{n}D"] = get_cat_dist(
                 num_categories=1,
@@ -163,8 +255,12 @@ def get_structure(
             conv_default = CONV_BLOCKS_PER_STAGE_ENCODER[_n - 1]
             res_default = RES_BLOCKS_PER_STAGE_ENCODER[_n - 1]
 
-            result[f"{_n}CEB"] = [f"{i}b" for i in range(1, int(s_max *  conv_default) + 1)]
-            result[f"{_n}REB"] = [f"{i}b" for i in range(1, int(s_max * res_default) + 1)]
+            result[f"{_n}CEB"] = [
+                f"{i}b" for i in range(1, int(s_max *  conv_default) + 1)
+            ]
+            result[f"{_n}REB"] = [
+                f"{i}b" for i in range(1, int(s_max * res_default) + 1)
+            ]
 
             prior[f"{_n}CEB"] = get_truncated_normal(
                 lower=1,
@@ -197,7 +293,9 @@ def get_structure(
 
         return result, prior
 
-    enc_dec_rules, enc_dec_prior = get_productions_and_prior(_n_stages=possible_n_stages) 
+    enc_dec_rules, enc_dec_prior = get_productions_and_prior(
+        _n_stages=possible_n_stages
+    )
 
     structure = {
         "S": starting_rule,
@@ -259,13 +357,28 @@ def get_structure(
 
     return structure, prior_dist
 
-
 def get_architecture(
         n_stages: int,
         s_max: int,
         prior_sampling_mode: Literal["mutation", "distribution"],
         prior_confidence: Literal["low", "medium", "high"]
     ) -> neps.CFGArchitectureParameter: # type: ignore
+    """Returns the architecture parameter for the given number of stages.
+
+    Parameters
+    ----------
+    n_stages : int
+        The number of stages.
+
+    s_max : int
+        The maximum model scale.
+
+    prior_sampling_mode : Literal["mutation", "distribution"]
+        The prior sampling mode.
+
+    prior_confidence : Literal["low", "medium", "high"]
+        The prior confidence.
+    """
     structure, prior = get_structure(
         n_stages=n_stages,
         s_max=s_max,
@@ -280,34 +393,48 @@ def get_architecture(
     )
 
 def get_default_architecture(n_stages: int) -> str:
-    encoder_blocks_and_stages = ' '.join([f'({_n}CEB 2b) down' for _n in range(1, n_stages)]) + f" ({n_stages}CEB 2b)"
-    decoder_blocks_and_stages = ' '.join([f'up ({_n}DB 2b)' for _n in range(1, n_stages)])
+    """Returns the default architecture for the given number of stages.
 
-    arch = f"(S unet ({n_stages}E conv_encoder (ENORM instance_norm) (ENONLIN leaky_relu) (EDROPOUT no_dropout) {encoder_blocks_and_stages}) ({n_stages}D conv_decoder (DNORM instance_norm) (DNONLIN leaky_relu) (DDROPOUT no_dropout) {decoder_blocks_and_stages}))"
+    Parameters
+    ----------
+    n_stages : int
+        The number of stages.
 
-    return arch
+    Returns:
+    -------
+    str
+        The default architecture string tree.
+    """
+    encoder_blocks_and_stages = " ".join(
+        [f"({_n}CEB 2b) down" for _n in range(1, n_stages)]) + f" ({n_stages}CEB 2b)"
+    decoder_blocks_and_stages = " ".join(
+        [f"up ({_n}DB 2b)" for _n in range(1, n_stages)])
 
+    return f"(S unet ({n_stages}E conv_encoder " \
+           f"(ENORM instance_norm) (ENONLIN leaky_relu) (EDROPOUT no_dropout) " \
+           f"{encoder_blocks_and_stages}) ({n_stages}D conv_decoder " \
+           f"(DNORM instance_norm) (DNONLIN leaky_relu) (DDROPOUT no_dropout) " \
+           f"{decoder_blocks_and_stages}))"
 
 def compute_search_space_size(structure: dict) -> int:
-    def f(A: str) -> int:
-        if A not in structure:  # Terminal case
+    """Computes the size of the search space defined by the given structure.
+
+    Parameters
+    ----------
+    structure : dict
+        The structure of the search space.
+
+    Returns:
+    -------
+    int
+        The size of the search space.
+    """
+    def f(architecture: str) -> int:
+        if architecture not in structure:  # Terminal case
             return 1
         return int(np.sum(
             [np.prod([f(A_prime) for A_prime in production.split(" ")])
-            for production in structure[A]]
+            for production in structure[architecture]]
         ))
 
     return f("S")
-
-
-if __name__ == "__main__":
-    # structure, prior_dist = get_structure(n_stages=7, prior_confidence="medium")
-
-    # for i in range(4, 8):
-    #     print(f"Search Space Size for {i} stages:", compute_search_space_size(get_structure(n_stages=i, prior_confidence="medium")[0]))
-
-    arch = get_architecture(n_stages=4, s_max=2, prior_sampling_mode="distribution", prior_confidence="medium")
-    print(arch.sample().value)
-    # default_arch = get_default_architecture(n_stages=4)
-    # print(default_arch)
-

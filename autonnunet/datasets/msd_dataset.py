@@ -26,15 +26,41 @@ MSD_DATASETS = list(MSD_URLS.keys())
 
 
 class MSDDataset(Dataset):
+    """Class for the Medical Segmentation Decathlon (MSD) dataset.
+
+    Parameters
+    ----------
+    name : str
+        The name of the dataset.
+
+    Raises:
+    ------
+    ValueError
+        If the dataset name is not found in the MSD datasets.
+    """
     def __init__(self, name: str, **kwargs) -> None:
         if name not in MSD_URLS:
             raise ValueError(f"Dataset {name} not found in MSD datasets.")
         super().__init__(name, **kwargs)
 
     def get_url(self) -> str:
+        """Returns the URL of the dataset.
+
+        Returns:
+        -------
+        str
+            The URL of the dataset.
+        """
         return MSD_URLS[self.name]
 
     def download_and_extract(self) -> None:
+        """Download and extract the dataset.
+
+        Raises:
+        ------
+        subprocess.CalledProcessError
+            If the download or extraction fails.
+        """
         url = MSD_URLS[self.name]
         tar_filename = os.path.basename(url)
         tar_path = NNUNET_DATASETS / tar_filename
@@ -49,6 +75,13 @@ class MSDDataset(Dataset):
         self.logger.info(f"Finished dataset extraction to {extracted_directory}")
 
     def convert(self) -> None:
+        """Converts the dataset to nnU-Net format.
+
+        Raises:
+        ------
+        subprocess.CalledProcessError
+            If the conversion fails.
+        """
         if self.raw_dataset_path.is_dir():
             self.logger.info(f"Dataset {self.name} already converted.")
             return
@@ -68,6 +101,13 @@ class MSDDataset(Dataset):
         subprocess.run(convert_command, check=True)
 
     def preprocess(self) -> None:
+        """Preprocesses the dataset using nnU-Net.
+
+        Raises:
+        ------
+        subprocess.CalledProcessError
+            If the preprocessing fails.
+        """
         if self.preprocessed_dataset_path.is_dir():
             self.logger.info(f"Dataset {self.name} already preprocessed.")
             return
