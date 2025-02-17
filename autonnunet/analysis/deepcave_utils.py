@@ -6,19 +6,16 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 import yaml
-from autonnunet.hnas.cfg_unet import CFGUNet
-from ConfigSpace import (
-    CategoricalHyperparameter as Categorical,
-    Configuration,
-    ConfigurationSpace,
-    EqualsCondition,
-    OrConjunction,
-    UniformFloatHyperparameter as Float,
-    UniformIntegerHyperparameter as Integer,
-)
+from ConfigSpace import CategoricalHyperparameter as Categorical
+from ConfigSpace import (Configuration, ConfigurationSpace, EqualsCondition,
+                         OrConjunction)
+from ConfigSpace import UniformFloatHyperparameter as Float
+from ConfigSpace import UniformIntegerHyperparameter as Integer
 from deepcave.runs.converters.deepcave import DeepCAVERun
 from deepcave.runs.objective import Objective
 from deepcave.runs.recorder import Recorder
+
+from autonnunet.hnas.cfg_unet import CFGUNet
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -73,12 +70,12 @@ def yaml_to_configspace(yaml_path: Path) -> ConfigurationSpace:
     config_space = ConfigurationSpace()
 
     for name, hp in config_space_dict["hyperparameters"].items():
-        name = format_hp_name(name)
+        _name = format_hp_name(name)
 
         if hp["type"] == "uniform_float":
             config_space.add(
                 Float(
-                    name=name,
+                    name=_name,
                     lower=hp["lower"],
                     upper=hp["upper"],
                     default_value=hp.get("default", None),
@@ -177,9 +174,9 @@ def row_to_config(row: pd.Series, config_space: ConfigurationSpace) -> Configura
     # We need to manually collect the hyperparameter configuraiton
     # from the corresponding row in the runhistory
     for name, value in row.items():
-        name = format_hp_name(str(name))
-        if name in list(config_space.keys()):
-            values[name] = value
+        _name = format_hp_name(str(name))
+        if _name in list(config_space.keys()):
+            values[_name] = value
 
     # To match the config space, we need to pretend
     # that the learning rate was not sampled
@@ -191,8 +188,10 @@ def row_to_config(row: pd.Series, config_space: ConfigurationSpace) -> Configura
         architecture_features = extract_architecture_features(row["architecture"])
         values.update(architecture_features)
 
-        # To match the config space, we need to pretend that the dropout rate was not sampled
-        if values["encoder_dropout"] != "dropout" and values["decoder_dropout"] != "dropout":
+        # To match the config space, we need to pretend that the dropout rate was not
+        # sampled
+        if values["encoder_dropout"] != "dropout" \
+            and values["decoder_dropout"] != "dropout":
             values.pop("dropout_rate")
 
     origin = row.get("Config Origin", None)
@@ -208,7 +207,8 @@ def get_extended_hnas_config_space(
         config_space: ConfigurationSpace,
         default_string_tree: str
     ) -> ConfigurationSpace:
-    """Extends the given configuration space with the hierarchical architecture features.
+    """Extends the given configuration space with the hierarchical architecture
+    features.
 
     Parameters
     ----------
@@ -306,7 +306,11 @@ def get_extended_hnas_config_space(
     return config_space
 
 
-def runhistory_to_deepcave(dataset: str, history: pd.DataFrame, approach_key: str) -> DeepCAVERun:
+def runhistory_to_deepcave(     # noqa: C901
+        dataset: str,
+        history: pd.DataFrame,
+        approach_key: str
+    ) -> DeepCAVERun:
     """Converts a hypersweeper runhistory to a DeepCAVE run.
 
     Parameters
@@ -336,12 +340,14 @@ def runhistory_to_deepcave(dataset: str, history: pd.DataFrame, approach_key: st
     if (save_path / prefix).exists():
         return DeepCAVERun.from_path(save_path / prefix)
 
-    config_space_path = Path(f"./runscripts/configs/search_space/{approach_key}.yaml").resolve()
+    config_space_path = Path(
+        f"./runscripts/configs/search_space/{approach_key}.yaml"
+    ).resolve()
     config_space = yaml_to_configspace(config_space_path)
 
     # In HNAS, we need to extend the config space with the architecture features
     if "architecture" in history.columns:
-        default_string_tree = str(history["architecture"].values[0])
+        default_string_tree = str(history["architecture"].to_numpy()[0])
         config_space = get_extended_hnas_config_space(
             config_space=config_space,
             default_string_tree=default_string_tree

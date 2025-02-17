@@ -1,9 +1,11 @@
+"""Abstract class for a image segmentation dataset."""
 from __future__ import annotations
 
 import logging
 from abc import ABC, abstractmethod
 
-from autonnunet.utils.paths import NNUNET_DATASETS, NNUNET_PREPROCESSED, NNUNET_RAW
+from autonnunet.utils.paths import (NNUNET_DATASETS, NNUNET_PREPROCESSED,
+                                    NNUNET_RAW)
 
 
 class Dataset(ABC):
@@ -38,7 +40,8 @@ class Dataset(ABC):
         The path to the preprocessed dataset.
 
     """
-    def __init__(self, name: str, **kwargs):
+    def __init__(self, name: str):
+        """Initializes a dataset."""
         self.name = name
         self.dataset_id = int(name.split("_")[0].replace("Dataset", ""))
 
@@ -54,12 +57,12 @@ class Dataset(ABC):
 
     @abstractmethod
     def download_and_extract(self):
-        pass
+        """Download and extract the dataset."""
 
     @abstractmethod
     def convert(self):
-        pass
+        """Converts the dataset to nnU-Net format."""
 
     @abstractmethod
     def preprocess(self):
-        pass
+        """Preprocesses the dataset."""

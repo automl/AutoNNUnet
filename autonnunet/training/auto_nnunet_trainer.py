@@ -9,60 +9,42 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 import torch
-from batchgenerators.transforms.abstract_transforms import AbstractTransform, Compose
+from batchgenerators.transforms.abstract_transforms import (AbstractTransform,
+                                                            Compose)
 from batchgenerators.transforms.color_transforms import (
-    BrightnessMultiplicativeTransform,
-    ContrastAugmentationTransform,
-    GammaTransform,
-)
+    BrightnessMultiplicativeTransform, ContrastAugmentationTransform,
+    GammaTransform)
 from batchgenerators.transforms.noise_transforms import (
-    GaussianBlurTransform,
-    GaussianNoiseTransform,
-)
-from batchgenerators.transforms.resample_transforms import (
-    SimulateLowResolutionTransform,
-)
-from batchgenerators.transforms.spatial_transforms import (
-    MirrorTransform,
-    SpatialTransform,
-)
+    GaussianBlurTransform, GaussianNoiseTransform)
+from batchgenerators.transforms.resample_transforms import \
+    SimulateLowResolutionTransform
+from batchgenerators.transforms.spatial_transforms import (MirrorTransform,
+                                                           SpatialTransform)
 from batchgenerators.transforms.utility_transforms import (
-    NumpyToTensor,
-    RemoveLabelTransform,
-    RenameTransform,
-)
+    NumpyToTensor, RemoveLabelTransform, RenameTransform)
 from batchgenerators.utilities.file_and_folder_operations import load_json
-from nnunetv2.training.data_augmentation\
-    .custom_transforms.cascade_transforms import (
-    ApplyRandomBinaryOperatorTransform,
-    MoveSegAsOneHotToData,
-    RemoveRandomConnectedComponentFromOneHotEncodingTransform,
-)
-from nnunetv2.training.data_augmentation\
-    .custom_transforms.deep_supervision_donwsampling import (
-    DownsampleSegForDSTransform2,
-)
-from nnunetv2.training.data_augmentation\
-    .custom_transforms.masking import MaskTransform
-from nnunetv2.training.data_augmentation\
-    .custom_transforms.region_based_training import (
-    ConvertSegmentationToRegionsTransform,
-)
-from nnunetv2.training.data_augmentation\
-    .custom_transforms.transforms_for_dummy_2d import (
-    Convert2DTo3DTransform,
-    Convert3DTo2DTransform,
-)
-from nnunetv2.training.loss.compound_losses import DC_and_BCE_loss, DC_and_CE_loss
+from nnunetv2.training.data_augmentation.custom_transforms.cascade_transforms import (
+    ApplyRandomBinaryOperatorTransform, MoveSegAsOneHotToData,
+    RemoveRandomConnectedComponentFromOneHotEncodingTransform)
+from nnunetv2.training.data_augmentation.custom_transforms.deep_supervision_donwsampling import \
+    DownsampleSegForDSTransform2
+from nnunetv2.training.data_augmentation.custom_transforms.masking import \
+    MaskTransform
+from nnunetv2.training.data_augmentation.custom_transforms.region_based_training import \
+    ConvertSegmentationToRegionsTransform
+from nnunetv2.training.data_augmentation.custom_transforms.transforms_for_dummy_2d import (
+    Convert2DTo3DTransform, Convert3DTo2DTransform)
+from nnunetv2.training.loss.compound_losses import (DC_and_BCE_loss,
+                                                    DC_and_CE_loss)
 from nnunetv2.training.loss.deep_supervision import DeepSupervisionWrapper
 from nnunetv2.training.loss.dice import MemoryEfficientSoftDiceLoss
-from nnunetv2.training.loss.robust_ce_loss import RobustCrossEntropyLoss, TopKLoss
+from nnunetv2.training.loss.robust_ce_loss import (RobustCrossEntropyLoss,
+                                                   TopKLoss)
 from nnunetv2.training.lr_scheduler.polylr import PolyLRScheduler
 from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
 from nnunetv2.utilities.helpers import softmax_helper_dim1
-from nnunetv2.utilities.label_handling.label_handling import (
-    determine_num_input_channels,
-)
+from nnunetv2.utilities.label_handling.label_handling import \
+    determine_num_input_channels
 from torch import nn
 from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: N817
 from torch.optim.lr_scheduler import CosineAnnealingLR

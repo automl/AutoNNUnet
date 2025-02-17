@@ -1,0 +1,24 @@
+# @package _global_
+hp_config:
+  aug_factor: 1.2270632838335815
+  dropout_rate: 0.030604245981568218
+  initial_lr: 0.01
+  loss_function: DiceAndCrossEntropyLoss
+  lr_scheduler: PolyLRScheduler
+  momentum: 0.9493084913320874
+  num_epochs: 37.03703703703703
+  optimizer: SGD
+  oversample_foreground_percent: 0.33
+  weight_decay: 3.0e-05
+hydra:
+  job:
+    chdir: true
+  job_logging:
+    stderr: true
+    stdout: true
+  output_subdir: "."
+  run:
+    dir: output/hpo_hnas/Dataset004_Hippocampus/3d_fullres/0/incumbent
+  sweep:
+    dir: output/hpo_hnas/Dataset004_Hippocampus/3d_fullres/0/incumbent
+    subdir: fold_${fold}

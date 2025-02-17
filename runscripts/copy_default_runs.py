@@ -1,15 +1,17 @@
+from __future__ import annotations
+
+import argparse
 import shutil
 from pathlib import Path
-import argparse
-from autonnunet.datasets import ALL_DATASETS
 
+from autonnunet.datasets import ALL_DATASETS
 
 if __name__  == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--configuration", type=str, default="3d_fullres")
     argparser.add_argument("--approach", type=str, default="hpo")
     args = argparser.parse_args()
-    
+
     output_dir = Path("./").resolve() / "output"
     for dataset in ALL_DATASETS:
         for fold in range(5):

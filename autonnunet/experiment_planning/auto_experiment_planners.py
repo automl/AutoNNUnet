@@ -10,24 +10,17 @@ from copy import deepcopy
 from typing import TYPE_CHECKING
 
 import numpy as np
-from dynamic_network_architectures.architectures.unet import ResidualEncoderUNet
+from dynamic_network_architectures.architectures.unet import \
+    ResidualEncoderUNet
 from dynamic_network_architectures.building_blocks.helper import (
-    convert_conv_op_to_dim,
-    convert_dim_to_conv_op,
-    get_matching_batchnorm,
-    get_matching_dropout,
-    get_matching_instancenorm,
-)
-from nnunetv2.experiment_planning\
-    .experiment_planners.default_experiment_planner import (
-    ExperimentPlanner,
-)
-from nnunetv2.experiment_planning\
-    .experiment_planners.network_topology import (
-    get_pool_and_conv_props,
-)
-from nnunetv2.preprocessing\
-    .resampling.default_resampling import compute_new_shape
+    convert_conv_op_to_dim, convert_dim_to_conv_op, get_matching_batchnorm,
+    get_matching_dropout, get_matching_instancenorm)
+from nnunetv2.experiment_planning.experiment_planners.default_experiment_planner import \
+    ExperimentPlanner
+from nnunetv2.experiment_planning.experiment_planners.network_topology import \
+    get_pool_and_conv_props
+from nnunetv2.preprocessing.resampling.default_resampling import \
+    compute_new_shape
 from nnunetv2.utilities.json_export import recursive_fix_for_json_export
 
 if TYPE_CHECKING:

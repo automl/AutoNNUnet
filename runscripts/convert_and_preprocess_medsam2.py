@@ -4,30 +4,31 @@ from __future__ import annotations
 import warnings
 
 warnings.filterwarnings("ignore")
-import numpy as np
-import SimpleITK as sitk
 import os
 
+import numpy as np
+import SimpleITK as sitk
+
 join = os.path.join
-from tqdm import tqdm
-import cc3d
-import sys
 import multiprocessing as mp
+import sys
 from functools import partial
-import cv2
 from typing import TYPE_CHECKING
 
+import cc3d
+import cv2
 import hydra
-from autonnunet.utils.paths import NNUNET_RAW, MEDSAM2_PREPROCESSED
+from tqdm import tqdm
+
 from autonnunet.utils.helpers import get_train_val_test_names
+from autonnunet.utils.paths import MEDSAM2_PREPROCESSED, NNUNET_RAW
 
 if TYPE_CHECKING:
     from omegaconf import DictConfig
 
 
 def preprocess(name: str, npy_path: str, npz_path: str, cfg: DictConfig):
-    """
-    Preprocess the image and ground truth, and save them as npz files
+    """Preprocess the image and ground truth, and save them as npz files.
 
     Parameters
     ----------
@@ -41,7 +42,7 @@ def preprocess(name: str, npy_path: str, npz_path: str, cfg: DictConfig):
 
     image_name = name.split(cfg.img_name_suffix)[0] + cfg.img_name_suffix
 
-    # We need to remove the modality suffix, e.g. "_0000" 
+    # We need to remove the modality suffix, e.g. "_0000"
     gt_name = name.split(cfg.gt_name_suffix)[0][:-5] + cfg.gt_name_suffix
 
     gt_sitk = sitk.ReadImage(join(gt_path, gt_name))
@@ -98,7 +99,7 @@ def preprocess(name: str, npy_path: str, npz_path: str, cfg: DictConfig):
         image_data_pre = np.uint8(image_data_pre)
         img_roi = image_data_pre[z_index, :, :]
 
-        # we use the original preprocessed image for the validation 
+        # we use the original preprocessed image for the validation
         np.savez_compressed(join(npz_path, image_name.split(cfg.img_name_suffix)[0] + ".npz"), imgs=image_data_pre, gts=gt_data, spacing=img_sitk.GetSpacing())
 
         # Save as npy files
@@ -128,7 +129,7 @@ def preprocess(name: str, npy_path: str, npz_path: str, cfg: DictConfig):
 
 
 @hydra.main(version_base=None, config_path="configs", config_name="convert_and_preprocess_medsam2")
-def run(cfg: DictConfig):    
+def run(cfg: DictConfig):
     names_train, names_val, _ = get_train_val_test_names(cfg)
     names_train_val = names_train + names_val
 
@@ -140,13 +141,11 @@ def run(cfg: DictConfig):
 
     preprocess_tr = partial(preprocess, npy_path=str(npy_path_tr), npz_path=str(npz_path_tr), cfg=cfg)
 
-    with mp.Pool(cfg.num_workers) as p:
-        with tqdm(total=len(names_train_val)) as pbar:
-            pbar.set_description("Preprocessing training images")
-            for i, _ in tqdm(enumerate(p.imap_unordered(preprocess_tr, names_train_val))):
-                pbar.update()
+    with mp.Pool(cfg.num_workers) as p, tqdm(total=len(names_train_val)) as pbar:
+        pbar.set_description("Preprocessing training images")
+        for _i, _ in tqdm(enumerate(p.imap_unordered(preprocess_tr, names_train_val))):
+            pbar.update()
 
 
 if __name__  == "__main__":
     sys.exit(run())
-    

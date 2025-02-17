@@ -4,17 +4,13 @@ from __future__ import annotations
 import nibabel as nib
 import numpy as np
 import pandas as pd
-from autonnunet.analysis.dataset_metrics import (
-    compute_compactness,
-    compute_std_per_axis,
-)
-from autonnunet.utils.helpers import dataset_name_to_msd_task, load_json
-from autonnunet.utils.paths import (
-    AUTONNUNET_OUTPUT,
-    NNUNET_DATASETS,
-    NNUNET_PREPROCESSED,
-)
 from tqdm import tqdm
+
+from autonnunet.analysis.dataset_metrics import (compute_compactness,
+                                                 compute_std_per_axis)
+from autonnunet.utils.helpers import dataset_name_to_msd_task, load_json
+from autonnunet.utils.paths import (AUTONNUNET_OUTPUT, NNUNET_DATASETS,
+                                    NNUNET_PREPROCESSED)
 
 SOURCES = {
     "Dataset001_BrainTumour": "mp-MRI",
@@ -42,7 +38,10 @@ def _load_original_dataset_info(dataset: str) -> dict:
     dict
         The dataset information.
     """
-    return load_json(NNUNET_DATASETS / dataset_name_to_msd_task(dataset_name=dataset) / "dataset.json")
+    return load_json(
+        NNUNET_DATASETS /\
+            dataset_name_to_msd_task(dataset_name=dataset) / "dataset.json"
+    )
 
 def _load_cached_dataset_features(dataset: str) -> pd.DataFrame | None:
     """Loads cached datasets features from disk in case they were already computed.
@@ -181,7 +180,10 @@ def _get_dataset_features(dataset: str) -> dict:
     }
 
 
-def extract_dataset_features(dataset: str, recompute: bool = False) -> pd.DataFrame:
+def extract_dataset_features(
+        dataset: str,
+        recompute: bool = False     # noqa: FBT001, FBT002
+    ) -> pd.DataFrame:
     """Extracts the dataset features from the dataset.
 
     Parameters
@@ -198,7 +200,8 @@ def extract_dataset_features(dataset: str, recompute: bool = False) -> pd.DataFr
     pd.DataFrame
         The dataset features.
     """
-    if not recompute and (dataset_features := _load_cached_dataset_features(dataset)) is not None:
+    if not recompute and \
+        (dataset_features := _load_cached_dataset_features(dataset)) is not None:
         return dataset_features
 
     nnunet_dataset_features = _get_dataset_features(dataset)

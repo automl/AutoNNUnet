@@ -1,0 +1,24 @@
+# @package _global_
+hp_config:
+  aug_factor: 1.7216667859087935
+  dropout_rate: 0.28563619932307044
+  initial_lr: 0.01
+  loss_function: DiceAndCrossEntropyLoss
+  lr_scheduler: PolyLRScheduler
+  momentum: 0.9827919545992319
+  num_epochs: 333.3333333333333
+  optimizer: SGD
+  oversample_foreground_percent: 0.33
+  weight_decay: 0.0010206439818920433
+hydra:
+  job:
+    chdir: true
+  job_logging:
+    stderr: true
+    stdout: true
+  output_subdir: "."
+  run:
+    dir: output/hpo_hnas/Dataset005_Prostate/3d_fullres/0/incumbent
+  sweep:
+    dir: output/hpo_hnas/Dataset005_Prostate/3d_fullres/0/incumbent
+    subdir: fold_${fold}

@@ -1,8 +1,9 @@
+"""Utilities for Medical Segmentation Decathlon (MSD) datasets."""
 from __future__ import annotations
 
 import argparse
-import os
 import subprocess
+from pathlib import Path
 
 from autonnunet.utils.paths import NNUNET_DATASETS
 
@@ -26,22 +27,18 @@ MSD_DATASETS = list(MSD_URLS.keys())
 
 
 class MSDDataset(Dataset):
-    """Class for the Medical Segmentation Decathlon (MSD) dataset.
+    """Class for the Medical Segmentation Decathlon (MSD) dataset."""
+    def __init__(self, name: str) -> None:
+        """Initializes a MSD dataset.
 
-    Parameters
-    ----------
-    name : str
-        The name of the dataset.
-
-    Raises:
-    ------
-    ValueError
-        If the dataset name is not found in the MSD datasets.
-    """
-    def __init__(self, name: str, **kwargs) -> None:
+        Parameters
+        ----------
+        name : str
+            The name of the dataset.
+        """
         if name not in MSD_URLS:
             raise ValueError(f"Dataset {name} not found in MSD datasets.")
-        super().__init__(name, **kwargs)
+        super().__init__(name)
 
     def get_url(self) -> str:
         """Returns the URL of the dataset.
@@ -62,7 +59,7 @@ class MSDDataset(Dataset):
             If the download or extraction fails.
         """
         url = MSD_URLS[self.name]
-        tar_filename = os.path.basename(url)
+        tar_filename = Path(url).name
         tar_path = NNUNET_DATASETS / tar_filename
 
         download_file(url, tar_path)
@@ -88,7 +85,7 @@ class MSDDataset(Dataset):
 
         # Since nnU-Net expects MSD datasets to be stored in "TaskXX_YY" format,
         # we need to convert the extracted dataset to this format
-        tar_filename = os.path.basename(MSD_URLS[self.name])
+        tar_filename = Path(MSD_URLS[self.name]).name
         task_name = tar_filename.replace(".tar", "")
         task_path = self.dl_dataset_dir / task_name
 
@@ -98,7 +95,7 @@ class MSDDataset(Dataset):
             "-overwrite_id", str(self.dataset_id).zfill(3)
         ]
         self.logger.info(f"Executing command: {' '.join(convert_command)}")
-        subprocess.run(convert_command, check=True)
+        subprocess.run(convert_command, check=True)     # noqa: S603
 
     def preprocess(self) -> None:
         """Preprocesses the dataset using nnU-Net.
@@ -118,7 +115,7 @@ class MSDDataset(Dataset):
             "--verify_dataset_integrity"
         ]
         self.logger.info(f"Executing command: {' '.join(preprocess_command)}")
-        subprocess.run(preprocess_command, check=True)
+        subprocess.run(preprocess_command, check=True)  # noqa: S603
 
 
 if __name__  == "__main__":

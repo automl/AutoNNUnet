@@ -6,8 +6,8 @@ warnings.filterwarnings("ignore")
 
 import logging
 import sys
-from pathlib import Path
 from typing import TYPE_CHECKING
+
 import hydra
 import torch
 
@@ -20,7 +20,7 @@ def run(cfg: DictConfig):
     from autonnunet.training import AutoNNUNetTrainer
 
     logger = logging.getLogger()
-    
+
     logger.setLevel(logging.INFO)
     logger.info("Starting model size calculation script")
     logger.info(f"torch.cuda.is_available(): {torch.cuda.is_available()}")

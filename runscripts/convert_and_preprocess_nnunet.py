@@ -10,11 +10,13 @@ import sys
 from typing import TYPE_CHECKING
 
 import hydra
+
 from autonnunet.datasets import Dataset
 
 if TYPE_CHECKING:
-    from autonnunet.datasets import Dataset
     from omegaconf import DictConfig
+
+    from autonnunet.datasets import Dataset
 
 
 @hydra.main(version_base=None, config_path="configs", config_name="convert_and_preprocess_nnunet")

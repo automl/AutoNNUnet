@@ -11,13 +11,10 @@ import yaml
 from omegaconf import DictConfig, OmegaConf
 
 from autonnunet.utils import dataset_name_to_msd_task, load_json
-from autonnunet.utils.paths import (
-    AUTONNUNET_CONFIGS,
-    AUTONNUNET_MSD_SUBMISSIONS,
-    AUTONNUNET_OUTPUT,
-    AUTONNUNET_PREDICTIONS,
-    NNUNET_RAW,
-)
+from autonnunet.utils.paths import (AUTONNUNET_CONFIGS,
+                                    AUTONNUNET_MSD_SUBMISSIONS,
+                                    AUTONNUNET_OUTPUT, AUTONNUNET_PREDICTIONS,
+                                    NNUNET_RAW)
 
 # According to the MSD, these predictions should not be included in the submission
 IGNORE_PREDICTIONS = [

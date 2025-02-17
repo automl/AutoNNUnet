@@ -1,8 +1,7 @@
 # Based on https://github.com/bowang-lab/MedSAM/blob/MedSAM2/finetune_sam2_img.py
-"""
-finetune sam2 model on medical image data
+"""finetune sam2 model on medical image data
 only finetune the image encoder and mask decoder
-freeze the prompt encoder
+freeze the prompt encoder.
 """
 from __future__ import annotations
 
@@ -10,43 +9,44 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-import sys
 import os
+import sys
 
 sys.path.append(os.path.abspath("submodules/MedSAM"))
-from sam2.build_sam import build_sam2 
+from sam2.build_sam import build_sam2
 from sam2.utils.transforms import SAM2Transforms
 
 join = os.path.join
-from typing import TYPE_CHECKING
-from pathlib import Path
-import logging
-
-import glob
-import pandas as pd
-import numpy as np
-import random
-import torch
-import hydra
-from codecarbon import OfflineEmissionsTracker
 import datetime
+import glob
+import logging
 import os
-import time
+import random
+import shutil
 import sys
-from tqdm import tqdm
-import torch
-import torch.nn as nn
-from torch.utils.data import DataLoader, Dataset
-import monai
+import time
 from datetime import datetime
-from autonnunet.utils.paths import MEDSAM2_PREPROCESSED
-from torch.nn import functional as F
-import cv2 
+from pathlib import Path
+from typing import TYPE_CHECKING
 
+import cv2
+import hydra
+import monai
+import numpy as np
+import pandas as pd
+import SimpleITK as sitk
+import torch
+from codecarbon import OfflineEmissionsTracker
+from torch import nn
+from torch.nn import functional as F
+from torch.utils.data import DataLoader, Dataset
+from tqdm import tqdm
+
+from autonnunet.utils.paths import MEDSAM2_PREPROCESSED
 
 if TYPE_CHECKING:
     from omegaconf import DictConfig
-    
+
 os.environ["OMP_NUM_THREADS"] = "4"  # export OMP_NUM_THREADS=4
 os.environ["OPENBLAS_NUM_THREADS"] = "4"  # export OPENBLAS_NUM_THREADS=4
 os.environ["MKL_NUM_THREADS"] = "6"  # export MKL_NUM_THREADS=6
@@ -64,8 +64,7 @@ def get_bbox(mask, bbox_shift=5):
     x_max = min(W, x_max + bbox_shift)
     y_min = max(0, y_min - bbox_shift)
     y_max = min(H, y_max + bbox_shift)
-    bboxes = np.array([x_min, y_min, x_max, y_max])
-    return bboxes
+    return np.array([x_min, y_min, x_max, y_max])
 
 @torch.no_grad()
 def medsam_inference(
@@ -106,16 +105,15 @@ def medsam_inference(
         align_corners=False,
     )  # (1, 1, gt.shape)
     low_res_pred = low_res_pred.squeeze().cpu().numpy()  # (256, 256)
-    medsam_seg = (low_res_pred > 0.5).astype(np.uint8)
+    return (low_res_pred > 0.5).astype(np.uint8)
 
-    return medsam_seg
 
 def compute_dice_coefficient(mask_gt, mask_pred):
     """Compute soerensen-dice coefficient.
 
     compute the soerensen-dice coefficient between the ground truth mask `mask_gt`
-    and the predicted mask `mask_pred`. 
-    
+    and the predicted mask `mask_pred`.
+
     Args:
         mask_gt: 3-dim Numpy array of type bool. The ground truth mask.
         mask_pred: 3-dim Numpy array of type bool. The predicted mask.
@@ -125,7 +123,7 @@ def compute_dice_coefficient(mask_gt, mask_pred):
     """
     volume_sum = mask_gt.sum() + mask_pred.sum()
     if volume_sum == 0:
-        return np.NaN
+        return np.nan
     volume_intersect = (mask_gt & mask_pred).sum()
     return 2*volume_intersect / volume_sum
 
@@ -134,10 +132,7 @@ def compute_multi_class_dsc(gt, npz_seg) -> dict:
     labels = np.unique(gt)[1:]
     for i in labels:
         gt_i = gt == i
-        if i in npz_seg.keys():
-            seg_i = npz_seg[i]
-        else:
-            seg_i = np.zeros_like(gt_i)
+        seg_i = npz_seg[i] if i in npz_seg else np.zeros_like(gt_i)
         if np.sum(gt_i)==0 and np.sum(seg_i)==0:
             dsc[i] = 1
         elif np.sum(gt_i)==0 and np.sum(seg_i)>0:
@@ -156,10 +151,10 @@ def validate(name: str, medsam_model, device, npz_path_tr, cfg) -> dict:
         return {}
 
     npz = np.load(join(npz_path_tr, _name), allow_pickle=True)
-    img_3D = npz['imgs']
+    img_3D = npz["imgs"]
 
     segs_dict = {}
-    gt_3D = npz['gts']
+    gt_3D = npz["gts"]
     label_ids = np.unique(gt_3D)[1:]
     ## Simulate 3D box for each organ
     for label_id in label_ids:
@@ -172,14 +167,14 @@ def validate(name: str, medsam_model, device, npz_path_tr, cfg) -> dict:
             z_box = get_bbox(marker_data_id[z, :, :])
             bbox_dict[z] = z_box
         # find largest bbox in bbox_dict
-        bbox_areas = [np.prod(bbox_dict[z][2:] - bbox_dict[z][:2]) for z in bbox_dict.keys()]
+        bbox_areas = [np.prod(bbox_dict[z][2:] - bbox_dict[z][:2]) for z in bbox_dict]
         z_max_area = list(bbox_dict.keys())[np.argmax(bbox_areas)]
         z_min = min(bbox_dict.keys())
         z_max = max(bbox_dict.keys())
-        z_max_area_bbox = mid_slice_bbox_2d = bbox_dict[z_max_area]
+        mid_slice_bbox_2d = bbox_dict[z_max_area]
 
         z_middle = int((z_max - z_min)/2 + z_min)
-    
+
         z_max = min(z_max+1, img_3D.shape[0])
         for z in range(z_middle, z_max):
             img_2d = img_3D[z, :, :]
@@ -188,7 +183,7 @@ def validate(name: str, medsam_model, device, npz_path_tr, cfg) -> dict:
             else:
                 img_3c = img_2d
             H, W, _ = img_3c.shape
-            
+
             # convert the shape to (3, H, W)
             img_1024_tensor = sam2_transforms(img_3c)[None, ...].to(device)
             # get the image embedding
@@ -205,7 +200,7 @@ def validate(name: str, medsam_model, device, npz_path_tr, cfg) -> dict:
                     box_1024 = mid_slice_bbox_2d / np.array([W, H, W, H]) * 1024
             img_2d_seg = medsam_inference(medsam_model, _features, box_1024[None,:], H, W)
             segs_3d_temp[z, img_2d_seg>0] = 1
-        
+
         # infer from middle slice to the z_min
         z_min = max(-1, z_min-1)
         for z in range(z_middle-1, z_min, -1):
@@ -230,7 +225,15 @@ def validate(name: str, medsam_model, device, npz_path_tr, cfg) -> dict:
             img_2d_seg = medsam_inference(medsam_model, _features, box_1024[None,:], H, W)
             segs_3d_temp[z, img_2d_seg>0] = 1
         segs_dict[label_id] = segs_3d_temp.copy() ## save the segmentation result in one-hot format
-    
+
+    if not os.path.exists("validation"):
+        os.makedirs("validation")
+
+    for label_id in label_ids:
+        seg_sitk = sitk.GetImageFromArray(segs_dict[label_id])
+        seg_sitk.SetSpacing(npz["spacing"])
+        sitk.WriteImage(seg_sitk, join("validation", _name.replace(".npz", f"_{label_id}.nii.gz")))
+
     dsc = compute_multi_class_dsc(gt_3D, segs_dict)
     dsc["case"] = name
     return dsc
@@ -240,9 +243,7 @@ def run(cfg: DictConfig):
     from omegaconf import OmegaConf
     print(OmegaConf.to_yaml(cfg))
 
-    from autonnunet.utils import (
-        seed_everything,
-    )
+    from autonnunet.utils import seed_everything
     from autonnunet.utils.helpers import get_train_val_test_names
 
     logger = logging.getLogger()
@@ -314,7 +315,7 @@ def run(cfg: DictConfig):
             return (
                 img_1024, ## [3, 1024, 1024]
                 torch.tensor(gt2D[None, :, :]).long(), ## [1, 256, 256]
-                torch.tensor(bboxes).float(), 
+                torch.tensor(bboxes).float(),
                 img_name,
             )
 
@@ -328,12 +329,11 @@ def run(cfg: DictConfig):
             # freeze prompt encoder
             for param in self.sam2_model.sam_prompt_encoder.parameters():
                 param.requires_grad = False
-            
+
 
         def forward(self, image, box):
-            """
-            image: (B, 3, 1024, 1024)
-            box: (B, 2, 2)
+            """image: (B, 3, 1024, 1024)
+            box: (B, 2, 2).
             """
             _features = self._image_encoder(image)
             img_embed, high_res_features = _features["image_embed"], _features["high_res_feats"]
@@ -362,7 +362,7 @@ def run(cfg: DictConfig):
             )
 
             return low_res_masks_logits
-        
+
         def _image_encoder(self, input_image):
             backbone_out = self.sam2_model.forward_image(input_image)
             _, vision_feats, _, _ = self.sam2_model._prepare_backbone_features(backbone_out)
@@ -372,11 +372,10 @@ def run(cfg: DictConfig):
             bb_feat_sizes = [(256, 256), (128, 128), (64, 64)]
             feats = [
                 feat.permute(1, 2, 0).view(input_image.size(0), -1, *feat_size)
-                for feat, feat_size in zip(vision_feats[::-1], bb_feat_sizes[::-1])
+                for feat, feat_size in zip(vision_feats[::-1], bb_feat_sizes[::-1], strict=False)
             ][::-1]
-            _features = {"image_embed": feats[-1], "high_res_feats": feats[:-1]}
+            return {"image_embed": feats[-1], "high_res_feats": feats[:-1]}
 
-            return _features
 
     device = torch.device(cfg.device)
     # Get path of current file
@@ -389,10 +388,10 @@ def run(cfg: DictConfig):
 
     logger.info(
         f"Number of total parameters: {sum(p.numel() for p in medsam_model.parameters())}"
-    ) 
+    )
     logger.info(
         f"Number of trainable parameters: {sum(p.numel() for p in medsam_model.parameters() if p.requires_grad)}"
-    )  
+    )
 
     img_mask_encdec_params = list(medsam_model.sam2_model.image_encoder.parameters()) + list(
         medsam_model.sam2_model.sam_mask_decoder.parameters()
@@ -402,7 +401,7 @@ def run(cfg: DictConfig):
     )
     logger.info(
         f"Number of image encoder and mask decoder parameters: {sum(p.numel() for p in img_mask_encdec_params if p.requires_grad)}"
-    )  
+    )
     seg_loss_func = monai.losses.DiceLoss(sigmoid=True, squared_pred=True, reduction="mean")
     fg_seg_loss_func = monai.losses.DiceLoss(include_background=False, sigmoid=True, squared_pred=True, reduction="mean")
     # cross entropy loss
@@ -410,7 +409,7 @@ def run(cfg: DictConfig):
 
     npy_path_tr = MEDSAM2_PREPROCESSED / cfg.dataset.name / "imagesTr" / "npy"
     npz_path_tr = MEDSAM2_PREPROCESSED / cfg.dataset.name / "imagesTr" / "npz"
-    
+
     train_names, val_names, _ = get_train_val_test_names(cfg)
 
     train_dataset = NpyDataset(str(npy_path_tr), train_names, bbox_shift=cfg.bbox_shift)
@@ -488,11 +487,11 @@ def run(cfg: DictConfig):
             optimizer.zero_grad()
             boxes_np = boxes.detach().cpu().numpy()
             image, gt2D = image.to(device), gt2D.to(device)
-            
+
             medsam_pred = medsam_model(image, boxes_np)
             seg_loss = seg_loss_func(medsam_pred, gt2D)
             ce_loss = ce_loss_func(medsam_pred, gt2D.float())
-            loss = seg_loss + ce_loss           
+            loss = seg_loss + ce_loss
             loss.backward()
             optimizer.step()
             optimizer.zero_grad()
@@ -505,7 +504,7 @@ def run(cfg: DictConfig):
 
         train_seg_losses.append(epoch_train_seg_loss)
         train_ce_losses.append(epoch_train_ce_loss)
-        
+
         medsam_model.eval()
         epoch_val_fg_seg_loss = 0
         epoch_val_seg_loss = 0
@@ -515,7 +514,7 @@ def run(cfg: DictConfig):
             for step, (image, gt2D, boxes, _) in enumerate(tqdm(val_dataloader)):
                 boxes_np = boxes.detach().cpu().numpy()
                 image, gt2D = image.to(device), gt2D.to(device)
-                
+
                 medsam_pred = medsam_model(image, boxes_np)
 
                 # To compare to nnU-Net we use foreground dice loss
@@ -523,8 +522,8 @@ def run(cfg: DictConfig):
                 seg_loss = seg_loss_func(medsam_pred, gt2D)
 
                 ce_loss = ce_loss_func(medsam_pred, gt2D.float())
-                loss = seg_loss + ce_loss      
-                
+                loss = seg_loss + ce_loss
+
                 epoch_val_fg_seg_loss = fg_seg_loss.item()
                 epoch_val_seg_loss += seg_loss.item()
                 epoch_val_ce_loss += ce_loss.item()
@@ -550,7 +549,7 @@ def run(cfg: DictConfig):
             "epoch": epoch,
         }
         torch.save(checkpoint, "medsam_model_latest.pth")
-       
+
         ## save the best model
         if epoch_val_seg_loss < best_val_fg_seg_loss:
             best_val_fg_seg_loss = epoch_val_seg_loss
@@ -582,10 +581,11 @@ def run(cfg: DictConfig):
             emissions.to_csv("emissions.csv", index=False)
             os.remove("emissions_old.csv")
 
-    logger.info("Training done")    
+    logger.info("Training done")
 
     # Perform actual validation
     logger.info("Starting validation")
+    shutil.rmtree("validation", ignore_errors=True)
     logger.info("Loading best model checkpoint")
     best_medsam2_checkpoint = torch.load("medsam_model_best.pth", map_location=device)
     medsam_model.load_state_dict(best_medsam2_checkpoint["model"], strict=True)

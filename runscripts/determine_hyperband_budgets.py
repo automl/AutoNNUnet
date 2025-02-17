@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 
 from autonnunet.utils import compute_hyperband_budgets
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--min_budget", type=int, default=10)

@@ -5,11 +5,10 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import argparse
-from autonnunet.datasets import ALL_DATASETS
-
-from autonnunet.evaluation import  extract_incumbent
 import logging
 
+from autonnunet.datasets import ALL_DATASETS
+from autonnunet.evaluation import extract_incumbent
 
 if __name__  == "__main__":
     argparser = argparse.ArgumentParser()

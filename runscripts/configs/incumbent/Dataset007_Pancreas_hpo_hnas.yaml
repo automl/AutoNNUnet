@@ -1,0 +1,24 @@
+# @package _global_
+hp_config:
+  aug_factor: 1.6004338146811175
+  dropout_rate: 0.12930660128488364
+  initial_lr: 0.009651085102456063
+  loss_function: DiceAndCrossEntropyLoss
+  lr_scheduler: CosineAnnealingLR
+  momentum: 0.8472723290354347
+  num_epochs: 1000.0
+  optimizer: SGD
+  oversample_foreground_percent: 0.642760012110261
+  weight_decay: 9.359968568499385e-05
+hydra:
+  job:
+    chdir: true
+  job_logging:
+    stderr: true
+    stdout: true
+  output_subdir: "."
+  run:
+    dir: output/hpo_hnas/Dataset007_Pancreas/3d_fullres/0/incumbent
+  sweep:
+    dir: output/hpo_hnas/Dataset007_Pancreas/3d_fullres/0/incumbent
+    subdir: fold_${fold}

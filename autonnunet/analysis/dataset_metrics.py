@@ -50,8 +50,8 @@ def compute_std_per_axis(class_mask: np.ndarray) -> float:
     """
     if class_mask.ndim == 1:
         return float(np.std(class_mask))
-    if class_mask.ndim == 2:
+    if class_mask.ndim == 2:        # noqa: PLR2004
         return float(np.std(class_mask, axis=(0, 1)))
-    if class_mask.ndim == 3:
+    if class_mask.ndim == 3:        # noqa: PLR2004
         return float(np.std(class_mask, axis=(0, 1, 2)))
     raise ValueError("Array must have at most 4 dimensions")

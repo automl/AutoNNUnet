@@ -5,11 +5,10 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import argparse
-from autonnunet.datasets import ALL_DATASETS
-
-from autonnunet.evaluation import run_prediction, extract_incumbent, compress_msd_submission
 import logging
 
+from autonnunet.datasets import ALL_DATASETS
+from autonnunet.evaluation import compress_msd_submission, run_prediction
 
 if __name__  == "__main__":
     argparser = argparse.ArgumentParser()
@@ -31,14 +30,13 @@ if __name__  == "__main__":
             configuration=args.configuration,
             use_folds=args.use_folds
         )
-        logger.info(f"Done.")
-
+        logger.info("Done.")
 
     logger.info("Compressing MSD submission.")
     compress_msd_submission(
         approach=args.approach,
         configuration=args.configuration
     )
-    logger.info(f"Done.")
+    logger.info("Done.")
 
-        
+
