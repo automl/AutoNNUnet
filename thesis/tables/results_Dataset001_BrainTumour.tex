@@ -1,0 +1,15 @@
+\begin{table}
+\caption{Performance Comparison}
+\label{tab:results}
+\begin{tabular}{llllllll}
+\toprule
+Approach & Conv & ResM & ResL & MedSAM2 & HPO & HPO+NAS & HPO+HNAS \\
+Class Label &  &  &  &  &  &  &  \\
+\midrule
+edema & $\mathbf{81.14}$ & $80.86$ & $80.44$ & $60.45$ & $80.91$ & $80.87$ & $80.75$ \\
+enhancing tumour & $78.83$ & $\mathbf{79.61}$ & $78.64$ & $40.53$ & $78.83$ & $79.29$ & $79.43$ \\
+non-enhancing tumor & $61.98$ & $61.97$ & $61.71$ & $30.62$ & $62.88$ & $\mathbf{63.20}$ & $62.86$ \\
+\textbf{Mean} & $73.98$ & $74.15$ & $73.60$ & $43.87$ & $74.21$ & $\mathbf{74.45}$ & $74.35$ \\
+\bottomrule
+\end{tabular}
+\end{table}
