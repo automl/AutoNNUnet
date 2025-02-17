@@ -2849,9 +2849,9 @@ class Plotter:
         if approach_key == "hpo_hnas":
             fig.subplots_adjust(
                 top=0.87,
-                bottom=0.51,
-                left=0.07,
-                right=0.97,
+                bottom=0.49,
+                left=0.08,
+                right=0.96,
                 wspace=0.2,
                 hspace=0.5,
             )
@@ -2859,8 +2859,8 @@ class Plotter:
             fig.subplots_adjust(
                 top=0.86,
                 bottom=0.43,
-                left=0.08,
-                right=0.98,
+                left=0.07,
+                right=0.96,
                 wspace=0.2,
                 hspace=0.5,
             )
@@ -3265,7 +3265,6 @@ class Plotter:
             self,
             deepcave_run: DeepCAVERun,
             outputs: dict,
-            show_ice: bool,             # noqa: FBT001
             hp_name: str,
             objective_id: int = 0,
             incumbent_value: str | int | float | None = None
@@ -3279,9 +3278,6 @@ class Plotter:
 
         outputs : dict
             The outputs of the DeepCAVE PDP evaluator.
-
-        show_ice : bool
-            Whether to show the individual conditional expectation (ICE) plots.
 
         hp_name : str
             The hyperparameter name.
@@ -3305,16 +3301,15 @@ class Plotter:
 
         fig, ax = plt.subplots(1, 1, figsize=(self.figwidth / 2, 3))
 
-        if show_ice:
-            for x_, y_ in zip(x_ice, y_ice, strict=False):
-                sns.lineplot(
-                    x=x_[:, hp_idx],
-                    y=y_,
-                    ax=ax,
-                    color=self.color_palette[3],
-                    alpha=0.1,
-                    label="ICE"
-                )
+        for x_, y_ in zip(x_ice, y_ice, strict=False):
+            sns.lineplot(
+                x=x_[:, hp_idx],
+                y=y_,
+                ax=ax,
+                color=self.color_palette[3],
+                alpha=0.1,
+                label="ICE"
+            )
 
         sns.lineplot(
             x=x[:, hp_idx],
@@ -3342,24 +3337,35 @@ class Plotter:
 
         if isinstance(hp, CategoricalHyperparameter):
             default_vector = 0
-            inc_vector = np.where(hp.choices == incumbent_value)[0][0]
+            if incumbent_value is None:
+                inc_vector = None
+            else:
+                inc_idx = np.where(
+                    np.array(list(hp.choices)) == incumbent_value
+                )[0][0]
+                inc_vector = inc_idx / (len(hp.choices) - 1)
         else:
             default_vector = hp.to_vector(hp.default_value)
-            inc_vector = hp.to_vector(incumbent_value)
+
+            if incumbent_value is None:
+                inc_vector = None
+            else:
+                inc_vector = hp.to_vector(incumbent_value)
 
         # We add vertical lines for the default and incumbent
         ax.axvline(
             x=default_vector,
             color=self.color_palette[2],
-            linestyle="--",
+            linestyle="-",
             label="Default"
         )
-        ax.axvline(
-            x=inc_vector,
-            color=self.color_palette[3],
-            linestyle="--",
-            label="Inc."
-        )
+        if inc_vector is not None:
+            ax.axvline(
+                x=inc_vector,
+                color=self.color_palette[3],
+                linestyle="--",
+                label="Inc."
+            )
 
         ax.set_xticks(tickvals)
         ax.set_xticklabels(ticktext)
@@ -3380,7 +3386,11 @@ class Plotter:
         )
 
         handles, labels = ax.get_legend_handles_labels()
-        handles, labels = handles[-4:], labels[-4:]
+
+        if inc_vector is None:
+            handles, labels = handles[-3:], labels[-3:]
+        else:
+            handles, labels = handles[-4:], labels[-4:]
 
         # We need to swap the ICE and PDP labels
         labels[0], labels[1] = labels[1], labels[0]
@@ -3391,7 +3401,7 @@ class Plotter:
             labels,
             loc="upper center",
             bbox_to_anchor=(0.5, -0.2),
-            ncol=4,
+            ncol=len(handles),
             fancybox=False,
             shadow=False,
             frameon=False
@@ -3486,7 +3496,6 @@ class Plotter:
             hp_name_2: str | None = None,
             budget_id: int = COMBINED_BUDGET,
             objective_id: int = 0,
-            show_ice: bool = True       # noqa: FBT001, FBT002
     ) -> None:
         """Plot a partial dependence plot for a given dataset and approach.
 
@@ -3509,10 +3518,6 @@ class Plotter:
 
         objective_id : int
             The objective ID. Defaults to 0.
-
-        show_ice : bool
-            Whether to show the individual conditional expectation (ICE) plots.
-            Defaults to True.
         """
         try:
             if approach_key == "hpo":
@@ -3527,20 +3532,19 @@ class Plotter:
             self.logger.error(e)
             return
 
-        objective = deepcave_run.get_objective(objective_id)
+        objective = deepcave_run.get_objective(0)
         inc_config = deepcave_run.get_incumbent(objectives=objective)[0]
 
         if hp_name_1 not in HYPERPARAMETER_REPLACEMENT_MAP:
             hp_name_1 = next(
                 k for k, v in HYPERPARAMETER_REPLACEMENT_MAP.items() if v == hp_name_1
             )
-            inc_1 = inc_config[hp_name_1]
+            inc_1 = inc_config.get(hp_name_1, None)
 
         if hp_name_2 and hp_name_2 in HYPERPARAMETER_REPLACEMENT_MAP:
             hp_name_2 = next(
                 k for k, v in HYPERPARAMETER_REPLACEMENT_MAP.items() if v == hp_name_2
             )
-            inc_config[hp_name_2]
 
         inputs = {
             "objective_id": objective_id,
@@ -3559,7 +3563,6 @@ class Plotter:
             self._plot_pdp_1hp(
                 deepcave_run=deepcave_run,
                 outputs=outputs,
-                show_ice=show_ice,
                 hp_name=hp_name_1,
                 objective_id=objective_id,
                 incumbent_value=inc_1
