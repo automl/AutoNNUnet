@@ -1608,7 +1608,7 @@ class Plotter:
 
         x_min, x_max = ax.get_xlim()
 
-        log_major_locator = LogLocator(base=10.0, subs=(0.1,), numticks=2)
+        log_major_locator = LogLocator(base=10.0, subs=(10,), numticks=2)
         log_minor_locator = LogLocator(base=10.0, subs="auto", numticks=10)
         ax.xaxis.set_major_locator(log_major_locator)
         ax.xaxis.set_minor_locator(log_minor_locator)
@@ -1622,11 +1622,11 @@ class Plotter:
         ) if valid_minor_ticks else None
 
         def minor_formatter(val, _):
-            if np.isclose(val, 0.1) or np.isclose(val, 0.2) \
-                or np.isclose(val, 0.3) or np.isclose(val, 0.5):
+            if np.isclose(val, 10) or np.isclose(val, 20) \
+                or np.isclose(val, 30) or np.isclose(val, 50):
                 return f"{val:.1f}"
             if closest_minor_tick is not None and np.isclose(val, closest_minor_tick):
-                if val < 0.1:   # noqa: PLR2004
+                if val < 10:   # noqa: PLR2004
                     return f"{val:.2f}"
                 return f"{val:.1f}"
             return ""
@@ -2501,6 +2501,7 @@ class Plotter:
             dpi=self.dpi
         )
         plt.clf()
+        plt.close()
 
     def plot_nas_origins(self, approach_key: str) -> None:
         """Plot the origins of the NAS/HNAS approaches for all datasets.
