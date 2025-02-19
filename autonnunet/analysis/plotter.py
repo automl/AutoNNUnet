@@ -4345,6 +4345,7 @@ class Plotter:
     def plot_joint_dataset_features_heatmap(
             self,
             include: Literal["none", "incumbents", "importances"],
+            orientation: Literal["left", "right"] = "right",
             corr_threshold: float = 0.7
     ) -> None:
         """Plot the joint dataset features heatmap.
@@ -4353,6 +4354,9 @@ class Plotter:
         ----------
         include : Literal["none", "incumbents", "importances"]
             The kind of hyperparameter values to include.
+
+        orientation : Literal["left", "right"]
+            The orientation of the x-axis labels. Defaults to "right".
 
         corr_threshold : float
             The correlation threshold. Defaults to 0.7.
@@ -4399,8 +4403,10 @@ class Plotter:
             fmt=".2f",
         )
 
-        plt.xticks(rotation=-90)
-        plt.grid(visible=False)
+        if orientation == "left":
+            plt.xticks(rotation=-90)
+        else:
+            plt.grid(visible=False)
 
         plt.title(title)
         plt.tight_layout()
@@ -4412,7 +4418,7 @@ class Plotter:
             output_dir.mkdir(parents=True, exist_ok=True)
 
         plt.savefig(
-            output_dir / f"heatmap.{self.format}",
+            output_dir / f"heatmap_{orientation}.{self.format}",
             format=self.format,
             dpi=self.dpi
         )

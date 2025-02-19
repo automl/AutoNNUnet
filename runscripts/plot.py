@@ -6,6 +6,31 @@ if __name__  == "__main__":
     plotter = Plotter(
         file_format="pdf",
     )
+    plotter.plot_joint_dataset_features_heatmap(
+        include="none",
+        orientation="left"
+    )
+    plotter.plot_joint_dataset_features_heatmap(
+        include="none",
+        orientation="right"
+    )
+    plotter.plot_joint_dataset_features_heatmap(
+        include="incumbents",
+        orientation="left"
+    )
+    plotter.plot_joint_dataset_features_heatmap(
+        include="incumbents",
+        orientation="right"
+    )
+    plotter.plot_joint_dataset_features_heatmap(
+        include="importances",
+        orientation="left"
+    )
+    plotter.plot_joint_dataset_features_heatmap(
+        include="importances",
+        orientation="right"
+    )
+    exit()
 
     # --------------------------------------------------------------------------------------------
     # Tables
@@ -30,13 +55,29 @@ if __name__  == "__main__":
     # --------------------------------------------------------------------------------------------
     plotter.plot_joint_dataset_features_heatmap(
         include="none",
+        orientation="left"
+    )
+    plotter.plot_joint_dataset_features_heatmap(
+        include="none",
+        orientation="right"
     )
     plotter.plot_joint_dataset_features_heatmap(
         include="incumbents",
+        orientation="left"
+    )
+    plotter.plot_joint_dataset_features_heatmap(
+        include="incumbents",
+        orientation="right"
     )
     plotter.plot_joint_dataset_features_heatmap(
         include="importances",
+        orientation="left"
     )
+    plotter.plot_joint_dataset_features_heatmap(
+        include="importances",
+        orientation="right"
+    )
+
     plotter.create_top_dataset_features_hps_table(
         include="incumbents",
         plot_relationships=True,
