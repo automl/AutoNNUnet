@@ -180,7 +180,6 @@ DATASET_FEATURES_REPLACEMENT_MAP = {
     "volume": "Volume",
     "class_volume": "Class Volume",
     "class_volume_ratio": "Class Volume Ratio",
-    "compactness": "Compactness",
     "mean_intensity": "Intensity Mean",
     "std_intensity": "Intensity Std.",
     "min_intensity": "Intensity Min.",

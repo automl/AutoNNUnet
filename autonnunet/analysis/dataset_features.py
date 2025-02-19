@@ -6,8 +6,6 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from autonnunet.analysis.dataset_metrics import (compute_compactness,
-                                                 compute_std_per_axis)
 from autonnunet.utils.helpers import dataset_name_to_msd_task, load_json
 from autonnunet.utils.paths import (AUTONNUNET_OUTPUT, NNUNET_DATASETS,
                                     NNUNET_PREPROCESSED)
@@ -114,16 +112,11 @@ def _get_image_and_label_features(dataset: str) -> pd.DataFrame:
 
             class_volume = class_mask.sum()
             if class_volume > 0:
-                compactness = compute_compactness(class_mask)
-                std = compute_std_per_axis(class_mask)
-
                 mean_intensity = img[class_mask].mean()
                 std_intensity = img[class_mask].std()
                 min_intensity = img[class_mask].min()
                 max_intensity = img[class_mask].max()
             else:
-                compactness = np.nan
-                std = [np.nan, np.nan, np.nan]
                 mean_intensity = np.nan
                 std_intensity = np.nan
                 min_intensity = np.nan
@@ -137,8 +130,6 @@ def _get_image_and_label_features(dataset: str) -> pd.DataFrame:
                 "class_label": class_label,
                 "class_volume": class_volume,
                 "class_volume_ratio": class_volume / volume,
-                "compactness": compactness,
-                "std": std,
                 "mean_intensity": mean_intensity,
                 "std_intensity": std_intensity,
                 "min_intensity": min_intensity,
