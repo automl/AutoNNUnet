@@ -1596,7 +1596,7 @@ class Plotter:
                 zorder=-1
             )
 
-    def _format_log_axis(self, ax: Any) -> None:
+    def _format_log_xaxis(self, ax: Any) -> None:
         """Formats a matplotlib axis with a logarithmic x-axis scale.
 
         Parameters
@@ -1657,7 +1657,7 @@ class Plotter:
             y="EMA Foreground Dice [%]",
             data=baseline_progress,
             hue="Approach",
-            errorbar=("sd"),
+            errorbar=("ci", 95),
         )
 
         g.set_title(f"Training Progress on\n{format_dataset_name(dataset)}")
@@ -2217,7 +2217,7 @@ class Plotter:
         ax.set_ylabel("Training Runtime [h]")
 
         self._format_axis(ax=ax, grid=True)
-        self._format_log_axis(ax=ax)
+        self._format_log_xaxis(ax=ax)
         ax.set_yscale("log")
 
         fig.subplots_adjust(
@@ -2362,7 +2362,7 @@ class Plotter:
 
         g.set_yscale("log")
 
-        self._format_log_axis(ax=ax)
+        self._format_log_xaxis(ax=ax)
         self._format_axis(ax=g, grid=True)
 
         plt.legend(
@@ -2474,7 +2474,7 @@ class Plotter:
         g.set_ylabel("Training Runtime [h]")
 
         self._format_axis(ax=g, grid=True)
-        self._format_log_axis(ax=ax)
+        self._format_log_xaxis(ax=ax)
 
         g.set_yscale("log")
 
@@ -2908,7 +2908,7 @@ class Plotter:
             Defaults to False.
         """
         if approach_keys is None:
-            approach_keys = APPROACHES[1:]
+            approach_keys = APPROACHES
         for approach_key in approach_keys:
             if approach_key == "hpo":
                 self._plot_hp_importances(
@@ -3293,7 +3293,22 @@ class Plotter:
         """
         x = np.asarray(outputs["x"])
         y = np.asarray(outputs["y"])
-        sigmas = np.sqrt(np.asarray(outputs["variances"])) / 100
+
+        objective = deepcave_run.get_objective(objective_id)
+        assert objective is not None
+
+        # To account for the objective scale in the plot we
+        # normalize the variances by the maximum value of the
+        # objective
+        objective_max = deepcave_run.get_encoded_data(
+            objective,
+            COMBINED_BUDGET,
+            specific=True,
+        )[objective.name].to_numpy().max()
+
+        sigmas = np.sqrt(
+            np.asarray(outputs["variances"])
+        ) / objective_max
         x_ice = np.asarray(outputs["x_ice"])
         y_ice = np.asarray(outputs["y_ice"])
 
@@ -3323,10 +3338,10 @@ class Plotter:
 
         ax.fill_between(
             x[:, hp_idx],
-            y - sigmas,
-            y + sigmas,
+            y1=y - max(sigmas) * sigmas,
+            y2=y + max(sigmas) * sigmas,
+            alpha=0.2,
             color=self.color_palette[0],
-            alpha=0.2
         )
 
         tickvals, ticktext = get_hyperparameter_ticks(hp=hp)
@@ -3380,8 +3395,8 @@ class Plotter:
         fig.subplots_adjust(
             top=0.85,
             bottom=0.21,
-            left=0.15,
-            right=0.94,
+            left=0.18,
+            right=0.9,
             wspace=0.33,
             hspace=0.33
         )
@@ -3581,7 +3596,7 @@ class Plotter:
                   f" on\n{format_dataset_name(dataset)}")
 
         if hp_name_2 is None:
-            title = f"pdp_{dataset}_{hp_name_1}_objective_{objective_id}"
+            title = f"pdp_{dataset}_objective_{objective_id}"
         else:
             title = f"pdp_{dataset}_{hp_name_1}_{hp_name_2}_objective_{objective_id}"
 
@@ -3806,11 +3821,11 @@ class Plotter:
         )
 
         plt.savefig(
-            self.analysis_plots[approach_key] / f"footprint_{dataset}.{self.format}",
-            format=self.format,
+            self.analysis_plots[approach_key] / f"footprint_{dataset}.png",
             dpi=self.dpi
         )
         plt.clf()
+        plt.close()
 
     def plot_footprints(
             self,
@@ -4109,40 +4124,52 @@ class Plotter:
                     approach_key=approach_key
                 )
 
-    def _get_joint_dataset_features(
+    def _get_joint_dataset_features(            # noqa: PLR0915
             self,
-            hp_importances: bool = False,       # noqa: FBT001, FBT002
-            budget: int = COMBINED_BUDGET
+            budget: int = COMBINED_BUDGET,
+            recompute: bool = False             # noqa: FBT001, FBT002
         ) -> pd.DataFrame:
         """Returns the joint dataset features and hyperparameter importances for all
         datasets.
 
         Parameters
         ----------
-        hp_importances : bool
-            Whether to include hyperparameter importances. Defaults to False.
-
         budget : int
             The budget to use. Defaults to COMBINED_BUDGET.
+
+        recompute : bool
+            Whether to recompute the joint dataset features. Defaults to False.
 
         Returns:
         -------
         pd.DataFrame
             The resulting joint dataset features.
         """
+        path = DEEPCAVE_CACHE_DIR / "dataset_features" / "joint_dataset_features.csv"
+        if not recompute and path.exists():
+            return pd.read_csv(path)
+        (DEEPCAVE_CACHE_DIR / "dataset_features").mkdir(parents=True, exist_ok=True)
+
         all_baseline_metrics = []
         all_dataset_features = []
+        all_hp_incumbents = []
         all_hp_importances = []
 
         for dataset in tqdm(self.datasets, desc="Processing dataset features"):
             baseline_metrics = self.get_baseline_data(dataset=dataset).metrics
+
+            # We ignore MedSAM2 here
+            baseline_metrics = baseline_metrics[
+                baseline_metrics["Approach"] != "MedSAM2"
+            ]
+
             baseline_metrics = baseline_metrics.drop(
                 columns=["Approach", "Fold", "Dataset", "Mean"]
             )
 
             # We need to extract class labels and mean DSC
             baseline_metrics = baseline_metrics.mean().reset_index()
-            baseline_metrics.columns = ["Class Label", "DSC"]
+            baseline_metrics.columns = ["Class Label", "nnU-Net Val. DSC"]
             baseline_metrics["Dataset"] = dataset
 
             all_baseline_metrics += [baseline_metrics]
@@ -4154,33 +4181,58 @@ class Plotter:
                 + dataset_features["n_test_samples"]
             all_dataset_features += [dataset_features]
 
-            if hp_importances:
-                importances_data = []
+            importances_data = []
+            incumbent_data = []
 
-                for data_func in [
-                    self.get_hpo_data,
-                    self.get_nas_data,
-                    self.get_hnas_data
-                ]:
-                    deepcave_run = data_func(dataset).deepcave_runs[dataset]
-                    selected_budget = self._get_budget(budget, deepcave_run)
+            for data_func in [
+                self.get_hpo_data,
+                self.get_nas_data,
+                self.get_hnas_data
+            ]:
+                deepcave_run = data_func(dataset).deepcave_runs[dataset]
 
-                    evaluator = fANOVA(run=deepcave_run)
-                    evaluator.calculate(budget=selected_budget, seed=42)
+                # 1) We extract incumbent values for each HP
+                objective = deepcave_run.get_objective(0)
+                incumbent_cfg = deepcave_run.get_incumbent(objectives=objective)[0]
 
-                    importances = evaluator.get_importances(
-                        hp_names=list(deepcave_run.configspace.keys())
-                    )
+                for hp in incumbent_cfg:
+                    assert isinstance(hp, str)
 
-                    for hp_key in importances:
-                        assert isinstance(hp_key, str)
+                    if isinstance(
+                            deepcave_run.configspace[hp],
+                            CategoricalHyperparameter
+                        ):
+                        continue
 
-                        importance = importances[hp_key]
-                        importances_data += [{
-                            "Dataset": dataset,
-                            "Hyperparameter": HYPERPARAMETER_REPLACEMENT_MAP[hp_key],
-                            "Importance": importance[0],
-                        }]
+                    incumbent_data += [{
+                        "Dataset": dataset,
+                        "Hyperparameter": HYPERPARAMETER_REPLACEMENT_MAP[hp] \
+                            + " Incumbent",
+                        "Incumbent Value": incumbent_cfg[hp],
+                    }]
+
+                incumbents_df = pd.DataFrame(incumbent_data)
+                all_hp_incumbents += [incumbents_df]
+
+                # 2) We compute importance values for each HP
+                selected_budget = self._get_budget(budget, deepcave_run)
+                evaluator = fANOVA(run=deepcave_run)
+                evaluator.calculate(budget=selected_budget, seed=42)
+
+                importances = evaluator.get_importances(
+                    hp_names=list(deepcave_run.configspace.keys())
+                )
+
+                for hp in importances:
+                    assert isinstance(hp, str)
+
+                    importance = importances[hp]
+                    importances_data += [{
+                        "Dataset": dataset,
+                        "Hyperparameter": HYPERPARAMETER_REPLACEMENT_MAP[hp] \
+                            + " Importance",
+                        "Importance": importance[0],
+                    }]
 
                 importances_df = pd.DataFrame(importances_data)
                 all_hp_importances += [importances_df]
@@ -4218,62 +4270,216 @@ class Plotter:
             how="inner"
         )
 
-        if len(all_hp_importances) > 0:
-            all_hp_importances = pd.concat(all_hp_importances)
-            all_hp_importances = all_hp_importances.groupby(
-                ["Dataset", "Hyperparameter"]
-            ).mean().reset_index()
-            all_hp_importances = all_hp_importances.pivot_table(
-                columns="Hyperparameter",
-                values="Importance",
-                index="Dataset"
-            ).reset_index()
-            all_hp_importances.columns.name = None
-            joint_data = joint_data.merge(
-                all_hp_importances,
-                on=["Dataset"],
-                how="inner"
-            )
+        all_hp_incumbents = pd.concat(all_hp_incumbents)
+        all_hp_incumbents = all_hp_incumbents.groupby(
+            ["Dataset", "Hyperparameter"]
+        ).mean().reset_index()
+        all_hp_incumbents = all_hp_incumbents.pivot_table(
+            columns="Hyperparameter",
+            values="Incumbent Value",
+            index="Dataset"
+        ).reset_index()
+        all_hp_incumbents.columns.name = None
+        joint_data = joint_data.merge(
+            all_hp_incumbents,
+            on=["Dataset"],
+            how="inner"
+        )
+
+        all_hp_importances = pd.concat(all_hp_importances)
+        all_hp_importances = all_hp_importances.groupby(
+            ["Dataset", "Hyperparameter"]
+        ).mean().reset_index()
+        all_hp_importances = all_hp_importances.pivot_table(
+            columns="Hyperparameter",
+            values="Importance",
+            index="Dataset"
+        ).reset_index()
+        all_hp_importances.columns.name = None
+        joint_data = joint_data.merge(
+            all_hp_importances,
+            on=["Dataset"],
+            how="inner"
+        )
+
+        joint_data.to_csv(path, index=False)
 
         return joint_data
 
+    @staticmethod
+    def _filter_joint_dataset_features(
+            features: pd.DataFrame,
+            include: Literal["none", "incumbents", "importances"]
+    ) -> pd.DataFrame:
+        """Filters the joint dataset features based on the include parameter.
+
+        Parameters
+        ----------
+        features : pd.DataFrame
+            The joint dataset features.
+
+        include : Literal["none", "incumbents", "importances"]
+            The kind of hyperparameter values to include.
+        """
+        if include == "incumbents":
+            # We filter all importances
+            columns = [c for c in features.columns if "Importance" not in c]
+            features = features[columns]
+            features.columns = [c.replace(" Incumbent", "") for c in features.columns]
+        elif include == "importances":
+            # We filter all incumbents
+            columns = [c for c in features.columns if "Incumbent" not in c]
+            features = features[columns]
+            features.columns = [c.replace(" Importance", "") for c in features.columns]
+        elif include == "none":
+            # We filter all incumbents and importances
+            columns = [c for c in features.columns if "Incumbent" not in c \
+                       and "Importance" not in c]
+            features = features[columns]
+        else:
+            raise ValueError(f"Unknown value for include: {include}."
+                             f"Must be one of 'none', 'incumbents' or 'importances'.")
+
+        return features
+
     def plot_joint_dataset_features_heatmap(
             self,
-            hp_importances: bool = True     # noqa: FBT001, FBT002
+            include: Literal["none", "incumbents", "importances"],
+            corr_threshold: float = 0.7
     ) -> None:
         """Plot the joint dataset features heatmap.
 
         Parameters
         ----------
-        hp_importances : bool
-            Whether to include hyperparameter importances. Defaults to True.
+        include : Literal["none", "incumbents", "importances"]
+            The kind of hyperparameter values to include.
+
+        corr_threshold : float
+            The correlation threshold. Defaults to 0.7.
         """
-        joint_data = self._get_joint_dataset_features(hp_importances=hp_importances)
+        joint_data = self._get_joint_dataset_features()
+        joint_data = self._filter_joint_dataset_features(
+            features=joint_data,
+            include=include
+        )
+
         numerical_cols = joint_data.select_dtypes(include=["number"]).columns
         joint_data = joint_data[numerical_cols]
 
-        fig, ax = plt.subplots(1, 1, figsize=(self.figwidth * 2, self.figwidth * 1.25))
+        if include == "none":
+            figsize = (self.figwidth, self.figwidth * 0.5)
+            title = "Correlation Heatmap for Baseline Metrics and "\
+                "Dataset Properties"
+        elif include == "incumbents":
+            figsize = (self.figwidth, self.figwidth * 0.75)
+            title = "Correlation Heatmap for  Baseline Metrics, "\
+                "Dataset Properties and Incumbent Hyperparameter Values"
+        else:
+            figsize = (self.figwidth * 2, self.figwidth * 1.25)
+            title = "Correlation Heatmap for Baseline Metrics, "\
+                "Dataset Properties and Hyperparameter Importances"
+
+        fig, ax = plt.subplots(1, 1, figsize=figsize)
 
         corr = joint_data.corr(method="spearman")
+
+        filtered_corr = corr.mask(corr == 1)
+
+        valid_rows = (filtered_corr.abs() >= corr_threshold).any(axis=1)
+        valid_cols = (filtered_corr.abs() >= corr_threshold).any(axis=0)
+
+        filtered_corr = filtered_corr.loc[valid_rows, valid_cols]
+
         sns.heatmap(
-            corr,
+            filtered_corr,
             cmap="coolwarm",
             annot=True,
             ax=ax,
             cbar=False,
             fmt=".2f",
         )
+
+        plt.xticks(rotation=-90)
+        plt.grid(visible=False)
+
+        plt.title(title)
         plt.tight_layout()
+
+        if include == "none":
+            output_dir = self.dataset_analysis_plots
+        else:
+            output_dir = self.dataset_analysis_plots / include
+            output_dir.mkdir(parents=True, exist_ok=True)
+
         plt.savefig(
-            self.dataset_analysis_plots / f"heatmap.{self.format}",
+            output_dir / f"heatmap.{self.format}",
             format=self.format,
             dpi=self.dpi
         )
 
+    def create_top_dataset_features_hps_table(
+            self,
+            include: Literal["incumbents", "importances"],
+            corr_threshold: float = 0.7,
+            plot_relationships: bool = False        # noqa: FBT001, FBT002
+    ) -> None:
+        """Create a table containing all correlations between a dataset feature
+        and hyperparameter importance with an absolute value larger than the
+        correlation threshold.
+
+        Parameters
+        ----------
+        include : Literal["incumbents", "importances"]
+            The kind of hyperparameter values to include.
+
+        corr_threshold : float
+            The correlation threshold. Defaults to 0.7.
+        """
+        joint_data = self._get_joint_dataset_features()
+        joint_data = self._filter_joint_dataset_features(
+            features=joint_data,
+            include=include
+        )
+        numerical_cols = joint_data.select_dtypes(include=["number"]).columns
+        joint_data = joint_data[numerical_cols]
+
+        corr = joint_data.corr(method="spearman")
+
+        # Extract relevant correlations
+        correlations = []
+        for hyperparameter in HYPERPARAMETER_REPLACEMENT_MAP.values():
+            for dataset_feature in DATASET_FEATURES_REPLACEMENT_MAP.values():
+                if not (dataset_feature in corr.index \
+                        and hyperparameter in corr.columns):
+                    continue
+
+                corr_value = corr.loc[dataset_feature, hyperparameter]
+                if np.abs(corr_value) >= corr_threshold:    # type: ignore
+                    correlations.append({
+                        "Hyperparameter": hyperparameter,
+                        "Dataset Feature": dataset_feature,
+                        "Correlation": corr_value
+                })
+
+        correlations = pd.DataFrame(correlations)
+        correlations.to_latex(
+            AUTONNUNET_TABLES / f"top_{include}_correlations.tex",
+            float_format="%.2f"
+        )
+
+        if plot_relationships:
+            for _, row in correlations.iterrows():
+                self.plot_joint_dataset_features(
+                    dataset_feature=row["Dataset Feature"],
+                    hp_name=row["Hyperparameter"],
+                    include=include
+                )
+
     def plot_joint_dataset_features(
             self,
-            feature_x: str,
-            feature_y: str,
+            dataset_feature: str,
+            hp_name: str,
+            include: Literal["incumbents", "importances"],
     ) -> None:
         """Plot the relationship between two dataset features, e.g. DSC and Class
         Volume Ratio.
@@ -4287,24 +4493,71 @@ class Plotter:
             The feature on the y-axis.
         """
         joint_data = self._get_joint_dataset_features()
-        joint_data = joint_data[[feature_x, feature_y, "Dataset"]]
+        joint_data = self._filter_joint_dataset_features(
+            features=joint_data,
+            include=include
+        )
+        joint_data = joint_data[[dataset_feature, hp_name, "Dataset"]]
         joint_data = joint_data.groupby("Dataset").mean().reset_index()
+        joint_data["Dataset"] = joint_data["Dataset"].apply(
+            lambda d: format_dataset_name(d)
+        )
 
-        fig, ax = plt.subplots(1, 1, figsize=(self.figwidth, self.figwidth))
+        fig, ax = plt.subplots(1, 1, figsize=(self.figwidth / 2, self.figwidth / 2))
 
         sns.scatterplot(
-            x=feature_x,
-            y=feature_y,
+            x=dataset_feature,
+            y=hp_name,
             data=joint_data,
             hue="Dataset",
-            ax=ax
+            ax=ax,
+            palette=self.color_palette,
         )
-        plt.tight_layout()
+
+        if include == "incumbents" and hp_name in [
+            "Initial LR",
+            "Momentum (SGD)",
+            "Weight Decay"
+        ]:
+            ax.set_yscale("log")
+        else:
+            pass
+
+        self._format_axis(ax=ax, grid=True)
+        if include == "incumbents":
+            title = f"Relationship between {dataset_feature}\nand Incumbent {hp_name}"
+        else:
+            title = f"Relationship between {dataset_feature}\nand {hp_name} Importance"
+
+        plt.title(title)
+
+        fig.subplots_adjust(
+            top=0.89,
+            bottom=0.43,
+            left=0.17,
+            right=0.87,
+        )
+
+        ax.legend(
+            loc="upper center",
+            bbox_to_anchor=(0.5, -0.2),
+            ncol=2,
+            title="Dataset",
+            fancybox=False,
+            shadow=False,
+            frameon=False
+        )
+
+        output_dir = self.dataset_analysis_plots / include
+        output_dir.mkdir(parents=True, exist_ok=True)
         plt.savefig(
-            self.dataset_analysis_plots / f"{feature_x}_{feature_y}.{self.format}",
+            output_dir /\
+                f"{dataset_feature}_{hp_name}_{include}.{self.format}",
             dpi=self.dpi,
             format=self.format
         )
+        plt.clf()
+        plt.close()
 
     def create_emissions_table(
             self,

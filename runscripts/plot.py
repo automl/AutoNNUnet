@@ -11,8 +11,8 @@ if __name__  == "__main__":
     # Tables
     # --------------------------------------------------------------------------------------------
     plotter.load_all_data()
-    plotter._create_dataset_dsc_table(dataset="Dataset001_BrainTumour")
     plotter.create_runtime_table()
+    plotter.create_dsc_table()
     plotter.create_dataset_dsc_tables()
 
     # --------------------------------------------------------------------------------------------
@@ -28,7 +28,25 @@ if __name__  == "__main__":
     # --------------------------------------------------------------------------------------------
     # Dataset Analysis
     # --------------------------------------------------------------------------------------------
-    plotter.plot_joint_dataset_features_heatmap()
+    plotter.plot_joint_dataset_features_heatmap(
+        include="none",
+    )
+    plotter.plot_joint_dataset_features_heatmap(
+        include="incumbents",
+    )
+    plotter.plot_joint_dataset_features_heatmap(
+        include="importances",
+    )
+    plotter.create_top_dataset_features_hps_table(
+        include="incumbents",
+        plot_relationships=True,
+        corr_threshold=0.7,
+    )
+    plotter.create_top_dataset_features_hps_table(
+        include="importances",
+        plot_relationships=True,
+        corr_threshold=0.7
+    )
 
     # --------------------------------------------------------------------------------------------
     # Qualitative Analysis
