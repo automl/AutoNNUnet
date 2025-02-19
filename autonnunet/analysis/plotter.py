@@ -220,9 +220,6 @@ WONG_PALETTE = [
     "#F0E442",
 ]
 
-# print full dataframes
-pd.set_option("display.max_rows", None)
-
 @dataclass
 class BaselineResult:
     """A dataclass to store the baseline results."""
@@ -4801,9 +4798,9 @@ class Plotter:
                     continue
 
                 _data = dataset_progress[dataset_progress["Approach"] == approach]
-                _data = _data[_data["Fold"] == 0]
-                _data = _data[[O_RUNTIME]]
-                _data.loc[:, O_RUNTIME] = _data[O_RUNTIME] / 3600
+
+                _data = _data[["Runtime"]]
+                _data.loc[:, "Runtime"] = _data["Runtime"] / 3600 / self.n_folds
                 _data = _data.sum().to_frame().T
                 _data["Approach"] = format_approach(approach)
                 _data["Dataset"] = format_dataset_name(dataset)[:3]
@@ -4811,12 +4808,12 @@ class Plotter:
                 all_results.append(_data)
 
         all_results = pd.concat(all_results)
-        all_results.loc[:, O_RUNTIME] = (all_results[O_RUNTIME]).astype(float)
+        all_results.loc[:, "Runtime"] = (all_results["Runtime"]).astype(float)
 
         pivot_table = all_results.pivot_table(
             index="Dataset",
             columns="Approach",
-            values=O_RUNTIME
+            values="Runtime"
         )
         pivot_table = pivot_table[
             [format_approach(a) for a in APPROACH_REPLACE_MAP.values() \
@@ -4824,14 +4821,16 @@ class Plotter:
         ]
 
         pivot_table.loc[ "\\textbf{Mean}", :] = pivot_table.mean(axis=0)
+        pivot_table["Speedup"] = np.inf
 
         def highlight_min(row):
-            min_val = row.min()
+            min_val = row[:-1].min()
+            speedup = row["Conv"] / min_val
             return pd.Series(
                 [
                     f"$\\mathbf{{{val:.2f}}}$" \
-                        if val == min_val else f"${val:.2f}$" for val in row
-                ],
+                        if val == min_val else f"${val:.2f}$" for val in row[:-1]
+                ] + [speedup],
                 index=row.index
             )
 
@@ -5032,7 +5031,9 @@ class Plotter:
 
             return tuple(_get_slice_idx(gt_label, dim) for dim in range(3))
 
-        def get_gt_data(dataset: str) -> tuple[str, np.ndarray, np.ndarray]:
+        def get_gt_data(
+                dataset: str
+            ) -> tuple[str, np.ndarray, np.ndarray, np.ndarray]:
             dataset_path = NNUNET_DATASETS / dataset_name_to_msd_task(dataset)
 
             for file in (dataset_path / "imagesTr" ).glob("*.nii.gz"):
@@ -5044,6 +5045,9 @@ class Plotter:
 
                 img_data: np.ndarray = img.get_fdata()      # type: ignore
                 label_data: np.ndarray = label.get_fdata()  # type: ignore
+
+                affine = img.affine                         # type: ignore
+                voxel_spacing = np.abs(np.diag(affine)[:3])
 
                 # We skip the very small examples for the visualization
                 if dataset == "Dataset003_Liver" and img_data.shape[2] < 500:           # noqa: PLR2004
@@ -5063,16 +5067,19 @@ class Plotter:
                 if len(img_data.shape) == 4:    # noqa: PLR2004
                     img_data = img_data[:, :, :, 0]
 
-                return file.name, img_data, label_data
+                return file.name, img_data, label_data, voxel_spacing
 
             raise ValueError(f"No data found for {dataset}")
 
         def get_slices(         # noqa: PLR0912, C901
                 dataset: str
-            ) -> dict[str, tuple[np.ndarray, np.ndarray, np.ndarray]]:
+            ) -> tuple[
+                dict[str, tuple[np.ndarray, np.ndarray, np.ndarray]],
+                np.ndarray
+            ]:
             slices = {}
 
-            file_name, img_data, label_data = get_gt_data(dataset)
+            file_name, img_data, label_data, spacing = get_gt_data(dataset)
 
             x, y, z = get_slice_idxs(label_data)
             label_data[label_data == 0] = np.nan
@@ -5165,7 +5172,7 @@ class Plotter:
                     pred_data[:, y, :]
                 ]
 
-            return slices
+            return slices, spacing
 
         output_dir = AUTONNUNET_PLOTS / "qualitative_results"
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -5191,8 +5198,14 @@ class Plotter:
                 ) for label in labels
             ]
 
-            slices = get_slices(dataset)
+            slices, spacing = get_slices(dataset)
             ndim = len(slices["Image"])
+
+            aspect_ratios = {
+                0: spacing[1] / spacing[0],
+                1: spacing[2] / spacing[0],
+                2: spacing[2] / spacing[1]
+            }
 
             fig, axs = plt.subplots(
                 ncols=len(slices),
@@ -5203,6 +5216,7 @@ class Plotter:
             for i, slice_name in enumerate(slices):
                 for j, slice_data in enumerate(slices[slice_name]):
                     ax = axs[j, i]
+                    aspect_ratio = aspect_ratios[j]
 
                     if j > 0:
                         _slice_data = np.rot90(slice_data)
@@ -5211,11 +5225,11 @@ class Plotter:
                         _slice_data = slice_data
                         img = slices["Image"][j]
 
-                    ax.imshow(_slice_data, cmap="gray")
+                    ax.imshow(_slice_data, cmap="gray", aspect=aspect_ratio)
 
                     if slice_name != "Image":
-                        ax.imshow(img, cmap="gray")
-                        ax.imshow(_slice_data, cmap=custom_cmap)
+                        ax.imshow(img, cmap="gray", aspect=aspect_ratio)
+                        ax.imshow(_slice_data, cmap=custom_cmap, aspect=aspect_ratio)
 
                     ax.set_xticks([])
                     ax.set_yticks([])
