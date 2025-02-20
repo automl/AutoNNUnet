@@ -4913,7 +4913,6 @@ class Plotter:
             if len (img_data.shape) == 4:   # noqa: PLR2004
                 img_data = img_data[:, :, :, 0]
 
-
             max_foreground = 0
             slice_idx = 0
             for i in range(_label_data.shape[2]):
@@ -4926,7 +4925,7 @@ class Plotter:
 
             return img_slice, label_slice
 
-        def get_slices(dataset: str) -> tuple[np.ndarray, np.ndarray]:
+        def get_slices(dataset: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
             dataset_path = NNUNET_DATASETS / dataset_name_to_msd_task(dataset)
 
             for file in (dataset_path / "imagesTr" ).glob("*.nii.gz"):
@@ -4935,6 +4934,7 @@ class Plotter:
 
                 img = nib.loadsave.load(file)
                 label = nib.loadsave.load(dataset_path / "labelsTr" / file.name)
+                spacing = np.abs(np.diag(img.affine)[:3])   # type: ignore
 
                 img_slice, label_slice = get_slice(img, label)
                 label_slice[label_slice == 0] = np.nan
@@ -4942,7 +4942,7 @@ class Plotter:
                 # We just use the first image
                 break
 
-            return img_slice, label_slice
+            return img_slice, label_slice, spacing
 
         fig, axs = plt.subplots(
             ncols=5,
@@ -4956,15 +4956,22 @@ class Plotter:
         images = []
         labels = []
 
+        viridis = plt.get_cmap("viridis")
+
         for dataset, ax in zip(self.datasets, axs.flatten(), strict=False):
-            img, label = get_slices(dataset)
+            img, label, spacing = get_slices(dataset)
+
+            colors = list(viridis(np.linspace(1, 0.2, len(np.unique(label)))))
+            custom_cmap = mcolors.ListedColormap(colors)
 
             images.append(img)
             labels.append(label)
 
             ax.set_title(format_dataset_name(dataset).replace(" ", "\n"))
-            ax.imshow(img, cmap="gray")
-            ax.imshow(label, cmap="viridis", alpha=0.7)
+
+            aspect = spacing[1] / spacing[0]
+            ax.imshow(img, cmap="gray", aspect=aspect)
+            ax.imshow(label, cmap=custom_cmap, alpha=0.7, aspect=aspect)
             ax.set_xticks([])
             ax.set_yticks([])
             ax.axis("off")
@@ -4994,6 +5001,9 @@ class Plotter:
             plt.clf()
 
             fig, ax = plt.subplots(1, 1, figsize=(4, 4))
+
+            colors = list(viridis(np.linspace(1, 0.2, len(np.unique(label)))))
+            custom_cmap = mcolors.ListedColormap(colors)
 
             ax.imshow(img, cmap="gray")
             ax.imshow(label, cmap="viridis", alpha=0.7)
@@ -5188,7 +5198,7 @@ class Plotter:
             # Uppercase labels first characters
             labels = {k: v[0].upper() + v[1:] for k, v in labels.items()}
 
-            colors = list(viridis(np.linspace(0, 1, len(labels))))
+            colors = list(viridis(np.linspace(1, 0.3, len(labels))))
             custom_cmap = mcolors.ListedColormap(colors)
 
             patches = [
@@ -5275,7 +5285,7 @@ class Plotter:
 
         colors = [
             (234 / 255, 234 / 255, 241 / 255, 1),
-            *list(viridis(np.linspace(0, 1, 3)))
+            *list(viridis(np.linspace(1, 0.2, 3)))
         ]
 
         custom_cmap = mcolors.ListedColormap(colors)
