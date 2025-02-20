@@ -96,6 +96,15 @@ To run nnU-Net with the incumbent configuration for the HPO approach on D01, run
 python runscripts/train.py -m "dataset=Dataset001_BrainTumour" "+incumbent=Dataset001_BrainTumour_hpo" "fold=range(5)"
 ```
 
+## Cross Evaluation
+For cross-evaluation of incumbent configurations, we select the 9/10 datasets where HPO+NAS achieved an improvement.
+To train all datasets with the incumbent configuration of another dataset, run
+```bash
+./runscripts/train_cross_eval.sh <dataset_name>
+```
+
+
+
 ## Inference and MSD Submission
 
 ```bash

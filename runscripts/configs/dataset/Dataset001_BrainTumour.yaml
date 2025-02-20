@@ -1,4 +1,4 @@
-_target_: automis.datasets.msd_dataset.MSDDataset
+_target_: autonnunet.datasets.msd_dataset.MSDDataset
 name: Dataset001_BrainTumour
 modality: MR
 runtime_min: 905

@@ -141,6 +141,7 @@ output/baseline_ResidualEncoderM
 output/baseline_ResidualEncoderL
 output/baseline_ResidualEncoderXL
 output/baseline_medsam2
+output/cross_eval
 
 
 output_bkp/

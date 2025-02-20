@@ -1,4 +1,4 @@
-_target_: automis.datasets.msd_dataset.MSDDataset
+_target_: autonnunet.datasets.msd_dataset.MSDDataset
 name: Dataset002_Heart
 modality: MR
 runtime_min: 446

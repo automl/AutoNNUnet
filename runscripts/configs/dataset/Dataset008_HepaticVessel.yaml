@@ -1,4 +1,4 @@
-_target_: automis.datasets.msd_dataset.MSDDataset
+_target_: autonnunet.datasets.msd_dataset.MSDDataset
 name: Dataset008_HepaticVessel
 modality: CT
 runtime_min: 445

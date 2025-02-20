@@ -6,31 +6,6 @@ if __name__  == "__main__":
     plotter = Plotter(
         file_format="pdf",
     )
-    plotter.plot_joint_dataset_features_heatmap(
-        include="none",
-        orientation="left"
-    )
-    plotter.plot_joint_dataset_features_heatmap(
-        include="none",
-        orientation="right"
-    )
-    plotter.plot_joint_dataset_features_heatmap(
-        include="incumbents",
-        orientation="left"
-    )
-    plotter.plot_joint_dataset_features_heatmap(
-        include="incumbents",
-        orientation="right"
-    )
-    plotter.plot_joint_dataset_features_heatmap(
-        include="importances",
-        orientation="left"
-    )
-    plotter.plot_joint_dataset_features_heatmap(
-        include="importances",
-        orientation="right"
-    )
-    exit()
 
     # --------------------------------------------------------------------------------------------
     # Tables

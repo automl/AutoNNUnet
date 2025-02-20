@@ -1,0 +1,30 @@
+# @package _global_
+hp_config:
+  activation: PReLU
+  aug_factor: 1.5532952997628926
+  base_num_features: 18
+  dropout_rate: 0.15860259313368602
+  encoder_type: ResidualEncoderM
+  initial_lr: 0.020128933790944593
+  loss_function: DiceAndCrossEntropyLoss
+  lr_scheduler: PolyLRScheduler
+  max_features: 245
+  model_scale: 3
+  momentum: 0.885920367019969
+  normalization: InstanceNorm
+  num_epochs: 1000.0
+  optimizer: SGD
+  oversample_foreground_percent: 0.7055990362505602
+  weight_decay: 7.981662590886503e-05
+hydra:
+  job:
+    chdir: true
+  job_logging:
+    stderr: true
+    stdout: true
+  output_subdir: "."
+  run:
+    dir: output/cross_eval/Dataset003_Liver/${dataset.name}/3d_fullres/0/incumbent
+  sweep:
+    dir: output/cross_eval/Dataset003_Liver/${dataset.name}/3d_fullres/0/incumbent
+    subdir: fold_${fold}

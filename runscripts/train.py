@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 warnings.filterwarnings("ignore")
 
 
-@hydra.main(version_base=None, config_path="configs", config_name="tune_hpo_hnas")
+@hydra.main(version_base=None, config_path="configs", config_name="train")
 def run(cfg: DictConfig) -> dict:   # noqa: C901, PLR0912, PLR0915
     """Runs the training and validation pipeline.
 
