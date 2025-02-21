@@ -21,7 +21,6 @@ import seaborn as sns
 from ConfigSpace import CategoricalHyperparameter
 from deepcave.constants import COMBINED_BUDGET
 from deepcave.evaluators.ablation import Ablation
-from deepcave.evaluators.fanova import fANOVA
 from deepcave.evaluators.footprint import Footprint
 from deepcave.evaluators.lpi import LPI
 from deepcave.evaluators.mo_ablation import MOAblation
@@ -34,6 +33,7 @@ from matplotlib.lines import Line2D
 from matplotlib.ticker import FuncFormatter, LogLocator
 from tqdm import tqdm
 
+from autonnunet.analysis.fanova import fANOVA
 from autonnunet.analysis.dataset_features import extract_dataset_features
 from autonnunet.analysis.deepcave_utils import runhistory_to_deepcave
 from autonnunet.datasets import ALL_DATASETS
@@ -489,6 +489,7 @@ class Plotter:
         self.hpo_dir = AUTONNUNET_OUTPUT / "hpo"
         self.nas_dir = AUTONNUNET_OUTPUT / "hpo_nas"
         self.hnas_dir = AUTONNUNET_OUTPUT / "hpo_hnas"
+        self.cross_eval_dir = AUTONNUNET_OUTPUT / "cross_eval"
 
         self.combined_plots = AUTONNUNET_PLOTS / "combined"
         self.combined_plots.mkdir(parents=True, exist_ok=True)
@@ -5381,3 +5382,180 @@ class Plotter:
 
         plt.tight_layout()
         plt.savefig(output_dir / f"dsc.{self.format}", dpi=self.dpi, format=self.format)
+
+    def _load_cross_eval_matrix(self) -> pd.DataFrame:
+        """Loads the matrix of evaluation returns for the cross-evaluation 
+        of HPO+NAS incumbents and datasets.
+
+        Returns
+        -------
+        pd.DataFrame
+            The cross-evaluation matrix.
+        """
+        matrix = pd.DataFrame(
+            columns=self.datasets,
+            index=self.datasets
+        )
+
+        for dataset_cfg in self.datasets:
+            for dataset_eval in self.datasets:
+                # For the diagonal, we just load the original HPO+NAS result
+                if dataset_cfg == dataset_eval:
+                    incumbents = self.get_hnas_data(
+                        dataset=dataset_cfg).incumbents[self.objectives[0]]
+                    
+                    # In the incumbents.csv, we store the the cost (1 - DSC [%]),
+                    dsc = 100 - incumbents[O_DSC].iloc[-1]
+
+                    matrix.loc[dataset_eval, dataset_cfg] = dsc
+                    continue
+
+                # For the remaining entries, we need to load the actual 
+                # cross-evaluation results
+                base_dir = self.cross_eval_dir / dataset_cfg / dataset_eval /\
+                    self.configuration / str(self.hpo_seed) / "incumbent"
+
+                all_metrics = []
+                for fold in range(self.n_folds):
+                    fold_dir = base_dir / f"fold_{fold}"
+                    if not (fold_dir / "validation").exists():
+                        continue
+
+                    metrics = self._load_nnunet_metrics(fold_dir)
+                    all_metrics += [metrics]
+
+                if len(all_metrics) == 0:
+                    dsc = np.nan
+                else:
+                    all_metrics = pd.concat(all_metrics)
+                    dsc = metrics["Mean"].mean()
+
+                matrix.loc[dataset_eval, dataset_cfg] = dsc
+
+        return matrix
+    
+    def plot_cross_eval_matrix(self) -> None:
+        """Plots the matrix of evaluation returns for the cross-evaluation 
+        of HPO+NAS incumbents and datasets.
+        """
+        matrix = self._load_cross_eval_matrix()
+
+        print(matrix)
+        exit()
+
+        fig, ax = plt.subplots(1, 1, figsize=(8, 6))
+
+        sns.heatmap(
+            matrix.astype(float),
+            annot=True,
+            fmt=".2f",
+            cmap="viridis",
+            ax=ax
+        )
+
+        ax.set_title("Cross-Evaluation of HPO+NAS Incumbents")
+        ax.set_xlabel("Evaluation Dataset")
+        ax.set_ylabel("Configuration Dataset")
+
+        output_dir = AUTONNUNET_PLOTS / "cross_eval"
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        plt.tight_layout()
+        plt.savefig(output_dir / f"cross_eval_matrix.{self.format}", dpi=self.dpi, format=self.format)
+
+    def _compute_hp_interactions(
+            self,
+            dataset: str,
+            approach_key: str,
+            budget: int = COMBINED_BUDGET
+    ) -> pd.DataFrame:
+        """Computes the interactions between hyperparameters for all datasets
+        for a given approach.
+
+        Parameters
+        ----------
+        dataset : str
+            The dataset to use for the evaluation.
+
+        approach_key : str
+            The key of the approach to use.
+
+        budget : int
+            The budget to use for the evaluation. Defaults to COMBINED_BUDGET.
+
+        Returns
+        -------
+        pd.DataFrame
+            The resulting interactions.
+        """
+        if approach_key == "hpo":
+            data_func = self.get_hpo_data
+        elif approach_key == "hpo_nas":
+            data_func = self.get_nas_data
+        elif approach_key == "hpo_hnas":
+            data_func = self.get_hnas_data
+        else:
+            raise ValueError(f"Unknown approach key {approach_key}")
+
+        deepcave_run = data_func(
+            dataset=dataset).deepcave_runs[dataset]
+        
+        selected_budget = self._get_budget(budget, deepcave_run)
+
+        evaluator = fANOVA(run=deepcave_run)
+        evaluator.calculate(budget=selected_budget, seed=42)
+
+
+        hyperparameters = [
+            HYPERPARAMETER_REPLACEMENT_MAP[hp] \
+                for hp in deepcave_run.configspace.keys()
+        ]
+        interactions = pd.DataFrame(
+            [],
+            columns=hyperparameters,
+            index=hyperparameters
+        )
+
+        fANOVA_interactions = evaluator.get_most_important_pairwise_marginals(n=-1)
+        for (hp1, hp2), percentage in fANOVA_interactions.items():
+            if percentage < 0.05:
+                continue
+            interactions.loc[hp1, hp2] = percentage * 100
+            interactions.loc[hp2, hp1] = percentage * 100
+
+        interactions = pd.DataFrame(interactions)
+
+        return interactions
+    
+    def create_hp_interaction_tables(
+            self,
+            approach_key: str,
+            budget: int = COMBINED_BUDGET
+    ):
+        """Creates the hyperparameter interaction tables for all datasets
+        for a given approach.
+
+        Parameters
+        ----------
+        approach_key : str
+            The key of the approach to use.
+
+        budget : int
+            The budget to use for the evaluation. Defaults to COMBINED_BUDGET.
+        """
+        for dataset in self.datasets:
+            interactions = self._compute_hp_interactions(
+                dataset=dataset,
+                approach_key=approach_key,
+                budget=budget
+            )
+            print(interactions)
+            exit()
+
+            output_dir = AUTONNUNET_TABLES / approach_key
+            output_dir.mkdir(parents=True, exist_ok=True)
+
+            interactions.to_latex(
+                output_dir / f"interactions_{dataset}.tex",
+                float_format="%.2f"
+            )
