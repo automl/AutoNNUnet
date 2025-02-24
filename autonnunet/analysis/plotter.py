@@ -4481,16 +4481,16 @@ class Plotter:
 
         if include == "none":
             figsize = (self.figwidth, self.figwidth * 0.5)
-            title = "Correlation Heatmap for Baseline Metrics and "\
-                "Dataset Properties"
+            title = "Correlation Heatmap for Baseline Metrics,\n"\
+                "and Dataset Properties"
         elif include == "incumbents":
             figsize = (self.figwidth, self.figwidth * 0.75)
-            title = "Correlation Heatmap for  Baseline Metrics, "\
-                "Dataset Properties and Incumbent Hyperparameter Values"
+            title = "Correlation Heatmap for  Baseline Metrics\n"\
+                "Dataset Properties, and Incumbent Hyperparameter Values"
         else:
             figsize = (self.figwidth * 2, self.figwidth * 1.25)
             title = "Correlation Heatmap for Baseline Metrics, "\
-                "Dataset Properties and Hyperparameter Importances"
+                "Dataset Properties, and Hyperparameter Importances"
 
         fig, ax = plt.subplots(1, 1, figsize=figsize)
 
@@ -4517,6 +4517,7 @@ class Plotter:
         else:
             plt.xticks(rotation=90)
 
+        plt.grid(visible=False)
         plt.title(title)
         plt.tight_layout()
 
