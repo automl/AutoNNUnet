@@ -33,17 +33,25 @@ from matplotlib.lines import Line2D
 from matplotlib.ticker import FuncFormatter, LogLocator
 from tqdm import tqdm
 
-from autonnunet.analysis.fanova import fANOVA
 from autonnunet.analysis.dataset_features import extract_dataset_features
 from autonnunet.analysis.deepcave_utils import runhistory_to_deepcave
+from autonnunet.analysis.fanova import fANOVA
 from autonnunet.datasets import ALL_DATASETS
-from autonnunet.utils import (compute_hyperband_budgets,
-                              dataset_name_to_msd_task, format_dataset_name,
-                              get_budget_per_config, load_json)
+from autonnunet.utils import (
+    compute_hyperband_budgets,
+    dataset_name_to_msd_task,
+    format_dataset_name,
+    get_budget_per_config,
+    load_json,
+)
 from autonnunet.utils.helpers import msd_task_to_dataset_name
-from autonnunet.utils.paths import (AUTONNUNET_MSD_RESULTS, AUTONNUNET_OUTPUT,
-                                    AUTONNUNET_PLOTS, AUTONNUNET_TABLES,
-                                    NNUNET_DATASETS)
+from autonnunet.utils.paths import (
+    AUTONNUNET_MSD_RESULTS,
+    AUTONNUNET_OUTPUT,
+    AUTONNUNET_PLOTS,
+    AUTONNUNET_TABLES,
+    NNUNET_DATASETS,
+)
 
 if TYPE_CHECKING:
     from deepcave.runs.converters.deepcave import DeepCAVERun
@@ -209,22 +217,12 @@ DATASET_JSON_FILENAME = "dataset.json"
 DEEPCAVE_CACHE_DIR = Path("./output/deepcave_cache").resolve()
 DEEPCAVE_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
-
-WONG_PALETTE = [
-    "#2271B2",
-    "#E69F00",
-    "#2C9E73",
-    "#D55E00",
-    "#CC79A7",
-    "#56B4E9",
-    "#F0E442",
-]
-
 @dataclass
 class BaselineResult:
     """A dataclass to store the baseline results."""
     progress: pd.DataFrame
     metrics: pd.DataFrame
+    metrics_per_case: pd.DataFrame
     emissions: pd.DataFrame
 
 @dataclass
@@ -234,6 +232,7 @@ class HPOResult:
     incumbent: pd.DataFrame
     incumbent_progress: pd.DataFrame
     incumbent_metrics: pd.DataFrame
+    incumbent_metrics_per_case: pd.DataFrame
     emissions: pd.DataFrame
     deepcave_runs: dict[str, DeepCAVERun]
 
@@ -243,6 +242,7 @@ class NASResult:
     history: pd.DataFrame
     incumbents: dict[str, pd.DataFrame]
     incumbent_metrics: pd.DataFrame
+    incumbent_metrics_per_case: pd.DataFrame
     incumbent_progress: pd.DataFrame
     emissions: pd.DataFrame
     deepcave_runs: dict[str, DeepCAVERun]
@@ -403,6 +403,7 @@ class Plotter:
         self._baseline_data = BaselineResult(
             progress=pd.DataFrame(),
             metrics=pd.DataFrame(),
+            metrics_per_case=pd.DataFrame(),
             emissions=pd.DataFrame()
         )
         self._baseline_datasets = []
@@ -412,6 +413,7 @@ class Plotter:
             incumbent=pd.DataFrame(),
             incumbent_progress=pd.DataFrame(),
             incumbent_metrics=pd.DataFrame(),
+            incumbent_metrics_per_case=pd.DataFrame(),
             emissions=pd.DataFrame(),
             deepcave_runs={}
         )
@@ -421,6 +423,7 @@ class Plotter:
             history=pd.DataFrame(),
             incumbents={k: pd.DataFrame() for k in self.objectives},
             incumbent_metrics=pd.DataFrame(),
+            incumbent_metrics_per_case=pd.DataFrame(),
             incumbent_progress=pd.DataFrame(),
             emissions=pd.DataFrame(),
             deepcave_runs={}
@@ -431,6 +434,7 @@ class Plotter:
             history=pd.DataFrame(),
             incumbents={k: pd.DataFrame() for k in self.objectives},
             incumbent_metrics=pd.DataFrame(),
+            incumbent_metrics_per_case=pd.DataFrame(),
             incumbent_progress=pd.DataFrame(),
             emissions=pd.DataFrame(),
             deepcave_runs={}
@@ -535,6 +539,8 @@ class Plotter:
             [self._baseline_data.emissions, baseline_data.emissions])
         self._baseline_data.metrics = pd.concat(
             [self._baseline_data.metrics, baseline_data.metrics])
+        self._baseline_data.metrics_per_case = pd.concat(
+            [self._baseline_data.metrics_per_case, baseline_data.metrics_per_case])
 
     def _load_hpo_data_lazy(self, dataset: str) -> None:
         """Lazy loading of the HPO data.
@@ -556,6 +562,9 @@ class Plotter:
             [self._hpo_data.incumbent_progress, hpo_data.incumbent_progress])
         self._hpo_data.incumbent_metrics = pd.concat(
             [self._hpo_data.incumbent_metrics, hpo_data.incumbent_metrics])
+        self._hpo_data.incumbent_metrics_per_case = pd.concat(
+            [self._hpo_data.incumbent_metrics_per_case,
+             hpo_data.incumbent_metrics_per_case])
         self._hpo_data.emissions = pd.concat(
             [self._hpo_data.emissions, hpo_data.emissions])
         self._hpo_data.deepcave_runs.update(hpo_data.deepcave_runs)
@@ -591,6 +600,8 @@ class Plotter:
             [v, nas_data.incumbents[k]]) for k, v in data.incumbents.items()}
         data.incumbent_metrics = pd.concat(
             [data.incumbent_metrics, nas_data.incumbent_metrics])
+        data.incumbent_metrics_per_case = pd.concat(
+            [data.incumbent_metrics_per_case, nas_data.incumbent_metrics_per_case])
         data.incumbent_progress = pd.concat(
             [data.incumbent_progress, nas_data.incumbent_progress])
         data.emissions = pd.concat([data.emissions, nas_data.emissions])
@@ -654,11 +665,14 @@ class Plotter:
             self._baseline_data.emissions["Dataset"] == dataset]
         metrics = self._baseline_data.metrics[
             self._baseline_data.metrics["Dataset"] == dataset]
+        metrics_per_case = self._baseline_data.metrics_per_case[
+            self._baseline_data.metrics_per_case["Dataset"] == dataset]
 
         return BaselineResult(
             progress=progress,
             emissions=emissions,
             metrics=metrics,
+            metrics_per_case=metrics_per_case
         )
 
     def get_hpo_data(self, dataset: str) -> HPOResult:
@@ -684,6 +698,7 @@ class Plotter:
                 incumbent=pd.DataFrame(),
                 incumbent_progress=pd.DataFrame(),
                 incumbent_metrics=pd.DataFrame(),
+                incumbent_metrics_per_case=pd.DataFrame(),
                 emissions=pd.DataFrame(),
                 deepcave_runs={}
             )
@@ -692,6 +707,8 @@ class Plotter:
             self._hpo_data.incumbent_progress["Dataset"] == dataset]
         incumbent_metrics = self._hpo_data.incumbent_metrics[
             self._hpo_data.incumbent_metrics["Dataset"] == dataset]
+        incumbent_metrics_per_case = self._hpo_data.incumbent_metrics_per_case[
+            self._hpo_data.incumbent_metrics_per_case["Dataset"] == dataset]
         emissions = self._hpo_data.emissions[
             self._hpo_data.emissions["Dataset"] == dataset]
         history = self._hpo_data.history[
@@ -702,6 +719,7 @@ class Plotter:
         return HPOResult(
             incumbent_progress=incumbent_progress,
             incumbent_metrics=incumbent_metrics,
+            incumbent_metrics_per_case=incumbent_metrics_per_case,
             emissions=emissions,
             history=history,
             incumbent=incumbent,
@@ -731,6 +749,7 @@ class Plotter:
                 history=pd.DataFrame(),
                 incumbents={k: pd.DataFrame() for k in self.objectives},
                 incumbent_metrics=pd.DataFrame(),
+                incumbent_metrics_per_case=pd.DataFrame(),
                 incumbent_progress=pd.DataFrame(),
                 deepcave_runs={}
             )
@@ -745,6 +764,8 @@ class Plotter:
                 self._nas_data.incumbents[objective]["Dataset"] == dataset]
         incumbent_metrics = self._nas_data.incumbent_metrics[
             self._nas_data.incumbent_metrics["Dataset"] == dataset]
+        incumbent_metrics_per_case = self._nas_data.incumbent_metrics_per_case[
+            self._nas_data.incumbent_metrics_per_case["Dataset"] == dataset]
         incumbent_progress = self._nas_data.incumbent_progress[
             self._nas_data.incumbent_progress["Dataset"] == dataset]
 
@@ -753,6 +774,7 @@ class Plotter:
             history=history,
             incumbents=incumbents,
             incumbent_metrics=incumbent_metrics,
+            incumbent_metrics_per_case=incumbent_metrics_per_case,
             incumbent_progress=incumbent_progress,
             deepcave_runs={dataset: self._nas_data.deepcave_runs[dataset]}
         )
@@ -780,6 +802,7 @@ class Plotter:
                 history=pd.DataFrame(),
                 incumbents={k: pd.DataFrame() for k in self.objectives},
                 incumbent_metrics=pd.DataFrame(),
+                incumbent_metrics_per_case=pd.DataFrame(),
                 incumbent_progress=pd.DataFrame(),
                 deepcave_runs={}
             )
@@ -795,6 +818,8 @@ class Plotter:
         deepcave_runs = {dataset: self._hnas_data.deepcave_runs[dataset]}
         incumbent_metrics = self._hnas_data.incumbent_metrics[
             self._hnas_data.incumbent_metrics["Dataset"] == dataset]
+        incumbent_metrics_per_case = self._hnas_data.incumbent_metrics_per_case[
+            self._hnas_data.incumbent_metrics_per_case["Dataset"] == dataset]
         incumbent_progress = self._hnas_data.incumbent_progress[
             self._hnas_data.incumbent_progress["Dataset"] == dataset]
 
@@ -803,6 +828,7 @@ class Plotter:
             history=history,
             incumbents=incumbents,
             incumbent_metrics=incumbent_metrics,
+            incumbent_metrics_per_case=incumbent_metrics_per_case,
             incumbent_progress=incumbent_progress,
             deepcave_runs=deepcave_runs
         )
@@ -848,7 +874,7 @@ class Plotter:
 
         return deepcave_run, history, incumbent
 
-    def _load_nnunet_metrics(self, fold_dir: Path) -> pd.DataFrame:
+    def _load_nnunet_metrics(self, fold_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
         """Load the validation metrics for nnU-Net.
 
         Parameters
@@ -873,9 +899,30 @@ class Plotter:
         })
         metrics_df["Mean"] = [validation_metrics["foreground_mean"]["Dice"] * 100]
 
-        return metrics_df
+        metrics_per_case = []
+        for case in validation_metrics["metric_per_case"]:
+            row = {
+                **{
+                    class_id: metrics["Dice"] * 100 \
+                        if not np.isnan(metrics["Dice"]) else 0 \
+                        for class_id, metrics in case["metrics"].items()
+                },
+                "Mean": np.mean([
+                     metrics["Dice"] * 100 \
+                        if not np.isnan(metrics["Dice"]) else 0 \
+                        for metrics in case["metrics"].values()
+                ]),
+                "File": Path(case["prediction_file"]).name,
+            }
+            metrics_per_case.append(row)
+        metrics_per_case = pd.DataFrame(metrics_per_case)
 
-    def _load_medsam2_metrics(self, fold_dir: Path) -> pd.DataFrame:
+        return metrics_df, metrics_per_case
+
+    def _load_medsam2_metrics(
+            self,
+            fold_dir: Path
+        ) -> tuple[pd.DataFrame, pd.DataFrame]:
         """Load the validation metrics for MedSAM2.
 
         Parameters
@@ -890,15 +937,17 @@ class Plotter:
         """
         metrics_path = fold_dir / MEDSAM2_VALIDATION_METRICS_FILENAME
         if not metrics_path.exists():
-            return pd.DataFrame()
+            return pd.DataFrame(), pd.DataFrame()
 
-        validation_metrics = pd.read_csv(metrics_path)
+        metrics = pd.read_csv(metrics_path)
+
         dataset_info_path = self.baseline_conv / fold_dir.parts[-2] /\
             self.configuration / fold_dir.parts[-1] / DATASET_JSON_FILENAME
 
         dataset_info = load_json(dataset_info_path)
         labels = {str(v): k for k, v in dataset_info["labels"].items()}
 
+        validation_metrics = metrics.copy()
         validation_metrics = validation_metrics.drop(
             columns=["case"]
         ).mean().to_frame().T
@@ -911,7 +960,17 @@ class Plotter:
             validation_metrics.loc[:, label] = validation_metrics[label] * 100
         validation_metrics.loc[:, "Mean"] = validation_metrics.loc[:, "Mean"] * 100
 
-        return validation_metrics
+        metrics_per_case = metrics.copy()
+        metrics_per_case = metrics_per_case.fillna(0)
+
+        metrics_per_case["Mean"] = metrics_per_case.drop(columns=["case"]).mean(axis=1)
+        metrics_per_case = metrics_per_case.rename(columns={
+            "case": "File"
+        })
+        metrics_per_case["File"] = metrics_per_case["File"].apply(
+            lambda x: x.replace("_0000", ""))
+
+        return validation_metrics, metrics_per_case
 
     def _load_nnunet_progress(self, fold_dir: Path) -> pd.DataFrame:
         """Load the training progress for nnU-Net.
@@ -1030,6 +1089,7 @@ class Plotter:
         all_progress  = []
         all_emissions = []
         all_metrics = []
+        all_metrics_per_case = []
 
         for approach, baseline_dir in zip(
             list(APPROACH_REPLACE_MAP.values())[:4],
@@ -1075,17 +1135,20 @@ class Plotter:
                         emissions = pd.DataFrame()
 
                     if approach == "MedSAM2":
-                        metrics = self._load_medsam2_metrics(fold_dir=fold_dir)
+                        metrics, metrics_per_case = self._load_medsam2_metrics(
+                            fold_dir=fold_dir)
                     else:
-                        metrics = self._load_nnunet_metrics(fold_dir=fold_dir)
+                        metrics, metrics_per_case = self._load_nnunet_metrics(
+                            fold_dir=fold_dir)
 
-                    for df in [progress, emissions, metrics]:
+                    for df in [progress, emissions, metrics, metrics_per_case]:
                         df["Approach"] = approach
                         df["Fold"] = fold
                         df["Dataset"] = dataset
 
                     all_emissions.append(emissions)
                     all_metrics.append(metrics)
+                    all_metrics_per_case.append(metrics_per_case)
                     dataset_progress.append(progress)
 
                 # We want to calculate the real runtime used by averaging
@@ -1107,10 +1170,12 @@ class Plotter:
         all_progress = pd.concat(all_progress)
         all_emissions = pd.concat(all_emissions)
         all_metrics = pd.concat(all_metrics)
+        all_metrics_per_case = pd.concat(all_metrics_per_case)
 
         return BaselineResult(
             progress=all_progress,
             metrics=all_metrics,
+            metrics_per_case=all_metrics_per_case,
             emissions=all_emissions
         )
 
@@ -1271,7 +1336,7 @@ class Plotter:
 
         return history
 
-    def _load_hpo_data(         # noqa: PLR0915
+    def _load_hpo_data(         # noqa: PLR0915, C901
             self,
             datasets: list[str]
         ) -> HPOResult:
@@ -1289,6 +1354,7 @@ class Plotter:
         """
         all_progress  = []
         all_metrics = []
+        all_metrics_per_case = []
         all_emissions = []
         all_history = []
         all_incumbent = []
@@ -1358,14 +1424,17 @@ class Plotter:
                         progress["Run ID"] = run_id
                         all_progress.append(progress)
 
-                        metrics = self._load_nnunet_metrics(run_dir)
-                        metrics["Dataset"] = dataset
-                        metrics["Approach"] = approach
-                        metrics["Fold"] = fold
+                        metrics, metrics_per_case = self._load_nnunet_metrics(run_dir)
+                        for df in [metrics, metrics_per_case]:
+                            df["Dataset"] = dataset
+                            df["Approach"] = approach
+                            df["Fold"] = fold
                         all_metrics.append(metrics)
+                        all_metrics_per_case.append(metrics_per_case)
 
         all_progress = pd.concat(all_progress)
         all_metrics = pd.concat(all_metrics)
+        all_metrics_per_case = pd.concat(all_metrics_per_case)
         all_emissions = pd.concat(all_emissions)
         all_history = pd.concat(all_history)
         all_incumbent = pd.concat(all_incumbent)
@@ -1375,6 +1444,7 @@ class Plotter:
             incumbent=all_incumbent,
             incumbent_progress=all_progress,
             incumbent_metrics=all_metrics,
+            incumbent_metrics_per_case=all_metrics_per_case,
             emissions=all_emissions,
             deepcave_runs=deepcave_runs
         )
@@ -1403,6 +1473,7 @@ class Plotter:
         all_history = []
         all_incumbent = defaultdict(list)
         all_metrics = []
+        all_metrics_per_case = []
         all_progress = []
         deepcave_runs = {}
 
@@ -1453,13 +1524,15 @@ class Plotter:
                 if i == 0:
                     incumbent_run_id = incumbent["Run ID"].to_numpy()[-1]
                     for fold in range(self.n_folds):
-                        metrics = self._load_nnunet_metrics(
+                        metrics, metrics_per_case = self._load_nnunet_metrics(
                             nas_run_dir / str(incumbent_run_id * self.n_folds + fold)
                         )
-                        metrics["Dataset"] = dataset
-                        metrics["Approach"] = approach
-                        metrics["Fold"] = fold
+                        for df in [metrics, metrics_per_case]:
+                            df["Dataset"] = dataset
+                            df["Approach"] = approach
+                            df["Fold"] = fold
                         all_metrics.append(metrics)
+                        all_metrics_per_case.append(metrics_per_case)
 
                         progress = self._load_nnunet_progress(
                             nas_run_dir / str(incumbent_run_id * self.n_folds + fold)
@@ -1498,11 +1571,13 @@ class Plotter:
             all_emissions = pd.concat(all_emissions)
             all_history = pd.concat(all_history)
             all_metrics = pd.concat(all_metrics)
+            all_metrics_per_case = pd.concat(all_metrics_per_case)
             all_progress = pd.concat(all_progress)
         else:
             all_emissions = pd.DataFrame()
             all_history = pd.DataFrame()
             all_metrics = pd.DataFrame()
+            all_metrics_per_case = pd.DataFrame()
             all_progress = pd.DataFrame()
 
         all_incumbent_df = {}
@@ -1516,6 +1591,7 @@ class Plotter:
             history=all_history,
             incumbents=all_incumbent_df,
             incumbent_metrics=all_metrics,
+            incumbent_metrics_per_case=all_metrics_per_case,
             incumbent_progress=all_progress,
             emissions=all_emissions,
             deepcave_runs=deepcave_runs
@@ -1703,7 +1779,7 @@ class Plotter:
         for dataset in self.datasets:
             self._plot_baseline(dataset=dataset, x_metric=x_metric)
 
-    def _plot_optimization(
+    def _plot_optimization(                 # noqa: C901, PLR0915
             self,
             dataset: str,
             x_log_scale: bool = False,      # noqa: FBT001, FBT002
@@ -1753,32 +1829,46 @@ class Plotter:
             incumbent = pd.concat([incumbent, hnas_data.incumbents[O_DSC]])
 
         baseline_data = self.get_baseline_data(dataset)
-
         metrics = baseline_data.metrics
-        metrics.loc[:, O_DSC] = (100 - metrics["Mean"]).copy()
-        metrics = metrics[[O_DSC, "Approach", "Fold"]]
 
-        # We remove the MedSAM2 approach from the baseline
-        metrics = metrics[~metrics["Approach"].isin(["MedSAM2"])]
+        runtimes = (
+            baseline_data.progress.groupby(
+                "Approach")["Runtime"].sum() / 3600 / 5
+        ).reset_index()
+        runtimes = runtimes[~runtimes["Approach"].isin(["MedSAM2"])]
 
+        metrics = metrics.merge(runtimes, on="Approach")
         metrics_expanded = pd.DataFrame(
             np.repeat(metrics.values, 2, axis=0),
             columns=metrics.columns
         )
-        metrics_expanded[x_metric] = np.tile(
-            [0, incumbent[x_metric].max()],
-            len(metrics)
-        )
 
-        g = sns.lineplot(
-            data=metrics_expanded,
-            x=x_metric,
-            y=O_DSC,
-            hue="Approach",
-            palette=self.color_palette[:3],
-            linestyle="--",
-            errorbar=("sd") if show_error else None,
-        )
+        metrics_expanded[x_metric] = np.tile(metrics["Runtime"].values, 2)
+        metrics_expanded.loc[1::2, x_metric] = incumbent[x_metric].max()
+        metrics_expanded.loc[:, O_DSC] = (100 - metrics_expanded["Mean"])
+
+        # Plot baselines
+        mean_metrics = metrics.groupby("Approach").mean().reset_index()
+        for i, approach in enumerate(
+                list(APPROACH_REPLACE_MAP.values())[:3]
+            ):
+            x = mean_metrics[
+                mean_metrics["Approach"] == approach
+            ]["Runtime"].iloc[0]
+            y = 100 - mean_metrics[
+                mean_metrics["Approach"] == approach
+            ]["Mean"].iloc[0]
+            color = color_palette[i]
+
+            g = sns.lineplot(
+                x=[x, incumbent[x_metric].max()],
+                y=[y, y],
+                color=color,
+                label=approach,
+                linestyle="--",
+                errorbar=("sd") if show_error else None,
+                ax=ax
+            )
 
         n_hpo_approaches = len(incumbent["Approach"].unique())
         sns.lineplot(
@@ -1963,18 +2053,25 @@ class Plotter:
             baseline_data = self.get_baseline_data(dataset)
 
             metrics = baseline_data.metrics
+            metrics = metrics[["Mean", "Approach", "Fold"]]
 
             # We remove the MedSAM2 approach from the baseline
             metrics = metrics[~metrics["Approach"].isin(["MedSAM2"])]
 
+            runtimes = (
+                baseline_data.progress.groupby(
+                    "Approach")["Runtime"].sum() / 3600 / 5
+            ).reset_index()
+            runtimes = runtimes[~runtimes["Approach"].isin(["MedSAM2"])]
+
+            metrics = metrics.merge(runtimes, on="Approach")
             metrics_expanded = pd.DataFrame(
                 np.repeat(metrics.values, 2, axis=0),
                 columns=metrics.columns
             )
-            metrics_expanded[x_metric] = np.tile(
-                [0, incumbent[x_metric].max()],
-                len(metrics)
-            )
+
+            metrics_expanded[x_metric] = np.tile(metrics["Runtime"].values, 2)
+            metrics_expanded.loc[1::2, x_metric] = incumbent[x_metric].max()
             metrics_expanded.loc[:, O_DSC] = (100 - metrics_expanded["Mean"])
 
             n_hpo_approaches = len(incumbent["Approach"].unique())
@@ -1989,16 +2086,27 @@ class Plotter:
                 max_hpo_approaches_ax = ax
 
             # Plot baselines
-            g = sns.lineplot(
-                data=metrics_expanded,
-                x=x_metric,
-                y=O_DSC,
-                hue="Approach",
-                palette=color_palette[:min(3, n_baseline_approaches)],
-                linestyle="--",
-                errorbar=("sd") if show_error else None,
-                ax=ax
-            )
+            mean_metrics = metrics.groupby("Approach").mean().reset_index()
+            for i, approach in enumerate(
+                    list(APPROACH_REPLACE_MAP.values())[:3]
+                ):
+                x = mean_metrics[
+                    mean_metrics["Approach"] == approach
+                ]["Runtime"].iloc[0]
+                y = 100 - mean_metrics[
+                    mean_metrics["Approach"] == approach
+                ]["Mean"].iloc[0]
+                color = color_palette[i]
+
+                g = sns.lineplot(
+                    x=[x, incumbent[x_metric].max()],
+                    y=[y, y],
+                    color=color,
+                    label=approach,
+                    linestyle="--",
+                    errorbar=("sd") if show_error else None,
+                    ax=ax
+                )
 
             # Plot our approaches
             sns.lineplot(
@@ -2057,6 +2165,7 @@ class Plotter:
 
             ax.get_legend().remove()
             ax.yaxis.set_tick_params(pad=1)
+            self._format_axis(ax=g, grid=True)
 
         # We use the axis with most approaches to get the legend
         (
@@ -2608,12 +2717,14 @@ class Plotter:
 
                 pdps += [(dataset, most_important_hp)]
 
+            hp_order = sorted(hyperparameters.values(), key=lambda x: x.lower())
+
             g = sns.barplot(
                 data=importances_df,
                 x="Importance",
                 y="Hyperparameter",
                 hue="Hyperparameter",
-                hue_order=hyperparameters.values(),
+                hue_order=hp_order,
                 ax=ax,
                 errorbar=None,
                 dodge=False,
@@ -2787,6 +2898,7 @@ class Plotter:
 
                         pdps += [(1 - weight, most_important_hp)]
 
+            hp_names = sorted(hp_names, key=lambda x: x.lower())
             for j, hp in enumerate(hp_names):
                 hp_data = importances[importances["hp_name"] == hp]
                 hp_data = hp_data.sort_values(by="weight")
@@ -3387,7 +3499,7 @@ class Plotter:
 
         self._format_axis(ax=ax)
 
-        ax.xaxis.set_minor_locator(plt.NullLocator())
+        ax.xaxis.set_minor_locator(plt.NullLocator())   # type: ignore
 
         fig.subplots_adjust(
             top=0.85,
@@ -4403,7 +4515,7 @@ class Plotter:
         if orientation == "left":
             plt.xticks(rotation=-90)
         else:
-            plt.grid(visible=False)
+            plt.xticks(rotation=90)
 
         plt.title(title)
         plt.tight_layout()
@@ -5020,171 +5132,327 @@ class Plotter:
             )
             plt.close()
 
-    def plot_qualitative_segmentations(self) -> None:   # noqa: PLR0915, C901
-        """Plot the qualitative segmentations for all datasets."""
-        def get_slice_idxs(gt_label: np.ndarray):
-            def _get_slice_idx(label: np.ndarray, dim: int) -> int:
-                max_foreground = 0
-                slice_idx = 0
+    def _get_validation_image(      # noqa: PLR0915
+            self,
+            dataset: str,
+            case_where_autonnunet: Literal["best", "worst"] = "best"
+    ) -> tuple[str, int, tuple[int, int, int]]:
+        """Returns the image and label with largest distance between the
+        validation scores of nnU-Net (Conv) and the best method.
 
-                _label = label.copy()
-                _label[_label != 0] = 1
+        Parameter
+        ---------
+        dataset : str
+            The dataset to get the image for.
 
-                for i in range(_label.shape[dim]):
-                    index = tuple(
-                        slice(None) if j != dim else i for j in range(_label.ndim)
-                    )
-                    if (fg_sum := _label[index].sum()) > max_foreground:
-                        max_foreground = fg_sum
-                        slice_idx = i
+        case_where_autonnunet : Literal["best", "worst"]
+            Whether to return the best or worst case for autonnunet.
+            Defaults to "best".
 
-                return slice_idx
+        Returns:
+        -------
+        tuple[str, int, tuple[int, int, int]]
+            The file name, fold, and slice indexes.
+        """
+        data_funcs = {
+            "hpo": self.get_hpo_data,
+            "hpo_nas": self.get_nas_data,
+            "hpo_hnas": self.get_hnas_data
+        }
 
-            return tuple(_get_slice_idx(gt_label, dim) for dim in range(3))
+        # First, we need to find the best approach for this dataset
+        best_approach_key = None
+        best_dsc = 0
+        for approach_key, data_func in data_funcs.items():
+            data = data_func(dataset=dataset).incumbent_metrics
+            dsc = data["Mean"].mean()
 
-        def get_gt_data(
-                dataset: str
-            ) -> tuple[str, np.ndarray, np.ndarray, np.ndarray]:
-            dataset_path = NNUNET_DATASETS / dataset_name_to_msd_task(dataset)
+            if dsc > best_dsc:
+                best_dsc = dsc
+                best_approach_key = approach_key
 
-            for file in (dataset_path / "imagesTr" ).glob("*.nii.gz"):
-                if file.name.startswith("._"):
-                    continue
+        # Now, we need to find the image with the largest distance
+        assert best_approach_key is not None
+        baseline_metrics_per_case = self.get_baseline_data(
+            dataset=dataset).metrics_per_case
+        baseline_metrics_per_case = baseline_metrics_per_case[
+            baseline_metrics_per_case["Approach"] == "nnU-Net (Conv)"
+        ]
 
-                img = nib.loadsave.load(file)
-                label = nib.loadsave.load(dataset_path / "labelsTr" / file.name)
+        auto_metrics_per_case = data_funcs[
+            best_approach_key](dataset=dataset).incumbent_metrics_per_case
+        all_metrics_per_case = pd.concat(
+            [baseline_metrics_per_case, auto_metrics_per_case])
 
-                img_data: np.ndarray = img.get_fdata()      # type: ignore
-                label_data: np.ndarray = label.get_fdata()  # type: ignore
+        # We are interested in the file name and fold where the difference is largest
+        metrics_pivot = all_metrics_per_case.pivot_table(
+            index=["File", "Fold"],
+            columns="Approach",
+            values="Mean"
+        )
 
-                affine = img.affine                         # type: ignore
-                voxel_spacing = np.abs(np.diag(affine)[:3])
+        # Depending on whether we want the best or worst case of
+        # autonnunet we have to compute the difference
+        approach_name = APPROACH_REPLACE_MAP[best_approach_key]
+        if case_where_autonnunet == "worst":
+            metrics_pivot["Difference"] = metrics_pivot["nnU-Net (Conv)"] \
+                - metrics_pivot[approach_name]
+        else:
+            metrics_pivot["Difference"] = metrics_pivot[approach_name] \
+                - metrics_pivot["nnU-Net (Conv)"]
 
-                # We skip the very small examples for the visualization
-                if dataset == "Dataset003_Liver" and img_data.shape[2] < 500:           # noqa: PLR2004
-                    continue
-                if dataset == "Dataset005_Prostate" and img_data.shape[2] < 24:         # noqa: PLR2004
-                    continue
-                if dataset == "Dataset007_Pancreas" and img_data.shape[2] < 137:        # noqa: PLR2004
-                    continue
-                if dataset == "Dataset008_HepaticVessel" and img_data.shape[2] < 138:   # noqa: PLR2004
-                    continue
-                if dataset == "Dataset009_Spleen" and img_data.shape[2] < 168:          # noqa: PLR2004
-                    continue
-                if dataset == "Dataset010_Colon" and "colon_061" not in file.name:
-                    continue
+        max_diff_row = metrics_pivot[
+            metrics_pivot["Difference"] == metrics_pivot["Difference"].max()
+        ]
+        max_file, max_fold = max_diff_row.index[0]
 
-                # In case of mp-MRI, we use the first setting
-                if len(img_data.shape) == 4:    # noqa: PLR2004
-                    img_data = img_data[:, :, :, 0]
+        auto_class_metrics = auto_metrics_per_case[
+            (auto_metrics_per_case["File"] == max_file) &
+            (auto_metrics_per_case["Fold"] == max_fold)
+        ].drop(columns=["Mean", "File", "Dataset", "Approach", "Fold"])
+        baseline_class_metrics = baseline_metrics_per_case[
+            (baseline_metrics_per_case["File"] == max_file) &
+            (baseline_metrics_per_case["Fold"] == max_fold)
+        ].drop(columns=["Mean", "File", "Dataset", "Approach", "Fold"])
 
-                return file.name, img_data, label_data, voxel_spacing
+        # To find the most interesting slices, we look at the
+        # difference between the baseline and best approach
+        _, label_data, _ = self._get_gt_data(
+            dataset=dataset,
+            img_name=max_file
+        )
+        if case_where_autonnunet == "worst":
+            class_difference = (baseline_class_metrics.to_numpy() \
+                - auto_class_metrics.to_numpy())[0]
 
-            raise ValueError(f"No data found for {dataset}")
+            # We load the prediction data from the best approach
+            # to select the slices based on the difference to
+            # the ground truth. We are looking for the slices where
+            # the best approach is worst
+            if best_approach_key == "hpo":
+                best_approach_path = self.hpo_dir
+            elif best_approach_key == "hpo_nas":
+                best_approach_path = self.nas_dir
+            else:
+                best_approach_path = self.hnas_dir
 
-        def get_slices(         # noqa: PLR0912, C901
-                dataset: str
-            ) -> tuple[
-                dict[str, tuple[np.ndarray, np.ndarray, np.ndarray]],
-                np.ndarray
-            ]:
-            slices = {}
+            prediction_data = nib.loadsave.load(
+                best_approach_path / dataset / self.configuration / "0" /\
+                "incumbent" / f"fold_{max_fold}" / "validation" / max_file
+            ).get_fdata()   # type: ignore
+        else:
+            class_difference = (auto_class_metrics.to_numpy() \
+                - baseline_class_metrics.to_numpy())[0]
 
-            file_name, img_data, label_data, spacing = get_gt_data(dataset)
+            # Here, we are looking for the slices where the baseline is
+            # worst
+            prediction_data = nib.loadsave.load(
+                self.baseline_conv / dataset / self.configuration /\
+                f"fold_{max_fold}" / "validation" / max_file
+            ).get_fdata()   # type: ignore
 
-            x, y, z = get_slice_idxs(label_data)
-            label_data[label_data == 0] = np.nan
+        max_class_idx = np.argmax(class_difference) + 1
 
-            slices["Image"] = [
-                img_data[:, :, z],
-                img_data[x, :, :],
-                img_data[:, y, :]
+        _label_class_data = label_data.copy()
+        _label_class_data[_label_class_data != max_class_idx] = 0
+        if _label_class_data.sum() > 0.02 * np.prod(_label_class_data.shape):
+            prediction_data[prediction_data != max_class_idx] = 0
+            difference = (label_data != prediction_data).astype(int)
+
+            x = int(np.argmax(difference.sum(axis=(1, 2))))
+            y = int(np.argmax(difference.sum(axis=(0, 2))))
+            z = int(np.argmax(difference.sum(axis=(0, 1))))
+        else:
+            _label_data = label_data.copy()
+            _label_data[label_data != 0] = 1
+            x = int(np.argmax(_label_data.sum(axis=(1, 2))))
+            y = int(np.argmax(_label_data.sum(axis=(0, 2))))
+            z = int(np.argmax(_label_data.sum(axis=(0, 1))))
+
+        return max_file, int(max_fold), (x, y, z)
+
+    def _get_gt_data(
+            self,
+            dataset: str,
+            img_name: str,
+        ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Get the ground truth data for a given image.
+
+        Parameters
+        ----------
+        dataset : str
+            The dataset to get the ground truth data for.
+
+        img_name : str
+            The image name.
+
+        Returns:
+        -------
+        tuple[np.ndarray, np.ndarray, np.ndarray]
+            The image data, label data and voxel spacing.
+        """
+        dataset_path = NNUNET_DATASETS / dataset_name_to_msd_task(dataset)
+
+        img = nib.loadsave.load(dataset_path / "imagesTr" / img_name)
+        label = nib.loadsave.load(dataset_path / "labelsTr" / img_name)
+
+        img_data: np.ndarray = img.get_fdata()      # type: ignore
+        label_data: np.ndarray = label.get_fdata()  # type: ignore
+
+        affine = img.affine                         # type: ignore
+        voxel_spacing = np.abs(np.diag(affine)[:3])
+
+        # In case of mp-MRI, we use the first setting
+        if len(img_data.shape) == 4:    # noqa: PLR2004
+            img_data = img_data[:, :, :, 0]
+
+        return img_data, label_data, voxel_spacing
+
+    def get_slices_and_metrics(
+            self,
+            dataset: str,
+            img_name: str,
+            fold: int,
+            slice_idxs: tuple[int, int, int]
+        ) -> tuple[
+            dict[str, tuple[np.ndarray, np.ndarray, np.ndarray]],
+            dict[str, tuple[np.ndarray, np.ndarray, np.ndarray]],
+            np.ndarray
+        ]:
+        """Get the slices for the given dataset.
+
+        Parameters
+        ----------
+        dataset : str
+            The dataset to get the slices for.
+
+        img_name: str
+            The image name.
+
+        fold : int
+            The fold to get the slices from.
+
+        Returns:
+        -------
+        tuple[
+            dict[str, tuple[np.ndarray, np.ndarray, np.ndarray]],
+            dict[str, tuple[np.ndarray, np.ndarray, np.ndarray]],
+            np.ndarray
+        ]
+            The slices, metrics, and voxel spacing.
+        """
+        slices = {}
+        metrics = {}
+
+        img_data, label_data, spacing = self._get_gt_data(
+            dataset=dataset,
+            img_name=img_name
+        )
+
+        label_data[label_data == 0] = np.nan
+        x, y, z = slice_idxs
+
+        slices["Image"] = [
+            img_data[:, :, z],
+            img_data[x, :, :],
+            img_data[:, y, :]
+        ]
+
+        slices["Ground\nTruth"] = [
+            label_data[:, :, z],
+            label_data[x, :, :],
+            label_data[:, y, :]
+        ]
+
+        baseline_metrics_per_case = self.get_baseline_data(
+            dataset=dataset).metrics_per_case
+        for approach, path in zip(
+            list(APPROACH_REPLACE_MAP.values())[:4], [
+                self.baseline_conv,
+                self.baseline_resenc_m,
+                self.baseline_resenc_l,
+                self.baseline_medsam2
+            ], strict=False):
+
+            approach_metrics = baseline_metrics_per_case[
+                (baseline_metrics_per_case["Approach"] == approach) &
+                (baseline_metrics_per_case["File"] == img_name) &
+                (baseline_metrics_per_case["Fold"] == fold)
             ]
+            dsc = approach_metrics["Mean"].to_numpy()[0]
 
-            slices["Ground\nTruth"] = [
-                label_data[:, :, z],
-                label_data[x, :, :],
-                label_data[:, y, :]
-            ]
+            if approach == "MedSAM2":
+                _file_name = img_name.split(".nii.gz")[0] + "_0000_1.nii.gz"
+                file_path = path / dataset / f"fold_{fold}" / "validation" /\
+                    _file_name
+            else:
+                file_path = path / dataset / self.configuration /\
+                    f"fold_{fold}" / "validation" / img_name
 
-            for approach, path in zip(
-                list(APPROACH_REPLACE_MAP.values())[:4], [
-                    self.baseline_conv,
-                    self.baseline_resenc_m,
-                    self.baseline_resenc_l,
-                    self.baseline_medsam2
-                ], strict=False):
-                # Since we don't know in which fold the prediction is in the validation
-                # split, we need to iterate over all folds and take the first match
-                for fold in range(self.n_folds):
-                    if approach == "MedSAM2":
-                        _file_name = file_name.split(".nii.gz")[0] + "_0000_1.nii.gz"
-                        file_path = path / dataset / f"fold_{fold}" / "validation" /\
-                            _file_name
+            if approach == "MedSAM2":
+                paths = list(file_path.parent.glob(file_path.stem[:-6] + "*"))
 
-                    else:
-                        file_path = path / dataset / self.configuration /\
-                            f"fold_{fold}" / "validation" / file_name
-                    if file_path.exists():
-                        break
-
-                if not file_path.exists():
-                    continue
-
-                if approach == "MedSAM2":
-                    paths = list(file_path.parent.glob(file_path.stem[:-6] + "*"))
-
-                    pred_data = np.full_like(
-                        nib.loadsave.load(paths[0]).get_fdata(), np.nan)   # type: ignore
-                    for i, _path in enumerate(paths):
-                        pred = nib.loadsave.load(_path).get_fdata()      # type: ignore
-                        pred_data[pred == 1] = i + 1
-                else:
-                    pred = nib.loadsave.load(file_path)
-                    pred_data = pred.get_fdata()        # type: ignore
-
-                pred_data[pred_data == 0] = np.nan
-
-                _approach = approach.replace(" ", "\n")
-
-                slices[_approach] = [
-                    pred_data[:, :, z],
-                    pred_data[x, :, :],
-                    pred_data[:, y, :]
-                ]
-
-            for approach, path in zip(
-                list(APPROACH_REPLACE_MAP.values())[4:], [
-                    self.hpo_dir,
-                    self.nas_dir,
-                    self.hnas_dir
-                ], strict=False):
-
-                # Since we don't know in which fold the prediction is in the validation
-                # split, we need to iterate over all folds and take the first match
-                for fold in range(self.n_folds):
-                    file_path = path / dataset / self.configuration / "0" /\
-                        "incumbent" / f"fold_{fold}" / "validation" / file_name
-                    if file_path.exists():
-                        break
-
-                if not file_path.exists():
-                    continue
-
+                pred_data = np.full_like(
+                    nib.loadsave.load(paths[0]).get_fdata(), np.nan)   # type: ignore
+                for i, _path in enumerate(paths):
+                    pred = nib.loadsave.load(_path).get_fdata()      # type: ignore
+                    pred_data[pred == 1] = i + 1
+            else:
                 pred = nib.loadsave.load(file_path)
                 pred_data = pred.get_fdata()        # type: ignore
-                pred_data[pred_data == 0] = np.nan
 
-                _approach = approach.replace(" ", "\n").replace("+", "+\n")
+            pred_data[pred_data == 0] = np.nan
 
-                slices[_approach] = [
-                    pred_data[:, :, z],
-                    pred_data[x, :, :],
-                    pred_data[:, y, :]
-                ]
+            _approach = approach.replace(" ", "\n")
 
-            return slices, spacing
+            slices[_approach] = [
+                pred_data[:, :, z],
+                pred_data[x, :, :],
+                pred_data[:, y, :]
+            ]
+            metrics[_approach] = dsc
 
+        for approach, path, data_func in zip(
+            list(APPROACH_REPLACE_MAP.values())[4:], [
+                self.hpo_dir,
+                self.nas_dir,
+                self.hnas_dir
+            ], [
+                self.get_hpo_data,
+                self.get_nas_data,
+                self.get_hnas_data
+            ], strict=False):
+
+            approach_metrics = data_func(dataset=dataset).incumbent_metrics_per_case
+            approach_metrics = approach_metrics[
+                (approach_metrics["File"] == img_name) &
+                (approach_metrics["Fold"] == fold)
+            ]
+            dsc = approach_metrics["Mean"].to_numpy()[0]
+
+            file_path = path / dataset / self.configuration / "0" /\
+                "incumbent" / f"fold_{fold}" / "validation" / img_name
+
+            pred = nib.loadsave.load(file_path)
+            pred_data = pred.get_fdata()        # type: ignore
+            pred_data[pred_data == 0] = np.nan
+
+            _approach = approach.replace(" ", "\n").replace("+", "+\n")
+
+            slices[_approach] = [
+                pred_data[:, :, z],
+                pred_data[x, :, :],
+                pred_data[:, y, :]
+            ]
+            metrics[_approach] = dsc
+
+        return slices, metrics, spacing
+
+    def plot_qualitative_segmentations(
+                self,
+                case_where_autonnunet: Literal["best", "worst"] = "best"
+        ) -> None:
+        """Plot the qualitative segmentations for all datasets."""
         output_dir = AUTONNUNET_PLOTS / "qualitative_results"
         output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -5209,7 +5477,21 @@ class Plotter:
                 ) for label in labels
             ]
 
-            slices, spacing = get_slices(dataset)
+            (
+                img_name,
+                fold,
+                slice_idxs
+            ) = self._get_validation_image(
+                dataset=dataset,
+                case_where_autonnunet=case_where_autonnunet
+            )
+
+            slices, metrics, spacing = self.get_slices_and_metrics(
+                dataset=dataset,
+                img_name=img_name,
+                fold=fold,
+                slice_idxs=slice_idxs
+            )
             ndim = len(slices["Image"])
 
             aspect_ratios = {
@@ -5221,7 +5503,7 @@ class Plotter:
             fig, axs = plt.subplots(
                 ncols=len(slices),
                 nrows=ndim,
-                figsize=(self.figwidth, 4.25),
+                figsize=(self.figwidth, 4.3),
             )
 
             for i, slice_name in enumerate(slices):
@@ -5247,9 +5529,23 @@ class Plotter:
                     ax.axis("off")
 
                     if j == 0:
-                        ax.set_title(slice_name)
+                        if slice_name in metrics:
+                            fmt_dsc = metrics[slice_name]
+                            _slice_title = f"{slice_name}\n{fmt_dsc:.2f}"
+                        else:
+                            _slice_title = slice_name
+                        ax.set_title(_slice_title)
 
-            fig.suptitle(f"Qualitative Results for {format_dataset_name(dataset)}")
+            case_name = img_name.split(".nii.gz")[0]
+            if case_where_autonnunet == "best":
+                fig.suptitle(
+                    f"Qualitative Results for {case_name} (Best Case) "
+                    f"in {format_dataset_name(dataset)}")
+            else:
+                fig.suptitle(
+                    f"Qualitative Results for {case_name} (Worst Case) "
+                    f"in {format_dataset_name(dataset)}")
+
             fig.legend(
                 handles=patches,
                 loc="upper center",
@@ -5260,16 +5556,19 @@ class Plotter:
                 frameon=False
             )
             fig.subplots_adjust(
-                top=0.8,
-                bottom=0.08,
+                top=0.76,
+                bottom=0.1,
                 left=0.,
                 right=1.,
                 hspace=0.07,
                 wspace=0.1,
             )
 
-            plt.savefig(output_dir /\
-                        f"{dataset}.{self.format}", dpi=self.dpi, format=self.format)
+            plt.savefig(
+                output_dir / f"{dataset}_{case_where_autonnunet}.{self.format}",
+                dpi=self.dpi,
+                format=self.format
+            )
             plt.clf()
             plt.close()
 
@@ -5384,33 +5683,38 @@ class Plotter:
         plt.savefig(output_dir / f"dsc.{self.format}", dpi=self.dpi, format=self.format)
 
     def _load_cross_eval_matrix(self) -> pd.DataFrame:
-        """Loads the matrix of evaluation returns for the cross-evaluation 
+        """Loads the matrix of evaluation returns for the cross-evaluation
         of HPO+NAS incumbents and datasets.
 
-        Returns
+        Returns:
         -------
         pd.DataFrame
             The cross-evaluation matrix.
         """
+        cfg_datasets = [
+            d for d in self.datasets if d != "Dataset008_HepaticVessel"
+        ]
+
+        eval_datasets = self.datasets
         matrix = pd.DataFrame(
-            columns=self.datasets,
-            index=self.datasets
+            columns=cfg_datasets,
+            index=eval_datasets
         )
 
-        for dataset_cfg in self.datasets:
-            for dataset_eval in self.datasets:
+        for dataset_cfg in cfg_datasets:
+            for dataset_eval in eval_datasets:
                 # For the diagonal, we just load the original HPO+NAS result
                 if dataset_cfg == dataset_eval:
-                    incumbents = self.get_hnas_data(
-                        dataset=dataset_cfg).incumbents[self.objectives[0]]
-                    
+                    incumbent_metrics = self.get_nas_data(
+                        dataset=dataset_cfg).incumbent_metrics
+
                     # In the incumbents.csv, we store the the cost (1 - DSC [%]),
-                    dsc = 100 - incumbents[O_DSC].iloc[-1]
+                    dsc = incumbent_metrics["Mean"].mean()
 
                     matrix.loc[dataset_eval, dataset_cfg] = dsc
                     continue
 
-                # For the remaining entries, we need to load the actual 
+                # For the remaining entries, we need to load the actual
                 # cross-evaluation results
                 base_dir = self.cross_eval_dir / dataset_cfg / dataset_eval /\
                     self.configuration / str(self.hpo_seed) / "incumbent"
@@ -5418,14 +5722,18 @@ class Plotter:
                 all_metrics = []
                 for fold in range(self.n_folds):
                     fold_dir = base_dir / f"fold_{fold}"
-                    if not (fold_dir / "validation").exists():
+                    if not (fold_dir / "validation" /\
+                            NNUNET_VALIDATION_METRICS_FILENAME).exists():
+                        self.logger.info(
+                            f"Skipping {dataset_cfg} / {dataset_eval} / fold_{fold}."
+                        )
                         continue
 
-                    metrics = self._load_nnunet_metrics(fold_dir)
+                    metrics, _ = self._load_nnunet_metrics(fold_dir)
                     all_metrics += [metrics]
 
                 if len(all_metrics) == 0:
-                    dsc = np.nan
+                    dsc = 0.
                 else:
                     all_metrics = pd.concat(all_metrics)
                     dsc = metrics["Mean"].mean()
@@ -5433,41 +5741,77 @@ class Plotter:
                 matrix.loc[dataset_eval, dataset_cfg] = dsc
 
         return matrix
-    
+
     def plot_cross_eval_matrix(self) -> None:
-        """Plots the matrix of evaluation returns for the cross-evaluation 
+        """Plots the matrix of validation DSCs for the cross-evaluation
         of HPO+NAS incumbents and datasets.
         """
         matrix = self._load_cross_eval_matrix()
 
-        print(matrix)
-        exit()
+        matrix.columns = [
+            format_dataset_name(dataset)[:3] for dataset in matrix.columns
+        ]
+        matrix.index = pd.Index([
+            format_dataset_name(dataset)[:3] for dataset in matrix.index
+        ])
+        matrix = matrix.astype(float)
 
-        fig, ax = plt.subplots(1, 1, figsize=(8, 6))
+        # We add the Mean per config
+        matrix.loc[r"$\mathbf{Mean}$", :] = matrix.mean(axis=0)
 
-        sns.heatmap(
-            matrix.astype(float),
-            annot=True,
-            fmt=".2f",
+        # We highlight the best DSC per evaluation dataset
+        numeric_matrix = matrix.to_numpy().astype(float)
+        row_max_indices = np.argmax(matrix, axis=1)
+        annot_matrix = np.array([
+            [r"$\mathbf{" + f"{val:.2f}" + "}$" if col == row_max_indices[row] \
+                else r"$" + f"{val:.2f}" + "$"
+            for col, val in enumerate(row_values)]  # type: ignore
+            for row, row_values in enumerate(numeric_matrix)
+        ], dtype=str)
+
+        fig, ax = plt.subplots(1, 1, figsize=(self.figwidth, self.figwidth / 2))
+
+        g = sns.heatmap(
+            matrix,
+            annot=annot_matrix,
+            fmt="",
             cmap="viridis",
-            ax=ax
+            ax=ax,
+            cbar_kws={"label": "DSC [%]"}
+        )
+        for text in g.texts:
+            text.set_va("center")   # type: ignore
+            text.set_ha("center")   # type: ignore
+
+        plt.yticks(rotation=0)
+
+        ax.set_title("Cross-Evaluation Matrix for HPO+NAS Incumbent Configurations")
+
+        ax.xaxis.set_label_position("top")
+        ax.xaxis.tick_top()
+        ax.set_ylabel("Evaluation Dataset")
+        ax.set_xlabel("Configuration Dataset")
+
+        fig.subplots_adjust(
+            top=0.82,
+            bottom=0.03,
+            left=0.12,
+            right=1.05,
         )
 
-        ax.set_title("Cross-Evaluation of HPO+NAS Incumbents")
-        ax.set_xlabel("Evaluation Dataset")
-        ax.set_ylabel("Configuration Dataset")
-
-        output_dir = AUTONNUNET_PLOTS / "cross_eval"
-        output_dir.mkdir(parents=True, exist_ok=True)
-
-        plt.tight_layout()
-        plt.savefig(output_dir / f"cross_eval_matrix.{self.format}", dpi=self.dpi, format=self.format)
+        plt.savefig(
+            self.combined_plots / f"cross_eval_matrix.{self.format}",
+            dpi=self.dpi,
+            format=self.format
+        )
 
     def _compute_hp_interactions(
             self,
             dataset: str,
             approach_key: str,
-            budget: int = COMBINED_BUDGET
+            budget: int = COMBINED_BUDGET,
+            create_table: bool = True,      # noqa: FBT001, FBT002
+            table_top_n: int = 5
     ) -> pd.DataFrame:
         """Computes the interactions between hyperparameters for all datasets
         for a given approach.
@@ -5483,7 +5827,7 @@ class Plotter:
         budget : int
             The budget to use for the evaluation. Defaults to COMBINED_BUDGET.
 
-        Returns
+        Returns:
         -------
         pd.DataFrame
             The resulting interactions.
@@ -5499,7 +5843,7 @@ class Plotter:
 
         deepcave_run = data_func(
             dataset=dataset).deepcave_runs[dataset]
-        
+
         selected_budget = self._get_budget(budget, deepcave_run)
 
         evaluator = fANOVA(run=deepcave_run)
@@ -5508,28 +5852,58 @@ class Plotter:
 
         hyperparameters = [
             HYPERPARAMETER_REPLACEMENT_MAP[hp] \
-                for hp in deepcave_run.configspace.keys()
+                for hp in deepcave_run.configspace
         ]
         interactions = pd.DataFrame(
             [],
             columns=hyperparameters,
-            index=hyperparameters
+            index=hyperparameters,
+            dtype=float
         )
 
         fANOVA_interactions = evaluator.get_most_important_pairwise_marginals(n=-1)
         for (hp1, hp2), percentage in fANOVA_interactions.items():
-            if percentage < 0.05:
-                continue
-            interactions.loc[hp1, hp2] = percentage * 100
-            interactions.loc[hp2, hp1] = percentage * 100
+            hp1_name = HYPERPARAMETER_REPLACEMENT_MAP[hp1]
+            hp2_name = HYPERPARAMETER_REPLACEMENT_MAP[hp2]
+
+            interactions.loc[hp1_name, hp2_name] = percentage * 100
+            interactions.loc[hp2_name, hp1_name] = percentage * 100
 
         interactions = pd.DataFrame(interactions)
+        interactions = interactions.fillna(0)
+
+        # Diagnonal should still be NaN
+        for hp in hyperparameters:
+            interactions.loc[hp, hp] = np.nan
+
+        if create_table:
+            top_n_interactions = []
+            top_n_fANOVA = evaluator.get_most_important_pairwise_marginals(
+                n=table_top_n
+            )
+            for (hp1, hp2), percentage in top_n_fANOVA.items():
+                top_n_interactions += [{
+                    "Hyperparameter 1": HYPERPARAMETER_REPLACEMENT_MAP[hp1],
+                    "Hyperparameter 2": HYPERPARAMETER_REPLACEMENT_MAP[hp2],
+                    "Interaction [\\%]": f"${percentage * 100:.2f}$"
+                }]
+            top_n_interactions = pd.DataFrame(top_n_interactions)
+
+            output_dir = AUTONNUNET_TABLES / approach_key
+            output_dir.mkdir(parents=True, exist_ok=True)
+
+            top_n_interactions.to_latex(
+                output_dir /\
+                    f"top_{table_top_n}_interactions_{dataset}.tex",
+                index=False
+            )
 
         return interactions
-    
-    def create_hp_interaction_tables(
+
+    def compute_all_hp_interaction_tables(
             self,
             approach_key: str,
+            threshold: float = 0.01,
             budget: int = COMBINED_BUDGET
     ):
         """Creates the hyperparameter interaction tables for all datasets
@@ -5541,21 +5915,98 @@ class Plotter:
             The key of the approach to use.
 
         budget : int
-            The budget to use for the evaluation. Defaults to COMBINED_BUDGET.
+            The budget to use for the evaluation.
+            Defaults to COMBINED_BUDGET.
         """
+        all_interactions = []
         for dataset in self.datasets:
             interactions = self._compute_hp_interactions(
                 dataset=dataset,
                 approach_key=approach_key,
-                budget=budget
+                budget=budget,
             )
-            print(interactions)
-            exit()
 
-            output_dir = AUTONNUNET_TABLES / approach_key
-            output_dir.mkdir(parents=True, exist_ok=True)
+            all_interactions += [interactions]
 
-            interactions.to_latex(
-                output_dir / f"interactions_{dataset}.tex",
-                float_format="%.2f"
+        average_interactions = pd.concat(
+            all_interactions).groupby(level=0).mean()
+        average_interactions[average_interactions < threshold] = 0
+
+        average_interactions = average_interactions.sort_index(axis=0)
+        average_interactions = average_interactions.sort_index(axis=1)
+
+        if approach_key == "hpo":
+            figsize = (self.figwidth, self.figwidth * 0.6)
+        elif approach_key == "hpo_nas":
+            figsize = (self.figwidth * 1.25, self.figwidth)
+        else:
+            figsize = (self.figwidth * 1.5, self.figwidth)
+
+        for orientation in ["left", "right"]:
+            fig, ax = plt.subplots(1, 1, figsize=figsize)
+
+            heatmap = sns.heatmap(
+                average_interactions,
+                annot=True,
+                fmt=".2f",
+                cmap="viridis",
+                ax=ax,
+                cbar_kws={"label": "Interaction [%]"}
             )
+
+            _approach = APPROACH_REPLACE_MAP[approach_key].replace(" (ours)", "")
+            plt.title(f"Average Hyperparameter Interactions for {_approach}")
+
+            plt.grid(visible=False)
+            ax.set_xlabel("Hyperparameter")
+            ax.set_ylabel("Hyperparameter")
+
+            if orientation == "left":
+                plt.xticks(rotation=-90)
+                cbar = heatmap.collections[0].colorbar
+
+                ax.set_ylabel(
+                    "Hyperparameter",
+                    rotation=-90,
+                    labelpad=15
+                )
+
+                assert cbar is not None
+                cbar.set_label(
+                    "Interaction [%]",
+                    rotation=-90,
+                    labelpad=15
+                )
+            else:
+                plt.xticks(rotation=90)
+
+            if approach_key == "hpo":
+                fig.subplots_adjust(
+                    top=0.95,
+                    bottom=0.41,
+                    left=0.25,
+                    right=0.99,
+                )
+            elif approach_key == "hpo_nas":
+                fig.subplots_adjust(
+                    top=0.95,
+                    bottom=0.27,
+                    left=0.21,
+                    right=1.03,
+                )
+            else:
+                fig.subplots_adjust(
+                    top=0.95,
+                    bottom=0.27,
+                    left=0.17,
+                    right=1.06,
+                )
+
+            plt.savefig(
+                self.analysis_plots[approach_key] /\
+                    f"average_hp_interactions_{orientation}.{self.format}",
+                dpi=self.dpi,
+                format=self.format
+            )
+            plt.clf()
+            plt.close()

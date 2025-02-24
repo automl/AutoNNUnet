@@ -4,8 +4,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from autonnunet.experiment_planning.auto_experiment_planners import (
-    AutoExperimentPlanner, nnUNetPlannerResEncL, nnUNetPlannerResEncM,
-    nnUNetPlannerResEncXL)
+        AutoExperimentPlanner,
+        nnUNetPlannerResEncL,
+        nnUNetPlannerResEncM,
+        nnUNetPlannerResEncXL,
+)
 
 if TYPE_CHECKING:
         from omegaconf import DictConfig

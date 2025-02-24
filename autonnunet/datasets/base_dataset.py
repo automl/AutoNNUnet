@@ -4,8 +4,7 @@ from __future__ import annotations
 import logging
 from abc import ABC, abstractmethod
 
-from autonnunet.utils.paths import (NNUNET_DATASETS, NNUNET_PREPROCESSED,
-                                    NNUNET_RAW)
+from autonnunet.utils.paths import NNUNET_DATASETS, NNUNET_PREPROCESSED, NNUNET_RAW
 
 
 class Dataset(ABC):

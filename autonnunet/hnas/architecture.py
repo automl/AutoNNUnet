@@ -5,8 +5,7 @@ from typing import Literal
 
 import neps
 import numpy as np
-from neps.search_spaces.hyperparameters import (CategoricalParameter,
-                                                IntegerParameter)
+from neps.search_spaces.hyperparameters import CategoricalParameter, IntegerParameter
 from scipy.stats import truncnorm
 
 from autonnunet.hnas.utils import plot_cat_dist, plot_norm_dist

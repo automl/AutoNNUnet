@@ -21,8 +21,8 @@ bbox_shift: 5
 num_workers: 0
 weight_decay: 0.01
 lr: 6e-5
-num_train_workers: 2
-num_val_workers: 2
+num_train_workers: 32
+num_val_workers: 8
 resume: true
 
 hydra:

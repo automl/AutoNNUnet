@@ -6,11 +6,15 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 import yaml
-from ConfigSpace import CategoricalHyperparameter as Categorical
-from ConfigSpace import (Configuration, ConfigurationSpace, EqualsCondition,
-                         OrConjunction)
-from ConfigSpace import UniformFloatHyperparameter as Float
-from ConfigSpace import UniformIntegerHyperparameter as Integer
+from ConfigSpace import (
+    CategoricalHyperparameter as Categorical,
+    Configuration,
+    ConfigurationSpace,
+    EqualsCondition,
+    OrConjunction,
+    UniformFloatHyperparameter as Float,
+    UniformIntegerHyperparameter as Integer,
+)
 from deepcave.runs.converters.deepcave import DeepCAVERun
 from deepcave.runs.objective import Objective
 from deepcave.runs.recorder import Recorder

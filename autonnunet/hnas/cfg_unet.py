@@ -8,18 +8,25 @@ from typing import TYPE_CHECKING
 
 import torch
 from dynamic_network_architectures.building_blocks.helper import (
-    convert_conv_op_to_dim, get_matching_batchnorm, get_matching_dropout,
-    get_matching_instancenorm)
-from dynamic_network_architectures.building_blocks.plain_conv_encoder import \
-    PlainConvEncoder
-from dynamic_network_architectures.building_blocks.residual_encoders import \
-    ResidualEncoder
-from dynamic_network_architectures.building_blocks.unet_decoder import \
-    UNetDecoder
-from dynamic_network_architectures.building_blocks.unet_residual_decoder import \
-    UNetResDecoder
+    convert_conv_op_to_dim,
+    get_matching_batchnorm,
+    get_matching_dropout,
+    get_matching_instancenorm,
+)
+from dynamic_network_architectures.building_blocks.plain_conv_encoder import (
+    PlainConvEncoder,
+)
+from dynamic_network_architectures.building_blocks.residual_encoders import (
+    ResidualEncoder,
+)
+from dynamic_network_architectures.building_blocks.unet_decoder import UNetDecoder
+from dynamic_network_architectures.building_blocks.unet_residual_decoder import (
+    UNetResDecoder,
+)
 from dynamic_network_architectures.initialization.weight_init import (
-    InitWeights_He, init_last_bn_before_add_to_0)
+    InitWeights_He,
+    init_last_bn_before_add_to_0,
+)
 from torch import nn
 
 if TYPE_CHECKING:

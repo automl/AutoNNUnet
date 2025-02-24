@@ -7,8 +7,11 @@ import pandas as pd
 from tqdm import tqdm
 
 from autonnunet.utils.helpers import dataset_name_to_msd_task, load_json
-from autonnunet.utils.paths import (AUTONNUNET_OUTPUT, NNUNET_DATASETS,
-                                    NNUNET_PREPROCESSED)
+from autonnunet.utils.paths import (
+    AUTONNUNET_OUTPUT,
+    NNUNET_DATASETS,
+    NNUNET_PREPROCESSED,
+)
 
 SOURCES = {
     "Dataset001_BrainTumour": "mp-MRI",

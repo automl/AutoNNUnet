@@ -6,6 +6,8 @@ if __name__  == "__main__":
     plotter = Plotter(
         file_format="pdf",
     )
+    plotter.plot_cross_eval_matrix() 
+    exit()
 
     # --------------------------------------------------------------------------------------------
     # Tables
@@ -24,6 +26,7 @@ if __name__  == "__main__":
     # Overview / Comparison
     # --------------------------------------------------------------------------------------------
     plotter.plot_optimization_combined()    # HPO + NAS + HNAS over time
+    plotter.plot_cross_eval_matrix()    
 
     # --------------------------------------------------------------------------------------------
     # Dataset Analysis
@@ -67,7 +70,12 @@ if __name__  == "__main__":
     # --------------------------------------------------------------------------------------------
     # Qualitative Analysis
     # --------------------------------------------------------------------------------------------
-    plotter.plot_qualitative_segmentations()
+    plotter.plot_qualitative_segmentations(
+        case_where_autonnunet="best"
+    )
+    plotter.plot_qualitative_segmentations(
+        case_where_autonnunet="worst"
+    )
 
     # --------------------------------------------------------------------------------------------
     # HPO
@@ -78,6 +86,7 @@ if __name__  == "__main__":
     plotter.plot_budget_correlations(approach_keys=["hpo"])
     plotter.plot_hpis(approach_keys=["hpo"], plot_pdps=True)
     plotter.plot_ablation_paths(approach_keys=["hpo"])
+    plotter.compute_all_hp_interaction_tables(approach_key="hpo")
 
     # --------------------------------------------------------------------------------------------
     # HPO + NAS
@@ -91,6 +100,7 @@ if __name__  == "__main__":
     plotter.plot_budget_correlations(approach_keys=["hpo_nas"])
     plotter.plot_hpis(approach_keys=["hpo_nas"], plot_pdps=True)
     plotter.plot_ablation_paths(approach_keys=["hpo_nas"])
+    plotter.compute_all_hp_interaction_tables(approach_key="hpo_nas")
 
     # --------------------------------------------------------------------------------------------
     # HPO + HNAS
@@ -104,3 +114,4 @@ if __name__  == "__main__":
     plotter.plot_budget_correlations(approach_keys=["hpo_hnas"])
     plotter.plot_hpis(approach_keys=["hpo_hnas"], plot_pdps=True)
     plotter.plot_ablation_paths(approach_keys=["hpo_hnas"])
+    plotter.compute_all_hp_interaction_tables(approach_key="hpo_hnas")
