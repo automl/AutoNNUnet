@@ -1830,6 +1830,7 @@ class Plotter:
 
         baseline_data = self.get_baseline_data(dataset)
         metrics = baseline_data.metrics
+        metrics = metrics[["Mean", "Approach", "Fold"]]
 
         runtimes = (
             baseline_data.progress.groupby(
@@ -1868,6 +1869,17 @@ class Plotter:
                 linestyle="--",
                 errorbar=("sd") if show_error else None,
                 ax=ax
+            )
+
+            ax.scatter(
+                x,
+                y,
+                color=color,
+                zorder=5,
+                linewidth=1,
+                s=100,
+                marker="*",
+                edgecolor="black"
             )
 
         n_hpo_approaches = len(incumbent["Approach"].unique())
