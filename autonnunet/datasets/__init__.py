@@ -1,6 +1,6 @@
 from .base_dataset import Dataset
-from .msd_dataset import MSD_DATASETS
+from .msd_dataset import MSD_DATASETS, MSDDataset
 
 ALL_DATASETS = MSD_DATASETS
 
-__all__ = ["Dataset", "ALL_DATASETS"]
+__all__ = ["Dataset", "MSDDataset", "ALL_DATASETS"]

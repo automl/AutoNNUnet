@@ -183,6 +183,7 @@ class CFGUNet(nn.Module):
         decoder_cfg = CFGUNet.parse_encoder_decoder(nested_list[3])
 
         return encoder_cfg, decoder_cfg
+    
     @staticmethod
     def get_norm_op(norm: str) -> type[nn.Module]:
         """Returns the normalization operation.

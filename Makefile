@@ -49,8 +49,6 @@ clean-test: ## remove test and coverage artifacts
 ruff: ## run ruff as a formatter
 	python -m ruff check --exit-zero autonnunet
 	python -m ruff check --silent --exit-zero --no-cache --fix autonnunet
-isort:
-	python -m isort autonnunet runscripts tests
 
 test: ## run tests quickly with the default Python
 	python -m pytest tests
@@ -78,4 +76,3 @@ check:
 
 format:
 	make ruff
-	make isort
