@@ -18,6 +18,7 @@ import nibabel as nib
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from ConfigSpace.hyperparameters.hyperparameter import Hyperparameter
 from ConfigSpace import CategoricalHyperparameter
 from deepcave.constants import COMBINED_BUDGET
 from deepcave.evaluators.ablation import Ablation
@@ -1600,7 +1601,8 @@ class Plotter:
     def _format_axis(
             self,
             ax: Any,
-            grid: bool = False      # noqa: FBT001, FBT002
+            grid: bool = False,     # noqa: FBT001, FBT002
+            border: bool = False    # noqa: FBT001, FBT002
         ) -> None:
         """Formats a matplotlib axis to match the overall format.
 
@@ -1611,6 +1613,10 @@ class Plotter:
 
         grid : bool
             Whether to add grid lines. Defaults to False.
+
+        border : bool
+            Whether to add show the top and right border.
+            Defaults to False.
         """
         major_length = 4
         minor_length = 2
@@ -1648,8 +1654,8 @@ class Plotter:
         )
         ax.spines["bottom"].set_color("black")
         ax.spines["left"].set_color("black")
-        ax.spines["right"].set_visible(False)
-        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(border)
+        ax.spines["top"].set_visible(border)
 
         if grid:
             ax.grid(
@@ -3383,6 +3389,47 @@ class Plotter:
                     n_hps=n_hps
                 )
 
+    @staticmethod
+    def _get_default_inc_vectors(
+            hp: Hyperparameter,
+            incumbent_value: str | int | float | None
+        ) -> tuple[float, float | None]:
+        """Get the default and incumbent vectors for a given hyperparameter.
+        
+        Parameters
+        ----------
+        hp : Hyperparameter
+            The hyperparameter.
+
+        incumbent_value : str | int | float | None
+            The incumbent value.
+
+        Returns:
+        -------
+        tuple[float, float | None]
+            The default and incumbent vectors.
+        """
+        if isinstance(hp, CategoricalHyperparameter):
+            default_vector = 0
+            if incumbent_value is None:
+                inc_vector = None
+            else:
+                inc_idx = np.where(
+                    np.array(list(hp.choices)) == incumbent_value
+                )[0][0]
+                inc_vector = inc_idx / (len(hp.choices) - 1)
+                inc_vector = float(inc_vector)
+        else:
+            default_vector = hp.to_vector(hp.default_value)
+
+            if incumbent_value is None:
+                inc_vector = None
+            else:
+                inc_vector = hp.to_vector(incumbent_value)
+                inc_vector = float(inc_vector)
+
+        return default_vector, inc_vector
+
     def _plot_pdp_1hp(
             self,
             deepcave_run: DeepCAVERun,
@@ -3472,22 +3519,10 @@ class Plotter:
 
         ticktext = [HYPERPARAMETER_VALUE_REPLACE_MAP.get(t, t) for t in ticktext]
 
-        if isinstance(hp, CategoricalHyperparameter):
-            default_vector = 0
-            if incumbent_value is None:
-                inc_vector = None
-            else:
-                inc_idx = np.where(
-                    np.array(list(hp.choices)) == incumbent_value
-                )[0][0]
-                inc_vector = inc_idx / (len(hp.choices) - 1)
-        else:
-            default_vector = hp.to_vector(hp.default_value)
-
-            if incumbent_value is None:
-                inc_vector = None
-            else:
-                inc_vector = hp.to_vector(incumbent_value)
+        default_vector, inc_vector = self._get_default_inc_vectors(
+            hp=hp,
+            incumbent_value=incumbent_value
+        )
 
         # We add vertical lines for the default and incumbent
         ax.axvline(
@@ -3551,6 +3586,8 @@ class Plotter:
             outputs: dict,
             hp_name_1: str,
             hp_name_2: str,
+            incumbent_value_1: str | int | float | None = None,
+            incumbent_value_2: str | int | float | None = None,
             objective_id: int = 0
         ) -> matplotlib.figure.Figure:
         """Plot a partial dependence plot for two hyperparameters.
@@ -3570,6 +3607,14 @@ class Plotter:
         hp_name_2 : str
             The second hyperparameter name.
 
+        incumbent_value_1 : str | int | float | None
+            The incumbent value for the first hyperparameter.
+            Defaults to None.
+        
+        incumbent_value_2 : str | int | float | None
+            The incumbent value for the second hyperparameter.
+            Defaults to None.
+
         objective_id : int
             The objective ID. Defaults to 0.
 
@@ -3588,6 +3633,15 @@ class Plotter:
         hp1 = deepcave_run.configspace[hp_name_1]
         hp2_idx = deepcave_run.configspace.index_of[hp_name_2]
         hp2 = deepcave_run.configspace[hp_name_2]
+
+        default_vector_1, inc_vector_1 = self._get_default_inc_vectors(
+            hp=hp1,
+            incumbent_value=incumbent_value_1
+        )
+        default_vector_2, inc_vector_2 = self._get_default_inc_vectors(
+            hp=hp2,
+            incumbent_value=incumbent_value_2
+        )
 
         fig, ax = plt.subplots(1, 1, figsize=(self.figwidth / 2, 3))
 
@@ -3614,11 +3668,40 @@ class Plotter:
         ax.set_xlabel(HYPERPARAMETER_REPLACEMENT_MAP[hp_name_1])
         ax.set_ylabel(HYPERPARAMETER_REPLACEMENT_MAP[hp_name_2])
 
-        self._format_axis(ax=ax)
+        # add markers for default and incumbent (if existing)
+        ax.scatter(
+            default_vector_1,
+            default_vector_2,
+            color=self.color_palette[2],
+            marker="x",
+            label="Default"
+        )
+        if inc_vector_1 is not None or inc_vector_2 is not None:
+            ax.scatter(
+                inc_vector_1 \
+                    if inc_vector_1 else default_vector_1,
+                inc_vector_2 \
+                    if inc_vector_2 else default_vector_2,
+                marker="x",
+                color=self.color_palette[3],
+                label="Incumbent"
+            )
+
+        # add legend
+        ax.legend(
+            loc="upper center",
+            bbox_to_anchor=(0.5, -0.2),
+            ncol=2,
+            fancybox=False,
+            shadow=False,
+            frameon=False
+        )
+
+        self._format_axis(ax=ax, border=True)
 
         fig.subplots_adjust(
             top=0.85,
-            bottom=0.15,
+            bottom=0.22,
             left=0.22,
             right=0.92,
         )
@@ -3682,6 +3765,7 @@ class Plotter:
             hp_name_2 = next(
                 k for k, v in HYPERPARAMETER_REPLACEMENT_MAP.items() if v == hp_name_2
             )
+            inc_2 = inc_config.get(hp_name_2, None)
 
         inputs = {
             "objective_id": objective_id,
@@ -3710,6 +3794,8 @@ class Plotter:
                 outputs=outputs,
                 hp_name_1=hp_name_1,
                 hp_name_2=hp_name_2,
+                incumbent_value_1=inc_1,
+                incumbent_value_2=inc_2,
                 objective_id=objective_id
             )
 
@@ -3719,13 +3805,21 @@ class Plotter:
         if hp_name_2 is None:
             title = f"pdp_{dataset}_objective_{objective_id}"
         else:
-            title = f"pdp_{dataset}_{hp_name_1}_{hp_name_2}_objective_{objective_id}"
+            title = f"pdp2d_{dataset}_{hp_name_1}_{hp_name_2}"
 
-        plt.savefig(
-            self.analysis_plots[approach_key] / f"{title}.{self.format}",
-            format=self.format,
-            dpi=self.dpi
-        )
+        if hp_name_2 is None:
+            plt.savefig(
+                self.analysis_plots[approach_key] / f"{title}.{self.format}",
+                format=self.format,
+                dpi=self.dpi
+            )
+        else:
+            # The contour plots aren't nice with pdf
+            plt.savefig(
+                self.analysis_plots[approach_key] / f"{title}.png",
+                format="png",
+                dpi=self.dpi
+            )
 
     def _plot_footprint(        # noqa: PLR0915
             self,
@@ -3924,7 +4018,7 @@ class Plotter:
             frameon=False
         )
 
-        self._format_axis(ax=ax)
+        self._format_axis(ax=ax, border=True)
 
         plt.xticks([])
         plt.yticks([])
