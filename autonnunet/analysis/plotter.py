@@ -3617,9 +3617,9 @@ class Plotter:
         self._format_axis(ax=ax)
 
         fig.subplots_adjust(
-            top=0.89,
+            top=0.85,
             bottom=0.15,
-            left=0.2,
+            left=0.22,
             right=0.92,
         )
 
@@ -3678,7 +3678,7 @@ class Plotter:
             )
             inc_1 = inc_config.get(hp_name_1, None)
 
-        if hp_name_2 and hp_name_2 in HYPERPARAMETER_REPLACEMENT_MAP:
+        if hp_name_2 and hp_name_2 not in HYPERPARAMETER_REPLACEMENT_MAP:
             hp_name_2 = next(
                 k for k, v in HYPERPARAMETER_REPLACEMENT_MAP.items() if v == hp_name_2
             )
