@@ -18,7 +18,6 @@ import nibabel as nib
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from ConfigSpace.hyperparameters.hyperparameter import Hyperparameter
 from ConfigSpace import CategoricalHyperparameter
 from deepcave.constants import COMBINED_BUDGET
 from deepcave.evaluators.ablation import Ablation
@@ -55,6 +54,7 @@ from autonnunet.utils.paths import (
 )
 
 if TYPE_CHECKING:
+    from ConfigSpace.hyperparameters.hyperparameter import Hyperparameter
     from deepcave.runs.converters.deepcave import DeepCAVERun
 
 APPROACHES = [
@@ -2700,6 +2700,7 @@ class Plotter:
             k: v for k, v in HYPERPARAMETER_REPLACEMENT_MAP.items() \
                 if k in HPO_HYPERPARAMETERS
         }
+        hp_order = sorted(hyperparameters.values(), key=lambda x: x.lower())
 
         for ax, dataset in zip(axes, self.datasets, strict=False):
             deepcave_run = self.get_hpo_data(dataset).deepcave_runs[dataset]
@@ -2722,8 +2723,8 @@ class Plotter:
                 importance = importances[hp_key]
                 importances_data += [{
                     "Hyperparameter": hp_name,
-                    "Importance": importance[0],
-                    "Error": importance[1],
+                    "Importance": importance[0] * 100,
+                    "Error": importance[1] * 100,
                 }]
             importances_df = pd.DataFrame(importances_data)
 
@@ -2735,13 +2736,12 @@ class Plotter:
 
                 pdps += [(dataset, most_important_hp)]
 
-            hp_order = sorted(hyperparameters.values(), key=lambda x: x.lower())
-
             g = sns.barplot(
                 data=importances_df,
                 x="Importance",
                 y="Hyperparameter",
                 hue="Hyperparameter",
+                order=hp_order,
                 hue_order=hp_order,
                 ax=ax,
                 errorbar=None,
@@ -2767,6 +2767,7 @@ class Plotter:
             ax.tick_params(axis="y", which="both", left=False)
 
             self._format_axis(ax=g, grid=True)
+            g.set_xlabel("Importance [%]")
 
             if ax == axes[0] or ax == axes[5]:
                 g.set_ylabel("Hyperparameter")
@@ -2841,6 +2842,7 @@ class Plotter:
             Defaults to False.
         """
         pdps = []
+        pdps_2d = []
 
         try:
             if approach_key == "hpo_nas":
@@ -2916,13 +2918,27 @@ class Plotter:
 
                         pdps += [(1 - weight, most_important_hp)]
 
+                    # We also get the two most important hyperparameters for runtime
+                    _importances = importances[importances["weight"] == 0]
+                    _importances = _importances.sort_values(
+                        by="importance",
+                        ascending=False
+                    )
+                    most_important_hp1 = _importances["hp_name"].iloc[0]
+                    most_important_hp2 = _importances["hp_name"].iloc[1]
+                    assert isinstance(most_important_hp1, str)
+                    assert isinstance(most_important_hp2, str)
+
+                    pdps_2d += [(0, most_important_hp1, most_important_hp2)]
+                    pdps_2d += [(1, most_important_hp1, most_important_hp2)]
+
             hp_names = sorted(hp_names, key=lambda x: x.lower())
             for j, hp in enumerate(hp_names):
                 hp_data = importances[importances["hp_name"] == hp]
                 hp_data = hp_data.sort_values(by="weight")
                 x = hp_data["weight"]
-                y = hp_data["importance"]
-                variance = hp_data["variance"]
+                y = hp_data["importance"] * 100
+                variance = hp_data["variance"] * 100
 
                 color = self.color_palette[j % len(self.color_palette)]
                 linestyle = "--" if j >= len(self.color_palette) else "-"
@@ -2957,7 +2973,7 @@ class Plotter:
                 frameon=False
             )
             ax.set_xlabel(f"Weight of {O_DSC}")
-            ax.set_ylabel("Importance")
+            ax.set_ylabel("Importance [%]")
 
             self._format_axis(ax=ax, grid=True)
 
@@ -3010,6 +3026,16 @@ class Plotter:
                     dataset=dataset,
                     approach_key=approach_key,
                     hp_name_1=hp,
+                    objective_id=objective_id
+                )
+
+        if len(pdps_2d) > 0:
+            for objective_id, hp1, hp2 in pdps_2d:
+                self.plot_pdp(
+                    dataset=dataset,
+                    approach_key=approach_key,
+                    hp_name_1=hp1,
+                    hp_name_2=hp2,
                     objective_id=objective_id
                 )
 
@@ -3395,7 +3421,7 @@ class Plotter:
             incumbent_value: str | int | float | None
         ) -> tuple[float, float | None]:
         """Get the default and incumbent vectors for a given hyperparameter.
-        
+
         Parameters
         ----------
         hp : Hyperparameter
@@ -3610,7 +3636,7 @@ class Plotter:
         incumbent_value_1 : str | int | float | None
             The incumbent value for the first hyperparameter.
             Defaults to None.
-        
+
         incumbent_value_2 : str | int | float | None
             The incumbent value for the second hyperparameter.
             Defaults to None.
@@ -3654,13 +3680,21 @@ class Plotter:
             y,
             levels=15,
             cmap="plasma",
-            alpha=1
+            alpha=1,
         )
         cbar = plt.colorbar(contour)
         cbar.set_label(self.objectives[objective_id])
 
         xtickvals, xticktext = get_hyperparameter_ticks(hp1)
         ytickvals, yticktext = get_hyperparameter_ticks(hp2)
+
+        xticktext = [
+            HYPERPARAMETER_VALUE_REPLACE_MAP.get(t, t) for t in xticktext
+        ]
+        yticktext = [
+            HYPERPARAMETER_VALUE_REPLACE_MAP.get(t, t) for t in yticktext
+        ]
+
         ax.set_xticks(xtickvals[:-1])
         ax.set_xticklabels(xticktext[:-1])
         ax.set_yticks(ytickvals[:-1])
@@ -3699,16 +3733,22 @@ class Plotter:
 
         self._format_axis(ax=ax, border=True)
 
+        # For categorical hyperparameters, we remove the minor ticks
+        if isinstance(hp1, CategoricalHyperparameter):
+            ax.xaxis.set_minor_locator(plt.NullLocator())   # type: ignore
+        if isinstance(hp2, CategoricalHyperparameter):
+            ax.yaxis.set_minor_locator(plt.NullLocator())   # type: ignore
+
         fig.subplots_adjust(
             top=0.85,
             bottom=0.22,
             left=0.22,
-            right=0.92,
+            right=0.9,
         )
 
         return fig
 
-    def plot_pdp(
+    def plot_pdp(           # noqa: PLR0912
             self,
             dataset: str,
             approach_key: str,
@@ -3805,7 +3845,7 @@ class Plotter:
         if hp_name_2 is None:
             title = f"pdp_{dataset}_objective_{objective_id}"
         else:
-            title = f"pdp2d_{dataset}_{hp_name_1}_{hp_name_2}"
+            title = f"pdp2d_{dataset}_{hp_name_1}_{hp_name_2}_objective_{objective_id}"
 
         if hp_name_2 is None:
             plt.savefig(
@@ -4684,9 +4724,14 @@ class Plotter:
                 })
 
         correlations = pd.DataFrame(correlations)
+        correlations = correlations.sort_values(
+            by="Correlation",
+            ascending=False
+        )
         correlations.to_latex(
             AUTONNUNET_TABLES / f"top_{include}_correlations.tex",
-            float_format="%.2f"
+            float_format="%.2f",
+            index=False
         )
 
         if plot_relationships:
