@@ -37,9 +37,8 @@ from deepcave.plugins.hyperparameter.pdp import PartialDependencies
 from deepcave.utils.styled_plotty import get_hyperparameter_ticks
 from matplotlib.lines import Line2D
 from matplotlib.ticker import FuncFormatter, LogLocator
-from scipy.spatial.distance import pdist, squareform
 from sklearn.manifold import MDS
-from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler
 from tqdm import tqdm
 
 from autonnunet.analysis.dataset_features import extract_dataset_features
@@ -6188,14 +6187,6 @@ class Plotter:
                 values=values
             )
 
-        def get_distance(x: Configuration, y: Configuration) -> float:
-            d = np.abs(
-                x.get_array() - y.get_array()
-            )
-            d[np.isnan(d)] = 1
-            d[np.logical_and(is_categorical, d != 0)] = 1
-            return float(np.sum(d / depth))
-
         def get_depth(cs: ConfigurationSpace, hp: Hyperparameter) -> int:
             parents = cs.parents_of[hp.name]
             if not parents:
@@ -6215,7 +6206,6 @@ class Plotter:
                         return d
 
             return d
-
         approach_key = "hpo_nas"
 
         configs = []
@@ -6255,6 +6245,14 @@ class Plotter:
             isinstance(cs[hp_name], CategoricalHyperparameter) \
                 for hp_name in incumbents.columns
         ])
+
+        def get_distance(x: Configuration, y: Configuration) -> float:
+            d = np.abs(
+                x.get_array() - y.get_array()
+            )
+            d[np.isnan(d)] = 1
+            d[np.logical_and(is_categorical, d != 0)] = 1
+            return float(np.sum(d / depth))
 
         depth = np.array([
             get_depth(cs, cs[hp_name]) for hp_name in incumbents.columns
@@ -6340,28 +6338,44 @@ class Plotter:
         features = features.drop(
             columns=["Class Label", "nnU-Net Val. DSC"]
         )
-        categorical_cols = features.select_dtypes(include=["object"]).columns
 
-        label_encoders = {}
+        numerical_cols = features.select_dtypes(exclude=["object"]).columns
+        categorical_cols = [
+            col for col in features.select_dtypes(include=["object"]).columns \
+                if col != "Dataset"
+        ]
+
         for col in categorical_cols:
-            if col == "Dataset":
-                continue
-            le = LabelEncoder()
-            features[col] = le.fit_transform(features[col])
-            label_encoders[col] = le
+            features[col] = features[col].astype("category").cat.codes
 
         features = features.groupby("Dataset").mean().reset_index()
         datasets = features["Dataset"]
         features = features.drop(columns=["Dataset"])
 
-        numerical_cols = features.select_dtypes(exclude=["object"]).columns
+        is_categorical = np.array([
+            col in categorical_cols for col in features.columns
+        ], dtype=bool)
+
+        def get_distance(x: pd.Series, y: pd.Series) -> float:
+            d = np.abs(x - y)
+            d[np.isnan(d)] = 1
+            d[np.logical_and(is_categorical, d != 0)] = 1
+            return float(np.sum(d))
+
         scaler = MinMaxScaler()
         features[numerical_cols] = scaler.fit_transform(features[numerical_cols])
 
-        distance_matrix = squareform(pdist(features, metric="euclidean"))
+        n_datasets = len(datasets)
+        distances = np.zeros((n_datasets, n_datasets))
+        for i in range(n_datasets):
+            for j in range(i + 1, n_datasets):
+                d = get_distance(features.iloc[i], features.iloc[j])
+
+                distances[i, j] = d
+                distances[j, i] = d
 
         mds = MDS(n_components=2, dissimilarity="precomputed", random_state=42)
-        mds_result = mds.fit_transform(distance_matrix)
+        mds_result = mds.fit_transform(distances)
 
         mds_df = pd.DataFrame(mds_result, columns=["MDS1", "MDS2"])
         mds_df["Dataset"] = [format_dataset_name(dataset) for dataset in datasets]
