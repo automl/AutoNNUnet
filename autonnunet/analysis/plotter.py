@@ -18,7 +18,12 @@ import nibabel as nib
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from ConfigSpace import CategoricalHyperparameter
+import yaml
+from ConfigSpace import (
+    CategoricalHyperparameter,
+    UniformFloatHyperparameter,
+    UniformIntegerHyperparameter,
+)
 from deepcave.constants import COMBINED_BUDGET
 from deepcave.evaluators.ablation import Ablation
 from deepcave.evaluators.footprint import Footprint
@@ -31,6 +36,9 @@ from deepcave.plugins.hyperparameter.pdp import PartialDependencies
 from deepcave.utils.styled_plotty import get_hyperparameter_ticks
 from matplotlib.lines import Line2D
 from matplotlib.ticker import FuncFormatter, LogLocator
+from scipy.spatial.distance import pdist, squareform
+from sklearn.manifold import MDS
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 from tqdm import tqdm
 
 from autonnunet.analysis.dataset_features import extract_dataset_features
@@ -46,6 +54,7 @@ from autonnunet.utils import (
 )
 from autonnunet.utils.helpers import msd_task_to_dataset_name
 from autonnunet.utils.paths import (
+    AUTONNUNET_CONFIGS,
     AUTONNUNET_MSD_RESULTS,
     AUTONNUNET_OUTPUT,
     AUTONNUNET_PLOTS,
@@ -6162,3 +6171,204 @@ class Plotter:
             )
             plt.clf()
             plt.close()
+
+    def plot_incumbents_2d(
+            self,
+    ) -> None:
+        """Creates a 2D representation of the incumbents for all datasets."""
+        approach_key = "hpo_nas"
+
+        configs = []
+        for dataset in self.datasets:
+            # No incumbent for Dataset008_HepaticVessel
+            if dataset ==  self.datasets[7]:
+                continue
+
+            config_path = AUTONNUNET_CONFIGS / "incumbent" /\
+                f"{dataset}_{approach_key}.yaml"
+
+            # Open yaml file as dict
+            with open(config_path) as file:
+                data = yaml.safe_load(file)
+                hp_config = data["hp_config"]
+
+            configs.append(hp_config)
+
+        incumbents = pd.DataFrame(configs)
+
+        categorical_cols = incumbents.select_dtypes(include=["object"]).columns
+        numerical_cols = incumbents.select_dtypes(exclude=["object"]).columns
+
+        label_encoders = {}
+        for col in categorical_cols:
+            le = LabelEncoder()
+            incumbents[col] = le.fit_transform(incumbents[col])
+            label_encoders[col] = le
+
+        deepcave_run = self.get_nas_data(
+            dataset=self.datasets[0]
+        ).deepcave_runs[self.datasets[0]]
+
+        def min_max_scale(_value, _min_val, _max_val):
+            return (_value - _min_val) / (_max_val - _min_val)
+
+        cs = deepcave_run.configspace
+        for col in numerical_cols:
+            if col != "num_epochs":
+                hp = cs[col]
+                assert isinstance(hp, UniformFloatHyperparameter \
+                                  | UniformIntegerHyperparameter)
+                min_val, max_val = hp.lower, hp.upper
+            else:
+                min_val, max_val = 1, 1000
+
+            incumbents[col] = incumbents[col].apply(
+                lambda x: min_max_scale(x, min_val, max_val)    # noqa: B023
+            )
+
+        distance_matrix = squareform(pdist(incumbents, metric="euclidean"))
+
+        mds = MDS(n_components=2, dissimilarity="precomputed", random_state=42)
+        mds_result = mds.fit_transform(distance_matrix)
+
+        mds_df = pd.DataFrame(mds_result, columns=["MDS1", "MDS2"])
+        datasets = self.datasets[:7] + self.datasets[8:]
+        mds_df["Dataset"] = [format_dataset_name(dataset) for dataset in datasets]
+
+        fig, ax = plt.subplots(1, 1, figsize=(self.figwidth / 2, self.figwidth / 2))
+
+        sns.scatterplot(
+            data=mds_df,
+            x="MDS1",
+            y="MDS2",
+            hue="Dataset",
+            ax=ax,
+            palette=self.color_palette[:9],
+        )
+
+        self._format_axis(ax=ax, grid=False, border=True)
+
+        ax.set_yticks([])
+        ax.set_xticks([])
+        ax.set_yticklabels([])
+        ax.set_xticklabels([])
+        ax.set_xlabel("")
+        ax.set_ylabel("")
+
+        plt.title("2D Representation of\nHPO + NAS Incumbent Configurations")
+
+        fig.subplots_adjust(
+            top=0.89,
+            bottom=0.43,
+            left=0.17,
+            right=0.87,
+        )
+
+        ax.legend(
+            loc="upper center",
+            bbox_to_anchor=(0.5, -0.2),
+            ncol=2,
+            title="Dataset",
+            fancybox=False,
+            shadow=False,
+            frameon=False
+        )
+
+        output_dir = self.dataset_analysis_plots
+        output_dir.mkdir(parents=True, exist_ok=True)
+        plt.savefig(
+            output_dir / f"2D_incumbents_hpo_nas.{self.format}",
+            dpi=self.dpi,
+            format=self.format
+        )
+        plt.clf()
+        plt.close()
+
+    def plot_datasets_2d(
+            self,
+    ) -> None:
+        """Creates a 2D representation of all datasets
+        based on their features.
+        """
+        features = self._get_joint_dataset_features()
+        features = self._filter_joint_dataset_features(
+            features=features,
+            include="none"
+        )
+        features = features.drop(
+            columns=["Class Label"]
+        )
+        categorical_cols = features.select_dtypes(include=["object"]).columns
+
+        label_encoders = {}
+        for col in categorical_cols:
+            if col == "Dataset":
+                continue
+            le = LabelEncoder()
+            features[col] = le.fit_transform(features[col])
+            label_encoders[col] = le
+
+        features = features.groupby("Dataset").mean().reset_index()
+        datasets = features["Dataset"]
+        features = features.drop(columns=["Dataset"])
+
+        numerical_cols = features.select_dtypes(exclude=["object"]).columns
+        scaler = MinMaxScaler()
+        features[numerical_cols] = scaler.fit_transform(features[numerical_cols])
+
+        distance_matrix = squareform(pdist(features, metric="euclidean"))
+
+        mds = MDS(n_components=2, dissimilarity="precomputed", random_state=42)
+        mds_result = mds.fit_transform(distance_matrix)
+
+        mds_df = pd.DataFrame(mds_result, columns=["MDS1", "MDS2"])
+        mds_df["Dataset"] = [format_dataset_name(dataset) for dataset in datasets]
+
+        fig, ax = plt.subplots(1, 1, figsize=(self.figwidth / 2, self.figwidth / 2))
+
+        sns.scatterplot(
+            data=mds_df,
+            x="MDS1",
+            y="MDS2",
+            hue="Dataset",
+            ax=ax,
+            palette=self.color_palette,
+        )
+
+        self._format_axis(ax=ax, grid=False, border=True)
+
+        ax.set_yticks([])
+        ax.set_xticks([])
+        ax.set_yticklabels([])
+        ax.set_xticklabels([])
+        ax.set_xlabel("")
+        ax.set_ylabel("")
+
+        plt.title("2D Representation of\nMSD Datasets")
+
+        fig.subplots_adjust(
+            top=0.89,
+            bottom=0.43,
+            left=0.17,
+            right=0.87,
+        )
+
+        ax.legend(
+            loc="upper center",
+            bbox_to_anchor=(0.5, -0.2),
+            ncol=2,
+            title="Dataset",
+            fancybox=False,
+            shadow=False,
+            frameon=False
+        )
+
+        output_dir = self.dataset_analysis_plots
+        output_dir.mkdir(parents=True, exist_ok=True)
+        plt.savefig(
+            output_dir / f"2D_datasets.{self.format}",
+            dpi=self.dpi,
+            format=self.format
+        )
+        plt.clf()
+        plt.close()
