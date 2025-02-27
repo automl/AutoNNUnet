@@ -21,7 +21,8 @@ import seaborn as sns
 import yaml
 from ConfigSpace import (
     CategoricalHyperparameter,
-    UniformFloatHyperparameter,
+    Configuration,
+    ConfigurationSpace,
     UniformIntegerHyperparameter,
 )
 from deepcave.constants import COMBINED_BUDGET
@@ -6172,10 +6173,49 @@ class Plotter:
             plt.clf()
             plt.close()
 
-    def plot_incumbents_2d(
+    def plot_incumbents_2d(     # noqa: C901, PLR0915
             self,
     ) -> None:
         """Creates a 2D representation of the incumbents for all datasets."""
+        # Helpers and structure adotped from
+        # https://github.com/automl/DeepCAVE/blob/e122de06f450a2a1d279527eec7ba5b1d227aac9/deepcave/evaluators/footprint.py#L371
+        def row_to_config(row: pd.Series) -> Configuration:
+            values = row.to_dict()
+            if values["optimizer"] != "SGD":
+                values.pop("momentum")
+            return Configuration(
+                configuration_space=cs,
+                values=values
+            )
+
+        def get_distance(x: Configuration, y: Configuration) -> float:
+            d = np.abs(
+                x.get_array() - y.get_array()
+            )
+            d[np.isnan(d)] = 1
+            d[np.logical_and(is_categorical, d != 0)] = 1
+            return float(np.sum(d / depth))
+
+        def get_depth(cs: ConfigurationSpace, hp: Hyperparameter) -> int:
+            parents = cs.parents_of[hp.name]
+            if not parents:
+                return 1
+
+            new_parents = parents
+            d = 1
+            while new_parents:
+                d += 1
+                old_parents = new_parents
+                new_parents = []
+                for p in old_parents:
+                    pp = cs.parents_of[p.name]
+                    if pp:
+                        new_parents.extend(pp)
+                    else:
+                        return d
+
+            return d
+
         approach_key = "hpo_nas"
 
         configs = []
@@ -6195,41 +6235,43 @@ class Plotter:
             configs.append(hp_config)
 
         incumbents = pd.DataFrame(configs)
-
-        categorical_cols = incumbents.select_dtypes(include=["object"]).columns
-        numerical_cols = incumbents.select_dtypes(exclude=["object"]).columns
-
-        label_encoders = {}
-        for col in categorical_cols:
-            le = LabelEncoder()
-            incumbents[col] = le.fit_transform(incumbents[col])
-            label_encoders[col] = le
+        n_configs = len(incumbents)
 
         deepcave_run = self.get_nas_data(
             dataset=self.datasets[0]
         ).deepcave_runs[self.datasets[0]]
 
-        def min_max_scale(_value, _min_val, _max_val):
-            return (_value - _min_val) / (_max_val - _min_val)
-
         cs = deepcave_run.configspace
-        for col in numerical_cols:
-            if col != "num_epochs":
-                hp = cs[col]
-                assert isinstance(hp, UniformFloatHyperparameter \
-                                  | UniformIntegerHyperparameter)
-                min_val, max_val = hp.lower, hp.upper
-            else:
-                min_val, max_val = 1, 1000
-
-            incumbents[col] = incumbents[col].apply(
-                lambda x: min_max_scale(x, min_val, max_val)    # noqa: B023
+        cs.add(
+            UniformIntegerHyperparameter(
+                name="num_epochs",
+                lower=1,
+                upper=1000,
+                log=False
             )
+        )
 
-        distance_matrix = squareform(pdist(incumbents, metric="euclidean"))
+        is_categorical = np.array([
+            isinstance(cs[hp_name], CategoricalHyperparameter) \
+                for hp_name in incumbents.columns
+        ])
+
+        depth = np.array([
+            get_depth(cs, cs[hp_name]) for hp_name in incumbents.columns
+        ])
+
+        distances = np.zeros((n_configs, n_configs))
+        for i in range(n_configs):
+            for j in range(i + 1, n_configs):
+                c1 = row_to_config(incumbents.iloc[i])
+                c2 = row_to_config(incumbents.iloc[j])
+                d = get_distance(c1, c2)
+
+                distances[i, j] = d
+                distances[j, i] = d
 
         mds = MDS(n_components=2, dissimilarity="precomputed", random_state=42)
-        mds_result = mds.fit_transform(distance_matrix)
+        mds_result = mds.fit_transform(distances)
 
         mds_df = pd.DataFrame(mds_result, columns=["MDS1", "MDS2"])
         datasets = self.datasets[:7] + self.datasets[8:]
@@ -6243,7 +6285,7 @@ class Plotter:
             y="MDS2",
             hue="Dataset",
             ax=ax,
-            palette=self.color_palette[:9],
+            palette=self.color_palette[:7] + self.color_palette[8:],
         )
 
         self._format_axis(ax=ax, grid=False, border=True)
@@ -6296,7 +6338,7 @@ class Plotter:
             include="none"
         )
         features = features.drop(
-            columns=["Class Label"]
+            columns=["Class Label", "nnU-Net Val. DSC"]
         )
         categorical_cols = features.select_dtypes(include=["object"]).columns
 
