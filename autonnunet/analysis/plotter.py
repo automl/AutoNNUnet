@@ -4757,16 +4757,19 @@ class Plotter:
             hp_name: str,
             include: Literal["incumbents", "importances"],
     ) -> None:
-        """Plot the relationship between two dataset features, e.g. DSC and Class
-        Volume Ratio.
+        """Plot the relationship between a hyperparameter and
+        a dataset feature.
 
         Parameters
         ----------
-        feature_x : str
-            The feature on the x-axis.
+        dataset_feature : str
+            The dataset feature to plot.
 
-        feature_y : str
-            The feature on the y-axis.
+        hp_name : str
+            The hyperparameter name.
+
+        include : Literal["incumbents", "importances"]
+            The kind of hyperparameter values to include.
         """
         joint_data = self._get_joint_dataset_features()
         joint_data = self._filter_joint_dataset_features(
@@ -4829,6 +4832,116 @@ class Plotter:
         plt.savefig(
             output_dir /\
                 f"{dataset_feature}_{hp_name}_{include}.{self.format}",
+            dpi=self.dpi,
+            format=self.format
+        )
+        plt.clf()
+        plt.close()
+
+    def plot_joint_dataset_features_combined(
+            self,
+            dataset_feature_1: str,
+            dataset_feature_2: str,
+            hp_name: str,
+            include: Literal["incumbents", "importances"],
+    ) -> None:
+        """Plot the relationship between a hyperparameter
+        and two dataset features.
+
+        Parameters
+        ----------
+        dataset_feature_1 : str
+            The first dataset feature to plot.
+
+        dataset_feature_2 : str
+            The second dataset feature to plot.
+
+        hp_name : str
+            The hyperparameter name.
+
+        include : Literal["incumbents", "importances"]
+            The kind of hyperparameter values to include.
+        """
+        joint_data = self._get_joint_dataset_features()
+        joint_data = self._filter_joint_dataset_features(
+            features=joint_data,
+            include=include
+        )
+        joint_data = joint_data[[
+            dataset_feature_1,
+            dataset_feature_2,
+            hp_name,
+            "Dataset"
+        ]]
+        joint_data = joint_data.groupby("Dataset").mean().reset_index()
+        joint_data["Dataset"] = joint_data["Dataset"].apply(
+            lambda d: format_dataset_name(d)
+        )
+
+        fig, axs = plt.subplots(
+            1, 2,
+            figsize=(self.figwidth, self.figwidth / 2),
+            sharey=True
+        )
+
+        for i, ax in enumerate(axs):
+            dataset_feature = dataset_feature_1 if i == 0 else dataset_feature_2
+
+            sns.scatterplot(
+                x=dataset_feature,
+                y=hp_name,
+                data=joint_data,
+                hue="Dataset",
+                ax=ax,
+                palette=self.color_palette,
+            )
+
+            if include == "incumbents" and hp_name in [
+                "Initial LR",
+                "Momentum (SGD)",
+                "Weight Decay"
+            ]:
+                ax.set_yscale("log")
+            else:
+                pass
+
+            if include == "importances":
+                ax.set_ylabel(f"Importance of {hp_name}")
+
+            self._format_axis(ax=ax, grid=True)
+            ax.legend().remove()
+
+        if include == "incumbents":
+            title = f"Relationship between Incumbent {hp_name} and\n{dataset_feature_1} and {dataset_feature_2}"
+        else:
+            title = f"Relationship between Importance of {hp_name} and\n{dataset_feature_1} and {dataset_feature_2}"
+
+        fig.suptitle(title)
+
+        fig.subplots_adjust(
+            top=0.87,
+            bottom=0.43,
+            left=0.1,
+            right=0.95,
+        )
+        handles, labels = axs[0].get_legend_handles_labels()
+        fig.legend(
+            handles=handles,
+            labels=labels,
+            loc="upper center",
+            bbox_to_anchor=(0.5, 0.33),
+            ncol=2,
+            title="Dataset",
+            fancybox=False,
+            shadow=False,
+            frameon=False
+        )
+
+        output_dir = self.dataset_analysis_plots / include
+        output_dir.mkdir(parents=True, exist_ok=True)
+        plt.savefig(
+            output_dir /\
+                f"{dataset_feature_1}_{dataset_feature_2}_{hp_name}_{include}.{self.format}",
             dpi=self.dpi,
             format=self.format
         )
@@ -6208,10 +6321,29 @@ class Plotter:
             return d
         approach_key = "hpo_nas"
 
+        deepcave_run = self.get_nas_data(
+            dataset=self.datasets[0]
+        ).deepcave_runs[self.datasets[0]]
+
+        cs = deepcave_run.configspace
+        cs.add(
+            UniformIntegerHyperparameter(
+                name="num_epochs",
+                lower=1,
+                upper=1000,
+                log=False,
+                default_value=1000,
+            )
+        )
+
         configs = []
         for dataset in self.datasets:
-            # No incumbent for Dataset008_HepaticVessel
-            if dataset ==  self.datasets[7]:
+            # No incumbent for Dataset008_HepaticVessel,
+            # so we use the default configuration
+            if dataset == self.datasets[7]:
+                configs.append(
+                    dict(cs.get_default_configuration())
+                )
                 continue
 
             config_path = AUTONNUNET_CONFIGS / "incumbent" /\
@@ -6226,20 +6358,6 @@ class Plotter:
 
         incumbents = pd.DataFrame(configs)
         n_configs = len(incumbents)
-
-        deepcave_run = self.get_nas_data(
-            dataset=self.datasets[0]
-        ).deepcave_runs[self.datasets[0]]
-
-        cs = deepcave_run.configspace
-        cs.add(
-            UniformIntegerHyperparameter(
-                name="num_epochs",
-                lower=1,
-                upper=1000,
-                log=False
-            )
-        )
 
         is_categorical = np.array([
             isinstance(cs[hp_name], CategoricalHyperparameter) \
@@ -6272,8 +6390,9 @@ class Plotter:
         mds_result = mds.fit_transform(distances)
 
         mds_df = pd.DataFrame(mds_result, columns=["MDS1", "MDS2"])
-        datasets = self.datasets[:7] + self.datasets[8:]
-        mds_df["Dataset"] = [format_dataset_name(dataset) for dataset in datasets]
+        datasets = [format_dataset_name(dataset) for dataset in self.datasets]
+        datasets = datasets[:7] + ["Default"] + datasets[8:]
+        mds_df["Dataset"] = datasets
 
         fig, ax = plt.subplots(1, 1, figsize=(self.figwidth / 2, self.figwidth / 2))
 
@@ -6283,7 +6402,7 @@ class Plotter:
             y="MDS2",
             hue="Dataset",
             ax=ax,
-            palette=self.color_palette[:7] + self.color_palette[8:],
+            palette=self.color_palette,
         )
 
         self._format_axis(ax=ax, grid=False, border=True)
@@ -6308,7 +6427,7 @@ class Plotter:
             loc="upper center",
             bbox_to_anchor=(0.5, -0.2),
             ncol=2,
-            title="Dataset",
+            title="Incumbent Configuration",
             fancybox=False,
             shadow=False,
             frameon=False
