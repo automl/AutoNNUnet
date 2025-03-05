@@ -4912,9 +4912,9 @@ class Plotter:
             ax.legend().remove()
 
         if include == "incumbents":
-            title = f"Relationship between Incumbent {hp_name} and\n{dataset_feature_1} and {dataset_feature_2}"
+            title = "Relationship between Incumbent Hyperparameter\nValues and Dataset Features"
         else:
-            title = f"Relationship between Importance of {hp_name} and\n{dataset_feature_1} and {dataset_feature_2}"
+            title = "Relationship between Hyperparameter\nImportance and Dataset Features"
 
         fig.suptitle(title)
 
