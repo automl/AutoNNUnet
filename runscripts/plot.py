@@ -6,15 +6,14 @@ if __name__  == "__main__":
     plotter = Plotter(
         file_format="pdf",
     )
-    plotter.plot_cross_eval_matrix() 
-    exit()
 
     # --------------------------------------------------------------------------------------------
     # Tables
     # --------------------------------------------------------------------------------------------
     plotter.load_all_data()
     plotter.create_runtime_table()
-    plotter.create_dsc_table()
+    plotter.create_val_dsc_table()
+    plotter.create_test_dsc_table()
     plotter.create_dataset_dsc_tables()
 
     # --------------------------------------------------------------------------------------------
@@ -66,6 +65,18 @@ if __name__  == "__main__":
         plot_relationships=True,
         corr_threshold=0.7
     )
+    plotter.plot_joint_dataset_features_combined(
+        dataset_feature_1="Volume",
+        dataset_feature_2="Class Volume Ratio",
+        hp_name="Weight Decay",
+        include="incumbents"
+    )
+    plotter.plot_joint_dataset_features_combined(
+        dataset_feature_1="Intensity Min.",
+        dataset_feature_2="Volume",
+        hp_name="Initial LR",
+        include="importances"
+    )
 
     # --------------------------------------------------------------------------------------------
     # Qualitative Analysis
@@ -87,6 +98,19 @@ if __name__  == "__main__":
     plotter.plot_hpis(approach_keys=["hpo"], plot_pdps=True)
     plotter.plot_ablation_paths(approach_keys=["hpo"])
     plotter.compute_all_hp_interaction_tables(approach_key="hpo")
+
+    plotter.plot_pdp(
+        dataset="Dataset001_BrainTumour",
+        approach_key="hpo",
+        hp_name_1="Initial LR",
+        hp_name_2="Momentum (SGD)",
+    )
+    plotter.plot_pdp(
+        dataset="Dataset003_Liver",
+        approach_key="hpo",
+        hp_name_1="Initial LR",
+        hp_name_2="Foreground Oversamp.",
+    )
 
     # --------------------------------------------------------------------------------------------
     # HPO + NAS

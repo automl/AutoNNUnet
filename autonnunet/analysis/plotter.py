@@ -505,6 +505,16 @@ class Plotter:
         self.hnas_dir = AUTONNUNET_OUTPUT / "hpo_hnas"
         self.cross_eval_dir = AUTONNUNET_OUTPUT / "cross_eval"
 
+        self.results_directiories = {
+            "baseline_ConvolutionalEncoder": self.baseline_conv,
+            "baseline_ResidualEncoderM": self.baseline_resenc_m,
+            "baseline_ResidualEncoderL": self.baseline_resenc_l,
+            "baseline_medsam2": self.baseline_medsam2,
+            "hpo": self.hpo_dir,
+            "hpo_nas": self.nas_dir,
+            "hpo_hnas": self.hnas_dir,
+        }
+
         self.combined_plots = AUTONNUNET_PLOTS / "combined"
         self.combined_plots.mkdir(parents=True, exist_ok=True)
         self.nas_plots = AUTONNUNET_PLOTS / "hpo_nas"
@@ -5104,7 +5114,7 @@ class Plotter:
         for dataset in self.datasets:
             self._create_dataset_dsc_table(dataset)
 
-    def create_dsc_table(self):
+    def create_val_dsc_table(self):
         """Create the overall validation DSC table."""
         def format_approach(a: str) -> str:
             return a.replace(" (ours)", "").replace("nnU-Net (", "").replace(")", "")
@@ -5157,7 +5167,104 @@ class Plotter:
         pivot_table = pivot_table.apply(highlight_max, axis=1)
 
         pivot_table.to_latex(
-            AUTONNUNET_TABLES / "results_dsc.tex",
+            AUTONNUNET_TABLES / "results_val_dsc.tex",
+            float_format="%.2f",
+            caption="Performance Comparison",
+            label="tab:results"
+        )
+
+    def _read_msd_results(
+            self,
+            approach_key: str
+        ) -> pd.DataFrame:
+        """Read the MSD test set results for the given approaches.
+
+        Parameters
+        ----------
+        approach_key : str
+            The approach to read the results for.
+
+        Returns:
+        -------
+        pd.DataFrame
+            The resulting MSD results.
+        """
+        results = []
+
+        result_path = AUTONNUNET_MSD_RESULTS /\
+            f"{approach_key}_{self.configuration}.json"
+        
+        if not result_path.exists():
+            return pd.DataFrame([])
+
+        msd_results = load_json(result_path)
+
+        for task_id, task_results in msd_results.items():
+            dataset = msd_task_to_dataset_name(task_id)
+            
+            dataset_info_path = self.baseline_conv / dataset /\
+                self.configuration / "fold_0" / "dataset.json"
+            dataset_info = load_json(dataset_info_path)
+            labels = {v: k for k, v in dataset_info["labels"].items()}
+
+            for cls in task_results["aggregates"]:
+                if "DCS" not in cls:
+                    continue
+
+                results += [{
+                    "Dataset": dataset,
+                    "Class": labels[int(cls[-5])],
+                    "Approach": APPROACH_REPLACE_MAP[approach_key],
+                    **{
+                        k: v * 100 \
+                            for k, v in task_results["aggregates"][cls].items()
+                    }
+                }]
+
+        return pd.DataFrame(results)
+
+    def create_test_dsc_table(self):
+        """Create the overall test set DSC table."""
+        def format_approach(a: str) -> str:
+            return a.replace(" (ours)", "").replace("nnU-Net (", "").replace(")", "")
+
+        all_results = []
+        for approach_key, approach in APPROACH_REPLACE_MAP.items():
+            all_results += [self._read_msd_results(approach_key)]
+
+        all_results = pd.concat(all_results)
+        all_results["Approach"] = all_results["Approach"].apply(
+            lambda a: format_approach(a)
+        )
+        all_results["Dataset"] = all_results["Dataset"].apply(
+            lambda d: format_dataset_name(d)[:3]
+        )
+
+        pivot_table = all_results.pivot_table(
+            index="Dataset",
+            columns="Approach",
+            values="mean"
+        )
+        pivot_table = pivot_table[
+            [format_approach(a) for a in APPROACH_REPLACE_MAP.values() if a != "MedSAM2"]
+        ]
+
+        pivot_table.loc[ "\\textbf{Mean}", :] = pivot_table.mean(axis=0)
+
+        def highlight_max(row):
+            max_val = row.max()
+            return pd.Series(
+                [
+                    f"$\\mathbf{{{val:.2f}}}$" \
+                        if val == max_val else f"${val:.2f}$" for val in row
+                ],
+                index=row.index
+            )
+
+        pivot_table = pivot_table.apply(highlight_max, axis=1)
+
+        pivot_table.to_latex(
+            AUTONNUNET_TABLES / "results_test_set_dsc.tex",
             float_format="%.2f",
             caption="Performance Comparison",
             label="tab:results"
@@ -5229,64 +5336,6 @@ class Plotter:
             caption="Performance Comparison",
             label="tab:results"
         )
-
-    def _read_msd_results(
-            self,
-            approaches: list[str] | None = None
-        ) -> pd.DataFrame:
-        """Read the MSD test set results for the given approaches.
-
-        Parameters
-        ----------
-        approaches : list[str]
-            The approaches to read the results for. Defaults to None. In that case, all
-            approaches are used.
-
-        Returns:
-        -------
-        pd.DataFrame
-            The resulting MSD results.
-        """
-        if approaches is None:
-            approaches = APPROACHES
-
-        results = []
-
-        for approach in approaches:
-            result_path = AUTONNUNET_MSD_RESULTS /\
-                f"{approach}_{self.configuration}.json"
-            if not result_path.exists():
-                continue
-
-            msd_results = load_json(result_path)
-
-            for task_id, task_results in msd_results.items():
-                dataset = msd_task_to_dataset_name(task_id)
-
-                for cls in task_results["aggregates"]:
-                    results += [{
-                        "Dataset": dataset,
-                        "Class": cls,
-                        "Approach": APPROACH_REPLACE_MAP[approach],
-                        **task_results["aggregates"][cls]
-                    }]
-
-        return pd.DataFrame(results)
-
-    def compare_msd_results(self):
-        """Compare the MSD test set results for all approaches."""
-        approaches = ["baseline_ConvolutionalEncoder", "hpo", "hpo_nas"]
-        msd_results = self._read_msd_results(approaches)
-
-
-        msd_results_per_dataset = msd_results[["Approach", "Dataset", "mean"]].groupby(
-            ["Approach", "Dataset"]
-        ).mean().reset_index()
-        msd_results_per_dataset = msd_results_per_dataset.rename(
-            columns={"mean": "DSC"}
-        )
-
-        print(msd_results_per_dataset)
 
     def plot_msd_overview(self) -> None:    # noqa: PLR0915
         """Plot an overview of the MSD datasets."""
@@ -5664,6 +5713,7 @@ class Plotter:
                     f"fold_{fold}" / "validation" / img_name
 
             if approach == "MedSAM2":
+                dsc *= 100
                 paths = list(file_path.parent.glob(file_path.stem[:-6] + "*"))
 
                 pred_data = np.full_like(
