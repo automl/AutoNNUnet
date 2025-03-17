@@ -1875,6 +1875,8 @@ class Plotter:
 
         # Plot baselines
         mean_metrics = metrics.groupby("Approach").mean().reset_index()
+        std_metrics = metrics.groupby("Approach").std().reset_index()
+
         for i, approach in enumerate(
                 list(APPROACH_REPLACE_MAP.values())[:3]
             ):
@@ -1883,6 +1885,9 @@ class Plotter:
             ]["Runtime"].iloc[0]
             y = 100 - mean_metrics[
                 mean_metrics["Approach"] == approach
+            ]["Mean"].iloc[0]
+            std = std_metrics[
+                std_metrics["Approach"] == approach
             ]["Mean"].iloc[0]
             color = color_palette[i]
 
@@ -1895,6 +1900,15 @@ class Plotter:
                 errorbar=("sd") if show_error else None,
                 ax=ax
             )
+
+            if show_error:
+                ax.fill_between(
+                    [x, incumbent[x_metric].max()],
+                    y - std,
+                    y + std,
+                    color=color,
+                    alpha=0.2
+                )
 
             ax.scatter(
                 x,
@@ -1979,8 +1993,13 @@ class Plotter:
             right=0.94,
         )
 
+        if show_error:
+            filename = f"optimization_progress_{dataset}_error.{self.format}"
+        else:
+            filename = f"optimization_progress_{dataset}.{self.format}"
+
         plt.savefig(
-            self.combined_plots / f"performance_over_time_{dataset}.{self.format}",
+            self.combined_plots / filename,
             format=self.format,
             dpi=self.dpi
         )
@@ -2028,6 +2047,7 @@ class Plotter:
                     show_error=show_error,
                     x_metric=x_metric
                 )
+                exit()
             except ValueError:
                 self.logger.info(f"Unable to plot HPO for {dataset}.")
                 continue
@@ -2124,6 +2144,8 @@ class Plotter:
 
             # Plot baselines
             mean_metrics = metrics.groupby("Approach").mean().reset_index()
+            std_metrics = metrics.groupby("Approach").std().reset_index()
+
             for i, approach in enumerate(
                     list(APPROACH_REPLACE_MAP.values())[:3]
                 ):
@@ -2132,6 +2154,9 @@ class Plotter:
                 ]["Runtime"].iloc[0]
                 y = 100 - mean_metrics[
                     mean_metrics["Approach"] == approach
+                ]["Mean"].iloc[0]
+                std = std_metrics[
+                    std_metrics["Approach"] == approach
                 ]["Mean"].iloc[0]
                 color = color_palette[i]
 
@@ -2144,6 +2169,15 @@ class Plotter:
                     errorbar=("sd") if show_error else None,
                     ax=ax
                 )
+
+                if show_error:
+                    ax.fill_between(
+                        [x, incumbent[x_metric].max()],
+                        y - std,
+                        y + std,
+                        color=color,
+                        alpha=0.2
+                    )
 
             # Plot our approaches
             sns.lineplot(
@@ -2249,8 +2283,13 @@ class Plotter:
             frameon=False
         )
 
+        if show_error:
+            filename = f"performance_over_time_error.{self.format}"
+        else:
+            filename = f"performance_over_time.{self.format}"
+
         plt.savefig(
-            self.combined_plots / f"performance_over_time.{self.format}",
+            self.combined_plots / filename,
             format=self.format,
             dpi=self.dpi
         )
