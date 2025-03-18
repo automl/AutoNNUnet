@@ -3030,10 +3030,10 @@ class Plotter:
                 shadow=False,
                 frameon=False
             )
-            ax.set_xlabel(f"Weight of {O_DSC}")
+            ax.set_xlabel(f"Weight of ({O_DSC})")
             ax.set_ylabel("Importance [%]")
 
-            self._format_axis(ax=ax, grid=True)
+            self._format_axis(ax=ax, grid=False)
 
         axs[0].set_title("HPO Hyperparameters")
         axs[1].set_title(f"{nas_approach} Hyperparameters")
