@@ -24,7 +24,8 @@ if __name__  == "__main__":
     # --------------------------------------------------------------------------------------------
     # Overview / Comparison
     # --------------------------------------------------------------------------------------------
-    plotter.plot_optimization_combined()    # HPO + NAS + HNAS over time
+    plotter.plot_optimization_combined(show_error=False)    # HPO + NAS + HNAS over time
+    plotter.plot_optimization_combined(show_error=True)  
     plotter.plot_cross_eval_matrix()    
 
     # --------------------------------------------------------------------------------------------
@@ -91,7 +92,8 @@ if __name__  == "__main__":
     # --------------------------------------------------------------------------------------------
     # HPO
     # --------------------------------------------------------------------------------------------
-    plotter.plot_optimization()
+    plotter.plot_optimization(show_error=False)
+    plotter.plot_optimization(show_error=True)
 
     plotter.plot_footprints(approach_keys=["hpo"])
     plotter.plot_budget_correlations(approach_keys=["hpo"])

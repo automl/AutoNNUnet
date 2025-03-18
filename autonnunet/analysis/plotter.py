@@ -2047,7 +2047,6 @@ class Plotter:
                     show_error=show_error,
                     x_metric=x_metric
                 )
-                exit()
             except ValueError:
                 self.logger.info(f"Unable to plot HPO for {dataset}.")
                 continue
@@ -5279,32 +5278,41 @@ class Plotter:
             lambda d: format_dataset_name(d)[:3]
         )
 
-        pivot_table = all_results.pivot_table(
+        pivot_table_mean = all_results.pivot_table(
             index="Dataset",
             columns="Approach",
             values="mean"
         )
-        pivot_table = pivot_table[
-            [format_approach(a) for a in APPROACH_REPLACE_MAP.values() if a != "MedSAM2"]
-        ]
+        pivot_table_std = all_results.pivot_table(
+            index="Dataset",
+            columns="Approach",
+            values="std"
+        )
 
-        pivot_table.loc[ "\\textbf{Mean}", :] = pivot_table.mean(axis=0)
+        filtered_columns = [format_approach(a) for a in APPROACH_REPLACE_MAP.values() if a != "MedSAM2"]
+        pivot_table_mean = pivot_table_mean[filtered_columns]
+        pivot_table_std = pivot_table_std[filtered_columns]
 
-        def highlight_max(row):
-            max_val = row.max()
-            return pd.Series(
-                [
-                    f"$\\mathbf{{{val:.2f}}}$" \
-                        if val == max_val else f"${val:.2f}$" for val in row
-                ],
-                index=row.index
-            )
+        pivot_table_mean.loc["\\textbf{Mean}", :] = pivot_table_mean.mean(axis=0)
+        pivot_table_std.loc["\\textbf{Mean}", :] = pivot_table_std.mean(axis=0)
 
-        pivot_table = pivot_table.apply(highlight_max, axis=1)
+        def format_with_std(row_mean, row_std):
+            max_val = row_mean.max()  
+            formatted_row = [
+                f"$\\mathbf{{{mean:.2f} \\pm {std:.2f}}}$" if mean == max_val else f"${mean:.2f} \\pm {std:.2f}$"
+                for mean, std in zip(row_mean, row_std)
+            ]
+            return pd.Series(formatted_row, index=row_mean.index)
 
-        pivot_table.to_latex(
+        formatted_results = pivot_table_mean.copy()
+        formatted_results = formatted_results.astype(str)
+
+        for idx in formatted_results.index:
+            formatted_results.loc[idx] = format_with_std(pivot_table_mean.loc[idx], pivot_table_std.loc[idx])
+
+        formatted_results.to_latex(
             AUTONNUNET_TABLES / "results_test_set_dsc.tex",
-            float_format="%.2f",
+            escape=False,
             caption="Performance Comparison",
             label="tab:results"
         )
