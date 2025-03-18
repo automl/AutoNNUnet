@@ -3017,7 +3017,9 @@ class Plotter:
                     ax=ax,
                     label=hp,
                     color=color,
-                    linestyle=linestyle
+                    linestyle=linestyle,
+                    marker="o",
+                    markeredgewidth=0,
                 )
 
             ax.legend(
