@@ -1804,7 +1804,7 @@ class Plotter:
         for dataset in self.datasets:
             self._plot_baseline(dataset=dataset, x_metric=x_metric)
 
-    def _plot_optimization(                 # noqa: C901, PLR0915
+    def _plot_optimization(                 # noqa: C901, PLR0915, PLR0912
             self,
             dataset: str,
             x_log_scale: bool = False,      # noqa: FBT001, FBT002
@@ -2372,7 +2372,10 @@ class Plotter:
                 label="HPO + NAS (ours)",
                 ax=ax,
                 drawstyle="steps-post",
-                zorder=5
+                zorder=5,
+                marker="o",
+                markersize=5,
+                markeredgewidth=0,
             )
 
         hnas_data = self.get_hnas_data(dataset)
@@ -2391,7 +2394,10 @@ class Plotter:
                 label="HPO + HNAS (ours)",
                 ax=ax,
                 drawstyle="steps-post",
-                zorder=5
+                zorder=5,
+                marker="o",
+                markersize=5,
+                markeredgewidth=0,
             )
         ax.set_title(f"Pareto Fronts for\n{format_dataset_name(dataset)}")
         ax.set_xlabel(O_DSC)
@@ -4962,9 +4968,11 @@ class Plotter:
             ax.legend().remove()
 
         if include == "incumbents":
-            title = "Relationship between Incumbent Hyperparameter\nValues and Dataset Features"
+            title = "Relationship between Incumbent Hyperparameter\n\
+                Values and Dataset Features"
         else:
-            title = "Relationship between Hyperparameter\nImportance and Dataset Features"
+            title = "Relationship between Hyperparameter\n\
+                Importance and Dataset Features"
 
         fig.suptitle(title)
 
@@ -5233,7 +5241,7 @@ class Plotter:
 
         result_path = AUTONNUNET_MSD_RESULTS /\
             f"{approach_key}_{self.configuration}.json"
-        
+
         if not result_path.exists():
             return pd.DataFrame([])
 
@@ -5241,7 +5249,7 @@ class Plotter:
 
         for task_id, task_results in msd_results.items():
             dataset = msd_task_to_dataset_name(task_id)
-            
+
             dataset_info_path = self.baseline_conv / dataset /\
                 self.configuration / "fold_0" / "dataset.json"
             dataset_info = load_json(dataset_info_path)
@@ -5269,7 +5277,7 @@ class Plotter:
             return a.replace(" (ours)", "").replace("nnU-Net (", "").replace(")", "")
 
         all_results = []
-        for approach_key, approach in APPROACH_REPLACE_MAP.items():
+        for approach_key, _approach in APPROACH_REPLACE_MAP.items():
             all_results += [self._read_msd_results(approach_key)]
 
         all_results = pd.concat(all_results)
@@ -5291,7 +5299,10 @@ class Plotter:
             values="std"
         )
 
-        filtered_columns = [format_approach(a) for a in APPROACH_REPLACE_MAP.values() if a != "MedSAM2"]
+        filtered_columns = [
+            format_approach(a) for a in APPROACH_REPLACE_MAP.values() \
+                if a != "MedSAM2"
+        ]
         pivot_table_mean = pivot_table_mean[filtered_columns]
         pivot_table_std = pivot_table_std[filtered_columns]
 
@@ -5299,10 +5310,11 @@ class Plotter:
         pivot_table_std.loc["\\textbf{Mean}", :] = pivot_table_std.mean(axis=0)
 
         def format_with_std(row_mean, row_std):
-            max_val = row_mean.max()  
+            max_val = row_mean.max()
             formatted_row = [
-                f"$\\mathbf{{{mean:.2f} \\pm {std:.2f}}}$" if mean == max_val else f"${mean:.2f} \\pm {std:.2f}$"
-                for mean, std in zip(row_mean, row_std)
+                f"$\\mathbf{{{mean:.2f} \\pm {std:.2f}}}$" \
+                    if mean == max_val else f"${mean:.2f} \\pm {std:.2f}$"
+                for mean, std in zip(row_mean, row_std, strict=False)
             ]
             return pd.Series(formatted_row, index=row_mean.index)
 
@@ -5310,7 +5322,10 @@ class Plotter:
         formatted_results = formatted_results.astype(str)
 
         for idx in formatted_results.index:
-            formatted_results.loc[idx] = format_with_std(pivot_table_mean.loc[idx], pivot_table_std.loc[idx])
+            formatted_results.loc[idx] = format_with_std(
+                pivot_table_mean.loc[idx],
+                pivot_table_std.loc[idx]
+            )
 
         formatted_results.to_latex(
             AUTONNUNET_TABLES / "results_test_set_dsc.tex",
