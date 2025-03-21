@@ -1755,7 +1755,7 @@ class Plotter:
             y="EMA Foreground Dice [%]",
             data=baseline_progress,
             hue="Approach",
-            errorbar=("ci", 95),
+            errorbar="sd",
         )
 
         g.set_title(f"Training Progress on\n{format_dataset_name(dataset)}")
