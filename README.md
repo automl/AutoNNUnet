@@ -46,6 +46,20 @@ conda activate autonnunet
 make install
 ```
 
+***Important***: The automated installation is great if you want to install all submodules automatically. However, it is also quite sensible to system-specific python and package versions. Therefore, if the installation using make fails, we recommend to install the subpackages manually:
+
+```bash
+# submodules
+cd submodules/batchgenerators && git checkout master && git pull &&  pip install . && cd ../../
+cd submodules/hypersweeper && git checkout dev && git pull &&  pip install . && cd ../../
+cd submodules/MedSAM && git checkout MedSAM2 && git pull &&  pip install . && cd ../../
+cd submodules/neps && git checkout master && git pull &&  pip install . && cd ../../
+cd submodules/nnUNet && git checkout dev && git pull &&  pip install . && cd ../../
+
+# AutoNNUNet
+pip install -e ".[dev]"
+```
+
 ## Reproduction of Experiments
 
 ### Cluster Setup
@@ -162,8 +176,6 @@ To train all datasets with the incumbent configuration of another dataset, run
 ```bash
 ./runscripts/train_cross_eval.sh <dataset_name>
 ```
-
-
 
 ## Inference and MSD Submission
 
