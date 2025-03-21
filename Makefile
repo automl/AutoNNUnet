@@ -68,7 +68,18 @@ docs: ## generate Sphinx HTML documentation, including API docs
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	$(BROWSER) docs/_build/html/index.html
-install: clean ## install the package to the active Python's site-packages
+
+setup-submodules:
+	git submodule update --init --recursive
+
+	cd submodules/batchgenerators && git checkout master && git pull origin master && pip install .
+	cd submodules/hypersweeper && git checkout dev && git pull origin dev && pip install -e .
+	cd submodules/MedSAM && git checkout MedSAM2 && git pull origin MedSAM2
+	cd submodules/neps && git checkout master && git pull origin master && pip install .
+	cd submodules/nnUNet && git checkout dev && git pull origin dev && pip install .
+
+
+install: clean setup-submodules ## install the package to the active Python's site-packages
 	pip install -e ".[dev]"
 
 check:

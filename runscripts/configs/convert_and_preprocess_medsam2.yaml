@@ -1,6 +1,7 @@
 defaults:
   - _self_
   - dataset: Dataset002_Heart
+  - cluster: local
 
 # We need to specify the fold to obtain all images
 # but it does not affect the pre-processing

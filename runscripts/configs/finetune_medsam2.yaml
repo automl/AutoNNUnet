@@ -2,7 +2,7 @@
 defaults:
   - base
   - _self_
-  - cluster: kisski_gpu
+  - cluster: gpu
   - dataset: Dataset001_BrainTumour
   - sam_config: sam2_hiera_t_post_processing
 

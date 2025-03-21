@@ -2,21 +2,23 @@
 name = "AutoNNU-Net"
 version = "0.1.0"
 dependencies = [
-  "typing_extensions", # Better typing
-  "tomli", 
+  "typing_extensions==4.12.2",
+  "tomli==2.0.1", 
   "tqdm",
   "pre-commit", 
   "codecarbon==2.6.0",
+  "arrow==1.3.0",
   "pathos",
   "ConfigSpace==1.2.0",
-  "deepcave==1.3.2",
   "torch==2.4.1",
-  "pandas==2.2.2",
+  "torchvision==0.19.1",
+  "opencv-python==4.11.0.86",
+  "monai==1.4.0",
+  "pandas>=2.2.2",
   "numpy==1.26.4",
   "hydra_core==1.3.2",
   "dynamic_network_architectures==0.3.1",
   "batchgeneratorsv2==0.2.1",
-  "nnunetv2==2.5.1",
   "scikit-learn",
   "pytest",
   "coverage",
@@ -24,14 +26,13 @@ dependencies = [
   "hydra-submitit-launcher",
   "hydra_colorlog",
   "mypy",
-  "smac==2.2.0",
   "tox",
   "twine",
   "bump-my-version",
 ]
 
 requires-python = ">=3.10"
-authors = [{ name = "AutoML Hannover", email =  "becktepe@stud.uni-hannover.de" }]
+authors = [{ name = "AutoML Hannover", email = "becktepe@stud.uni-hannover.de" }]
 readme = "README.md"
 description = "Integration of Automated Machine Learning (AutoML) methods into nnU-Net."
 classifiers = [
