@@ -6140,7 +6140,7 @@ class Plotter:
             format_dataset_name(dataset)[:3] for dataset in matrix.columns
         ]
         matrix.index = pd.Index([
-            format_dataset_name(dataset)[:3] for dataset in matrix.index
+            format_dataset_name(dataset) for dataset in matrix.index
         ])
         matrix = matrix.astype(float)
 
@@ -6165,7 +6165,10 @@ class Plotter:
             fmt="",
             cmap="viridis",
             ax=ax,
-            cbar_kws={"label": "DSC [%]"}
+            cbar_kws={
+                "label": "DSC [%]",
+                "pad": 0.025
+            }
         )
         for text in g.texts:
             text.set_va("center")   # type: ignore
@@ -6183,8 +6186,8 @@ class Plotter:
         fig.subplots_adjust(
             top=0.82,
             bottom=0.03,
-            left=0.12,
-            right=1.05,
+            left=0.23,
+            right=1.02,
         )
 
         plt.savefig(
