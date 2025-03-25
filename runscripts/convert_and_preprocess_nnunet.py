@@ -11,13 +11,10 @@ from typing import TYPE_CHECKING
 
 import hydra
 
-from autonnunet.datasets import Dataset
+from autonnunet.datasets import MSDDataset
 
 if TYPE_CHECKING:
     from omegaconf import DictConfig
-
-    from autonnunet.datasets import Dataset
-
 
 @hydra.main(version_base=None, config_path="configs", config_name="convert_and_preprocess_nnunet")
 def run(cfg: DictConfig):
@@ -25,7 +22,9 @@ def run(cfg: DictConfig):
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    dataset: Dataset = hydra.utils.instantiate(cfg.dataset)
+    dataset = MSDDataset(
+        name=cfg.dataset.name,
+    )
 
     dataset.convert()
     dataset.preprocess()

@@ -63,10 +63,10 @@ hydra:
     stderr: true  
   job:
     env_set:
-      nnUNet_datasets: /mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_datasets
-      nnUNet_raw: /mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_raw
-      nnUNet_preprocessed: /mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_preprocessed
-      nnUNet_results: /mnt/home/jbecktep/git_projects/MSC-JannisBecktepe-AutoNNUnet/data/nnUNet_results
+      nnUNet_datasets: ${hydra:runtime.cwd}/data/nnUNet_datasets
+      nnUNet_raw: ${hydra:runtime.cwd}/data/nnUNet_raw
+      nnUNet_preprocessed: ${hydra:runtime.cwd}/data/nnUNet_preprocessed
+      nnUNet_results: ${hydra:runtime.cwd}/data/nnUNet_results
 
       nnUNet_n_proc_DA: 30
 

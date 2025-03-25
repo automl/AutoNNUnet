@@ -25,7 +25,7 @@ def download_file(url: str, target_path: Path) -> None:
         print(f"File already exists at {target_path}.")
         return
 
-    # We need to import requests
+    # We need to import requests lazily
     import requests
     from tqdm import tqdm
 
@@ -64,8 +64,13 @@ def untar_file(tar_path: Path, target_path: Path) -> None:
     Exception
         If the extraction fails.
     """
-    with tarfile.open(tar_path) as tar:
-        tar.extractall(path=target_path)    # noqa: S202
+    try:
+        with tarfile.open(tar_path) as tar:
+            tar.extractall(path=target_path)    # noqa: S202
 
-    print(f"File successfully unpacked to {target_path}.")
-    Path(tar_path).unlink()
+        print(f"File successfully unpacked to {target_path}.")
+        Path(tar_path).unlink()
+    except tarfile.ReadError as e:
+        print(e)
+        print("Failed to unpack file. Try to remove the "\
+              "file and download and extract again.")

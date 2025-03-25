@@ -1,6 +1,6 @@
 defaults:
   - _self_
-  - /cluster: kisski_gpu_preprocess
+  - /cluster: gpu_preprocess
   - dataset: Dataset002_Heart
 
 configuration: 3d_fullres

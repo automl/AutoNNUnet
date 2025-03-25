@@ -1,7 +1,7 @@
 defaults:
   - _self_
   - base
-  - cluster: kisski_gpu
+  - cluster: gpu
   - search_space: hpo
   - dataset: Dataset001_BrainTumour
   - override hydra/sweeper: HyperNEPS

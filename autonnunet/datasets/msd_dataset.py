@@ -7,8 +7,8 @@ from pathlib import Path
 
 from autonnunet.utils.paths import NNUNET_DATASETS
 
-from .base_dataset import Dataset
-from .utils import download_file, untar_file
+from autonnunet.datasets.base_dataset import Dataset
+from autonnunet.datasets.utils import download_file, untar_file
 
 MSD_URLS = {
     "Dataset001_BrainTumour": "https://msd-for-monai.s3-us-west-2.amazonaws.com/Task01_BrainTumour.tar",
@@ -91,7 +91,7 @@ class MSDDataset(Dataset):
 
         convert_command = [
             "nnUNetv2_convert_MSD_dataset",
-            "-i", task_path,
+            "-i", str(task_path),
             "-overwrite_id", str(self.dataset_id).zfill(3)
         ]
         self.logger.info(f"Executing command: {' '.join(convert_command)}")

@@ -13,6 +13,7 @@ DEFAULT_DATA_DIR = {
 }
 
 for k, v in DEFAULT_DATA_DIR.items():
+    v.mkdir(parents=True, exist_ok=True)
     if not os.environ.get(k):
         os.environ[k] = str(v)
 
