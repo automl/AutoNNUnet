@@ -5312,8 +5312,8 @@ class Plotter:
         def format_with_std(row_mean, row_std):
             max_val = row_mean.max()
             formatted_row = [
-                f"$\\mathbf{{{mean:.2f} \\pm {std:.2f}}}$" \
-                    if mean == max_val else f"${mean:.2f} \\pm {std:.2f}$"
+                f"$\\mathbf{{{mean:.2f} \\pm {std:.1f}}}$" \
+                    if mean == max_val else f"${mean:.2f} \\pm {std:.1f}$"
                 for mean, std in zip(row_mean, row_std, strict=False)
             ]
             return pd.Series(formatted_row, index=row_mean.index)
@@ -5522,7 +5522,8 @@ class Plotter:
     def _get_validation_image(      # noqa: PLR0915
             self,
             dataset: str,
-            case_where_autonnunet: Literal["best", "worst"] = "best"
+            case_where_autonnunet: Literal["best", "worst"] = "best",
+            include_medsam2: bool = False    # noqa: FBT001, FBT002
     ) -> tuple[str, int, tuple[int, int, int]]:
         """Returns the image and label with largest distance between the
         validation scores of nnU-Net (Conv) and the best method.
@@ -5535,6 +5536,9 @@ class Plotter:
         case_where_autonnunet : Literal["best", "worst"]
             Whether to return the best or worst case for autonnunet.
             Defaults to "best".
+
+        include_medsam2 : bool
+            Whether to include MedSAM2 in the comparison. Defaults to False.
 
         Returns:
         -------
@@ -5562,9 +5566,11 @@ class Plotter:
         assert best_approach_key is not None
         baseline_metrics_per_case = self.get_baseline_data(
             dataset=dataset).metrics_per_case
-        baseline_metrics_per_case = baseline_metrics_per_case[
-            baseline_metrics_per_case["Approach"] == "nnU-Net (Conv)"
-        ]
+
+        if not include_medsam2:
+            baseline_metrics_per_case = baseline_metrics_per_case[
+                baseline_metrics_per_case["Approach"] != "MedSAM2"
+            ]
 
         auto_metrics_per_case = data_funcs[
             best_approach_key](dataset=dataset).incumbent_metrics_per_case
@@ -5578,15 +5584,20 @@ class Plotter:
             values="Mean"
         )
 
+        # We select based on the distance to the best baseline
+        metrics_pivot["Best Baseline"] = metrics_pivot[
+            ["nnU-Net (Conv)", "nnU-Net (ResL)", "nnU-Net (ResM)"]
+        ].max(axis=1)
+
         # Depending on whether we want the best or worst case of
         # autonnunet we have to compute the difference
         approach_name = APPROACH_REPLACE_MAP[best_approach_key]
         if case_where_autonnunet == "worst":
-            metrics_pivot["Difference"] = metrics_pivot["nnU-Net (Conv)"] \
+            metrics_pivot["Difference"] = metrics_pivot["Best Baseline"] \
                 - metrics_pivot[approach_name]
         else:
             metrics_pivot["Difference"] = metrics_pivot[approach_name] \
-                - metrics_pivot["nnU-Net (Conv)"]
+                - metrics_pivot["Best Baseline"]
 
         max_diff_row = metrics_pivot[
             metrics_pivot["Difference"] == metrics_pivot["Difference"].max()
@@ -5739,12 +5750,31 @@ class Plotter:
         label_data[label_data == 0] = np.nan
         x, y, z = slice_idxs
 
+        # crop non-zero region
+        non_zero_indices = np.argwhere(img_data != 0)
+
+        min_coords = non_zero_indices.min(axis=0)
+        max_coords = non_zero_indices.max(axis=0)
+
+        x -= min_coords[0]
+        y -= min_coords[1]
+        z -= min_coords[2]
+
+        def crop_non_zero(_image: np.ndarray) -> np.ndarray:
+            return _image[
+                min_coords[0] : max_coords[0] + 1, 
+                min_coords[1] : max_coords[1] + 1, 
+                min_coords[2] : max_coords[2] + 1
+            ]
+
+        img_data = crop_non_zero(img_data)
         slices["Image"] = [
             img_data[:, :, z],
             img_data[x, :, :],
             img_data[:, y, :]
         ]
 
+        label_data = crop_non_zero(label_data)
         slices["Ground\nTruth"] = [
             label_data[:, :, z],
             label_data[x, :, :],
@@ -5793,6 +5823,7 @@ class Plotter:
 
             _approach = approach.replace(" ", "\n")
 
+            pred_data = crop_non_zero(pred_data)
             slices[_approach] = [
                 pred_data[:, :, z],
                 pred_data[x, :, :],
@@ -5827,6 +5858,7 @@ class Plotter:
 
             _approach = approach.replace(" ", "\n").replace("+", "+\n")
 
+            pred_data = crop_non_zero(pred_data)
             slices[_approach] = [
                 pred_data[:, :, z],
                 pred_data[x, :, :],
@@ -5838,9 +5870,20 @@ class Plotter:
 
     def plot_qualitative_segmentations(
                 self,
-                case_where_autonnunet: Literal["best", "worst"] = "best"
+                case_where_autonnunet: Literal["best", "worst"] = "best",
+                include_medsam2: bool = True    # noqa: FBT001, FBT002
         ) -> None:
-        """Plot the qualitative segmentations for all datasets."""
+        """Plot the qualitative segmentations for all datasets.
+        
+        Parameters
+        ----------
+        case_where_autonnunet : Literal["best", "worst"]
+            Whether to plot the best or worst case for autonnunet.
+            Defaults to "best".
+
+        include_medsam2 : bool
+            Whether to include MedSAM2 in the comparison. Defaults to True.
+        """
         output_dir = AUTONNUNET_PLOTS / "qualitative_results"
         output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -5871,7 +5914,8 @@ class Plotter:
                 slice_idxs
             ) = self._get_validation_image(
                 dataset=dataset,
-                case_where_autonnunet=case_where_autonnunet
+                case_where_autonnunet=case_where_autonnunet,
+                include_medsam2=include_medsam2
             )
 
             slices, metrics, spacing = self.get_slices_and_metrics(
@@ -5881,6 +5925,10 @@ class Plotter:
                 slice_idxs=slice_idxs
             )
             ndim = len(slices["Image"])
+
+            if not include_medsam2:
+                slices.pop("MedSAM2")
+                metrics.pop("MedSAM2")
 
             aspect_ratios = {
                 0: spacing[1] / spacing[0],
@@ -5944,7 +5992,7 @@ class Plotter:
                 frameon=False
             )
             fig.subplots_adjust(
-                top=0.76,
+                top=0.75,
                 bottom=0.1,
                 left=0.,
                 right=1.,
@@ -6664,3 +6712,45 @@ class Plotter:
         )
         plt.clf()
         plt.close()
+
+    def create_dataset_features_table(self):
+        """Creates a table of the dataset features."""
+        features = self._get_joint_dataset_features()
+        features = self._filter_joint_dataset_features(
+            features=features,
+            include="none"
+        ) 
+
+        features = features[
+            ["Dataset", "nnU-Net Val. DSC", "Volume", "Class Volume Ratio",
+             "Intensity Min.", "Intensity Max.", "Intensity Mean",
+             "Intensity Std.", "#Images", "#Classes", "Source"]
+        ]
+
+        numerical_cols = features.select_dtypes(exclude=["object"]).columns
+        categorical_cols = [
+            col for col in features.select_dtypes(include=["object"]).columns \
+                if col != "Dataset"
+        ]
+
+        # custom aggregation function to compute mean over datasets
+        custom_agg = {
+            col: "mean" if col in numerical_cols else "first" for col in features.columns if col != "Dataset"
+        }
+
+        features = features.groupby("Dataset").agg(custom_agg).reset_index()
+        features["#Images"] = features["#Images"].astype(int)
+        features["#Classes"] = features["#Classes"].astype(int)
+
+        features["Volume"] = features["Volume"].apply(lambda x: f"{x:.2e}")
+        features["Class Volume Ratio"] = features["Class Volume Ratio"].apply(lambda x: f"{x:.2e}")
+        features["Intensity Min."] = features["Intensity Min."].apply(lambda x: f"{x:.2f}")
+        features["Intensity Max."] = features["Intensity Max."].apply(lambda x: f"{x:.2f}")
+        features["Intensity Mean"] = features["Intensity Mean"].apply(lambda x: f"{x:.2f}")
+        features["Intensity Std."] = features["Intensity Std."].apply(lambda x: f"{x:.2f}")
+        features["nnU-Net Val. DSC"] = features["nnU-Net Val. DSC"].apply(lambda x: f"{x:.2f}")
+
+        features.to_latex(
+            AUTONNUNET_TABLES / "dataset_features.tex",
+            index=False
+        )
