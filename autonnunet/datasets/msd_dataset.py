@@ -5,10 +5,9 @@ import argparse
 import subprocess
 from pathlib import Path
 
-from autonnunet.utils.paths import NNUNET_DATASETS
-
 from autonnunet.datasets.base_dataset import Dataset
 from autonnunet.datasets.utils import download_file, untar_file
+from autonnunet.utils.paths import NNUNET_DATASETS
 
 MSD_URLS = {
     "Dataset001_BrainTumour": "https://msd-for-monai.s3-us-west-2.amazonaws.com/Task01_BrainTumour.tar",
