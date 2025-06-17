@@ -21,10 +21,10 @@
 
 <div align="center">
     <h3>
-      <a href="#installation">Installation</a> |
-      <a href="#reproduction-of-experiments">Reproduction of Experiments</a> |
-      <a href="#known-issues">Known Issues</a> |
-      <a href="#license-&-citation">License & Citation</a>
+      <a href="#-installation">Installation</a> |
+      <a href="#-reproduction-of-experiments">Reproduction of Experiments</a> |
+      <a href="#-known-issues">Known Issues</a> |
+      <a href="#-license-&-citation">License & Citation</a>
     </h3>
 </div>
 
