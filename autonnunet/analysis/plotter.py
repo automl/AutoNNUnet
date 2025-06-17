@@ -5762,8 +5762,8 @@ class Plotter:
 
         def crop_non_zero(_image: np.ndarray) -> np.ndarray:
             return _image[
-                min_coords[0] : max_coords[0] + 1, 
-                min_coords[1] : max_coords[1] + 1, 
+                min_coords[0] : max_coords[0] + 1,
+                min_coords[1] : max_coords[1] + 1,
                 min_coords[2] : max_coords[2] + 1
             ]
 
@@ -5868,13 +5868,13 @@ class Plotter:
 
         return slices, metrics, spacing
 
-    def plot_qualitative_segmentations(
+    def plot_qualitative_segmentations(         # noqa: PLR0915
                 self,
                 case_where_autonnunet: Literal["best", "worst"] = "best",
                 include_medsam2: bool = True    # noqa: FBT001, FBT002
         ) -> None:
         """Plot the qualitative segmentations for all datasets.
-        
+
         Parameters
         ----------
         case_where_autonnunet : Literal["best", "worst"]
@@ -6719,7 +6719,7 @@ class Plotter:
         features = self._filter_joint_dataset_features(
             features=features,
             include="none"
-        ) 
+        )
 
         features = features[
             ["Dataset", "nnU-Net Val. DSC", "Volume", "Class Volume Ratio",
@@ -6728,27 +6728,35 @@ class Plotter:
         ]
 
         numerical_cols = features.select_dtypes(exclude=["object"]).columns
-        categorical_cols = [
+        [
             col for col in features.select_dtypes(include=["object"]).columns \
                 if col != "Dataset"
         ]
 
         # custom aggregation function to compute mean over datasets
         custom_agg = {
-            col: "mean" if col in numerical_cols else "first" for col in features.columns if col != "Dataset"
+            col: "mean" if col in numerical_cols else "first" \
+                for col in features.columns if col != "Dataset"
         }
 
         features = features.groupby("Dataset").agg(custom_agg).reset_index()
         features["#Images"] = features["#Images"].astype(int)
         features["#Classes"] = features["#Classes"].astype(int)
 
-        features["Volume"] = features["Volume"].apply(lambda x: f"{x:.2e}")
-        features["Class Volume Ratio"] = features["Class Volume Ratio"].apply(lambda x: f"{x:.2e}")
-        features["Intensity Min."] = features["Intensity Min."].apply(lambda x: f"{x:.2f}")
-        features["Intensity Max."] = features["Intensity Max."].apply(lambda x: f"{x:.2f}")
-        features["Intensity Mean"] = features["Intensity Mean"].apply(lambda x: f"{x:.2f}")
-        features["Intensity Std."] = features["Intensity Std."].apply(lambda x: f"{x:.2f}")
-        features["nnU-Net Val. DSC"] = features["nnU-Net Val. DSC"].apply(lambda x: f"{x:.2f}")
+        features["Volume"] = features["Volume"]\
+            .apply(lambda x: f"{x:.2e}")
+        features["Class Volume Ratio"] = features["Class Volume Ratio"]\
+            .apply(lambda x: f"{x:.2e}")
+        features["Intensity Min."] = features["Intensity Min."]\
+            .apply(lambda x: f"{x:.2f}")
+        features["Intensity Max."] = features["Intensity Max."]\
+            .apply(lambda x: f"{x:.2f}")
+        features["Intensity Mean"] = features["Intensity Mean"]\
+            .apply(lambda x: f"{x:.2f}")
+        features["Intensity Std."] = features["Intensity Std."]\
+            .apply(lambda x: f"{x:.2f}")
+        features["nnU-Net Val. DSC"] = features["nnU-Net Val. DSC"]\
+            .apply(lambda x: f"{x:.2f}")
 
         features.to_latex(
             AUTONNUNET_TABLES / "dataset_features.tex",
