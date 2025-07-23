@@ -15,8 +15,8 @@
 </div>
 
 <div align="center">
-    This repo contains the code for our [paper](https://openreview.net/pdf?id=XSTIEVoEa2): Auto-nnU-Net: Towards Automated Medical Image
-Segmentation.
+    This repo contains the code for our paper <a href="https://openreview.net/pdf?id=XSTIEVoEa2">Auto-nnU-Net: Towards Automated Medical Image
+Segmentation</a>.
     Integration of Automated Machine Learning (AutoML) methods into <a href="https://github.com/MIC-DKFZ/nnUNet">nnU-Net</a>.  
 📜 Free software under BSD license.
 </div>
