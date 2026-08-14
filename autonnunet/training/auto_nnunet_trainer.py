@@ -191,8 +191,8 @@ class AutoNNUNetTrainer(nnUNetTrainer):
             enable_deep_supervision=self.enable_deep_supervision
         )
 
-    @staticmethod
-    def from_config(cfg: DictConfig) -> AutoNNUNetTrainer:
+    @classmethod
+    def from_config(cls, cfg: DictConfig) -> AutoNNUNetTrainer:
         """Initializes a AutoNNUNetTrainer from a hydra configuration.
 
         Parameters:
@@ -203,7 +203,7 @@ class AutoNNUNetTrainer(nnUNetTrainer):
         Returns:
         -------
         AutoNNUNetTrainer
-            The AutoNNUNetTrainer.
+            The AutoNNUNetTrainer (or subclass, if called on a subclass).
         """
         preprocessed_dataset_folder_base = NNUNET_PREPROCESSED / cfg.dataset.name
         dataset_json = load_json(preprocessed_dataset_folder_base / "dataset.json")
@@ -226,7 +226,7 @@ class AutoNNUNetTrainer(nnUNetTrainer):
                     f"{cfg.trainer.plans_identifier}.json"
             )
 
-        nnunet_trainer = AutoNNUNetTrainer(
+        nnunet_trainer = cls(
             plans=plans,
             configuration=cfg.trainer.configuration,
             fold=cfg.fold,

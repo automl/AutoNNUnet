@@ -42,6 +42,7 @@ def run(cfg: DictConfig) -> dict:   # noqa: C901, PLR0912, PLR0915
     from torch.backends import cudnn
 
     from autonnunet.training.auto_nnunet_trainer import AutoNNUNetTrainer
+    from autonnunet.training.in_memory_trainer import InMemoryAutoNNUNetTrainer
     from autonnunet.utils import read_objectives, seed_everything
 
     if torch.cuda.is_available():
@@ -83,7 +84,8 @@ def run(cfg: DictConfig) -> dict:   # noqa: C901, PLR0912, PLR0915
     # TRAINING
     # ----------------------------------------------------------------------------------
     logger.info("Creating trainer")
-    nnunet_trainer = AutoNNUNetTrainer.from_config(cfg=cfg)
+    trainer_cls = InMemoryAutoNNUNetTrainer if cfg.trainer.cache_dataset_in_ram else AutoNNUNetTrainer
+    nnunet_trainer = trainer_cls.from_config(cfg=cfg)
 
     if cfg.pipeline.run_training:
         if Path("./checkpoint_final.pth").exists() and cfg.pipeline.continue_training:
