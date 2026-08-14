@@ -1,0 +1,40 @@
+# @package _global_
+defaults:
+  - override /hydra/launcher: submitit_local
+
+# GPU indices (as seen by this process/container) to cycle trials across.
+# Each concurrently launched job gets pinned to one of these via a
+# `device=cuda:{id}` override injected by the sweeper (see
+# HypersweeperSweeper.local_gpu_ids in submodules/hypersweeper).
+local_gpu_ids: [0, 1, 2, 3, 4, 5]
+
+hydra:
+  sweeper:
+    sweeper_kwargs:
+      # tune_hpo_nas.yaml sets slurm: true, which dynamically shrinks the job
+      # timeout based on budget/max_budget (down to a few hours for early,
+      # low-fidelity rungs). That scaling assumes each job has a whole GPU +
+      # node to itself, as on SLURM. Here, 5 jobs share one host/GPUs-worth of
+      # CPU, so a job can easily run slower than that budget-scaled timeout
+      # expects - and unlike SLURM, submitit's LocalExecutor cannot actually
+      # requeue a timed-out job, so hitting it hard-crashes the whole sweep
+      # (this is exactly what happened: a low-fidelity job with a ~5h
+      # computed timeout got stuck in validation and was killed after 21h).
+      # Disable the scaling here and rely solely on the static timeout_min
+      # below, which comfortably exceeds any single job's realistic runtime.
+      slurm: false
+  launcher:
+    name: ${dataset.name}
+    timeout_min: 4320  # 3 days; static ceiling, not scaled (see slurm: false above)
+    # submitit's LocalExecutor unconditionally sets CUDA_VISIBLE_DEVICES for
+    # every spawned job based on gpus_per_node (defaulting to 0 -> "", which
+    # hides ALL GPUs, breaking the device=cuda:{id} override below). This
+    # must match the number of entries in local_gpu_ids above.
+    gpus_per_node: 6
+  job:
+    env_set:
+      # nnU-Net spawns this many CPU workers for data augmentation *per job*.
+      # With multiple jobs running concurrently on one host, reduce this so
+      # total workers (nnUNet_n_proc_DA * len(local_gpu_ids)) stay within your
+      # CPU core count, e.g. 80 cores / 6 concurrent jobs ~= 13.
+      nnUNet_n_proc_DA: 10
