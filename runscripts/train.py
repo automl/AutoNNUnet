@@ -99,14 +99,24 @@ def run(cfg: DictConfig) -> dict:   # noqa: C901, PLR0912, PLR0915
 
             if cfg.save:
                 logger.info("Saving model to checkpoint dir.")
-                save_path_best = Path(cfg.save + "_best.pth").resolve()
                 save_path_final = Path(cfg.save + "_final.pth").resolve()
                 checkpoint_final_path = Path().resolve() / "checkpoint_final.pth"
-                checkpoint_best_path = Path().resolve() / "checkpoint_best.pth"
 
+                # Only the "_final" checkpoint is ever loaded back on resume
+                # (see AutoNNUNetTrainer.from_config) - the shared "_best"
+                # copy was pure dead weight (identical model size, doubling
+                # checkpoint disk usage for no functional benefit).
                 shutil.copy(checkpoint_final_path, save_path_final)
-                shutil.copy(checkpoint_best_path, save_path_best)
-                logger.info(f"Saved model to {save_path_best} and {save_path_final}")
+                logger.info(f"Saved model to {save_path_final}")
+
+        # progress.csv is only written from on_epoch_end(), so a run that trained
+        # zero new epochs (e.g. a resumed trial whose loaded checkpoint already
+        # reached the target num_epochs, or the checkpoint_final.pth skip above)
+        # would otherwise leave it missing even though the trainer's in-memory
+        # logging history (restored from the checkpoint) is complete.
+        if not Path("./progress.csv").exists():
+            logger.info("progress.csv missing, writing it from the trainer's logging history.")
+            nnunet_trainer.logger.plot_progress_png(nnunet_trainer.output_folder)
 
     # ----------------------------------------------------------------------------------
     # VALIDATION
