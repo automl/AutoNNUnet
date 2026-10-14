@@ -21,6 +21,7 @@ trainer:
   use_compressed_data: false
   export_validation_probabilities: false
   disable_checkpointing: false
+  cache_dataset_in_ram: false
 
 hp_config:
   # Fidelity

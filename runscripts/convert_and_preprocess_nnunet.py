@@ -10,8 +10,7 @@ import sys
 from typing import TYPE_CHECKING
 
 import hydra
-
-from autonnunet.datasets import MSDDataset
+from hydra.utils import get_class
 
 if TYPE_CHECKING:
     from omegaconf import DictConfig
@@ -22,7 +21,11 @@ def run(cfg: DictConfig):
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    dataset = MSDDataset(
+    # Dispatches on the dataset config's _target_ (e.g. MSDDataset for the
+    # Medical Segmentation Decathlon, LocalDataset for a dataset that is
+    # already in nnU-Net raw/preprocessed format).
+    dataset_cls = get_class(cfg.dataset._target_)
+    dataset = dataset_cls(
         name=cfg.dataset.name,
     )
 

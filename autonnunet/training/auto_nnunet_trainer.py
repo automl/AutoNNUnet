@@ -191,8 +191,8 @@ class AutoNNUNetTrainer(nnUNetTrainer):
             enable_deep_supervision=self.enable_deep_supervision
         )
 
-    @staticmethod
-    def from_config(cfg: DictConfig) -> AutoNNUNetTrainer:
+    @classmethod
+    def from_config(cls, cfg: DictConfig) -> AutoNNUNetTrainer:
         """Initializes a AutoNNUNetTrainer from a hydra configuration.
 
         Parameters:
@@ -203,7 +203,7 @@ class AutoNNUNetTrainer(nnUNetTrainer):
         Returns:
         -------
         AutoNNUNetTrainer
-            The AutoNNUNetTrainer.
+            The AutoNNUNetTrainer (or subclass, if called on a subclass).
         """
         preprocessed_dataset_folder_base = NNUNET_PREPROCESSED / cfg.dataset.name
         dataset_json = load_json(preprocessed_dataset_folder_base / "dataset.json")
@@ -226,7 +226,7 @@ class AutoNNUNetTrainer(nnUNetTrainer):
                     f"{cfg.trainer.plans_identifier}.json"
             )
 
-        nnunet_trainer = AutoNNUNetTrainer(
+        nnunet_trainer = cls(
             plans=plans,
             configuration=cfg.trainer.configuration,
             fold=cfg.fold,
@@ -244,9 +244,14 @@ class AutoNNUNetTrainer(nnUNetTrainer):
 
             if load_path_final.exists():
                 # We copy the best checkpoint to the current directory since the
-                # best epoch ever might be in the past and not overriden
+                # best epoch ever might be in the past and not overriden.
+                # Older checkpoints saved a dedicated "_best" file; newer ones
+                # don't (see train.py) since it was never actually used for
+                # anything but seeding this copy - fall back to "_final" so
+                # older and newer checkpoints both resume correctly.
                 checkpoint_best_path = Path().resolve() / "checkpoint_best.pth"
-                shutil.copyfile(load_path_best, checkpoint_best_path)
+                best_source = load_path_best if load_path_best.exists() else load_path_final
+                shutil.copyfile(best_source, checkpoint_best_path)
 
                 nnunet_trainer.load_checkpoint(str(load_path_final))
 

@@ -39,3 +39,7 @@ WORKDIR /tmp/autonnunet
 RUN git submodule update --init --recursive
 
 RUN make install
+
+# make install pulls in protobuf>=6 (via tensorboard), but wandb==0.16.6's
+# pre-compiled proto stubs only work against protobuf<4.
+RUN pip install "protobuf<4"

@@ -8,6 +8,9 @@ defaults:
 
 neps_seed: 0
 
+# Set by cluster=local_multi_gpu; leave null to keep sequential single-GPU execution.
+local_gpu_ids: null
+
 # HPO configuration
 min_budget: 10    # Minimum number of epochs
 max_budget: 1000  # Maximum number of epochs
@@ -33,6 +36,7 @@ hydra:
       job_array_size_limit: 1   # only one config at a time
       seeds: [0, 1, 2, 3, 4]    # these are the folds in our case
       seed_keyword: fold
+      local_gpu_ids: ${local_gpu_ids}
       slurm: true
       slurm_timeout: ${dataset.runtime_min}
       deterministic: true
