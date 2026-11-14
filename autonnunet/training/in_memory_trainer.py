@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from autonnunet.training.auto_nnunet_trainer import AutoNNUNetTrainer
 from autonnunet.training.in_memory_dataset import InMemoryNNUNetDataset
+from autonnunet.utils.ram_check import check_ram
 
 
 class InMemoryAutoNNUNetTrainer(AutoNNUNetTrainer):
@@ -20,6 +21,9 @@ class InMemoryAutoNNUNetTrainer(AutoNNUNetTrainer):
         just backed by `InMemoryNNUNetDataset`.
         """
         tr_keys, val_keys = self.do_split()
+
+        # RAM check before preloading
+        check_ram(self.preprocessed_dataset_folder, tr_keys + val_keys)
 
         dataset_tr = InMemoryNNUNetDataset(
             self.preprocessed_dataset_folder,

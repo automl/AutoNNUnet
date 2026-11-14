@@ -72,6 +72,7 @@ from autonnunet.hnas.cfg_unet import CFGUNet
 from autonnunet.training.auto_nnunet_logger import AutoNNUNetLogger
 from autonnunet.training.dummy_lr_scheduler import DummyLRScheduler
 from autonnunet.utils.paths import NNUNET_PREPROCESSED
+from autonnunet.utils.ram_check import check_ram
 
 if TYPE_CHECKING:
     from omegaconf import DictConfig
@@ -171,6 +172,15 @@ class AutoNNUNetTrainer(nnUNetTrainer):
         else:
             raise RuntimeError("You have called self.initialize even though the trainer"
                                " was already initialized. That should not happen.")
+
+    def get_tr_and_val_datasets(self):
+        """Same as `nnUNetTrainer.get_tr_and_val_datasets`, plus a RAM check."""
+        dataset_tr, dataset_val = super().get_tr_and_val_datasets()
+        check_ram(
+            self.preprocessed_dataset_folder,
+            list(dataset_tr.keys()) + list(dataset_val.keys()),
+        )
+        return dataset_tr, dataset_val
 
     def build_cfg_unet_architecture(self) -> nn.Module:
         """Builds the architecture based on the internal hyperparameters.
