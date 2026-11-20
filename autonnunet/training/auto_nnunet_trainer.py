@@ -71,6 +71,7 @@ from autonnunet.experiment_planning import plan_experiment
 from autonnunet.hnas.cfg_unet import CFGUNet
 from autonnunet.training.auto_nnunet_logger import AutoNNUNetLogger
 from autonnunet.training.dummy_lr_scheduler import DummyLRScheduler
+from autonnunet.training.monitor import TrainingMonitor
 from autonnunet.utils.paths import NNUNET_PREPROCESSED
 from autonnunet.utils.ram_check import check_ram
 
@@ -129,6 +130,9 @@ class AutoNNUNetTrainer(nnUNetTrainer):
 
         self.log_file = os.path.join(self.output_folder, "training_log.txt")    # noqa: PTH118
         self.logger = AutoNNUNetLogger()
+
+        # TensorBoard logging is always on: <run dir>/tensorboard
+        self.monitor = TrainingMonitor(Path(self.output_folder) / "tensorboard")
 
     def initialize(self) -> None:
         """Initializes the trainer.
@@ -533,6 +537,23 @@ class AutoNNUNetTrainer(nnUNetTrainer):
 
         msg = " ".join(new_args)
         logging.getLogger("Trainer").info(msg)
+
+    def on_train_start(self) -> None:
+        super().on_train_start()
+        self.monitor.on_train_start(self)
+
+    def on_epoch_start(self) -> None:
+        super().on_epoch_start()
+        self.monitor.on_epoch_start(self)
+
+    def on_epoch_end(self) -> None:
+        epoch = self.current_epoch
+        super().on_epoch_end()
+        self.monitor.on_epoch_end(self, epoch)
+
+    def on_train_end(self) -> None:
+        super().on_train_end()
+        self.monitor.on_train_end()
 
     def set_hp_config(self, hp_config: DictConfig) -> None:
         """Sets the hyperparameter configuration.

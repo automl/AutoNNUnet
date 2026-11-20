@@ -23,6 +23,13 @@ trainer:
   disable_checkpointing: false
   cache_dataset_in_ram: false
 
+# Surface distance metrics per label on the validation fold (DeepMind surface-distance),
+# computed after validation and logged to TensorBoard.
+surface_metrics:
+  # PLACEHOLDER: tolerance only for smoke tests, to be decided per dataset/label later,
+  # e.g. {default: 2.0, pancreas: 1.0}
+  nsd_tolerance_mm: 2.0
+
 hp_config:
   # Fidelity
   num_epochs: 1000

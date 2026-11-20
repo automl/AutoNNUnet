@@ -41,6 +41,7 @@ def run(cfg: DictConfig) -> dict:   # noqa: C901, PLR0912, PLR0915
     # before importing AutoNNUNet
     from torch.backends import cudnn
 
+    from autonnunet.evaluation.surface_metrics import compute_val_surface_metrics
     from autonnunet.training.auto_nnunet_trainer import AutoNNUNetTrainer
     from autonnunet.training.in_memory_trainer import InMemoryAutoNNUNetTrainer
     from autonnunet.utils import read_objectives, seed_everything
@@ -149,6 +150,13 @@ def run(cfg: DictConfig) -> dict:   # noqa: C901, PLR0912, PLR0915
             logger.error(f"Validation failed: {e}")
             logger.error("Setting Dice score to 0.0")
 
+        # Surface metrics (HD95, ASSD, NSD, ...) on the validation predictions.
+        # Has to happen here: the predicted .nii.gz files are deleted right below.
+        # Details and where the results end up: see compute_val_surface_metrics.
+        surface_metrics = (
+            {} if validation_failed else compute_val_surface_metrics(nnunet_trainer, cfg)
+        )
+
         if cfg.pipeline.remove_validation_files:
             logger.info("Removing validation files")
 
@@ -166,6 +174,9 @@ def run(cfg: DictConfig) -> dict:   # noqa: C901, PLR0912, PLR0915
         logger.info(f"Runtime: {objectives['runtime']}")
         logger.info(f"Objectives: {objectives!s}")
 
+        # Final metrics + hp_config for the TensorBoard HParams tab
+        nnunet_trainer.monitor.log_final(nnunet_trainer, objectives, surface_metrics)
+
     # ----------------------------------------------------------------------------------
     # CHECKPOINT HANDLING
     # ----------------------------------------------------------------------------------
@@ -177,6 +188,8 @@ def run(cfg: DictConfig) -> dict:   # noqa: C901, PLR0912, PLR0915
         Path(checkpoint_final_path).unlink()
         (checkpoint_best_path).unlink()
         logger.info("Removed checkpoints.")
+
+    nnunet_trainer.monitor.close()
 
     return objectives
 

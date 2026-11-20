@@ -73,7 +73,7 @@ setup-submodules:
 	git submodule update --init --recursive
 
 	cd submodules/batchgenerators && git checkout master && git pull origin master && pip install .
-	cd submodules/hypersweeper && git checkout dev && git pull origin dev && pip install -e .
+	cd submodules/hypersweeper && git checkout maximilian-master && git pull origin maximilian-master && pip install -e .
 	cd submodules/MedSAM && git checkout MedSAM2 && git pull origin MedSAM2
 	cd submodules/neps && git checkout master && git pull origin master && pip install .
 	cd submodules/nnUNet && git checkout dev && git pull origin dev && pip install .
